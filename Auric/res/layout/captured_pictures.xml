@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgray" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="fill_parent"
+        android:layout_height="60sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/topbar"
+        android:gravity="center"
+        android:text="@string/picture"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/previous"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/next"
+        android:layout_alignBottom="@+id/next"
+        android:background="@drawable/button_background"
+        android:textColor="#FFF"
+        android:text="@string/prev" />
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="162dp"
+        android:layout_height="288dp"
+        android:layout_above="@+id/previous"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:src="@drawable/abc_ab_stacked_solid_dark_holo" />
+
+    <Button
+        android:id="@+id/next"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="14dp"
+        android:background="@drawable/button_background"
+        android:text="@string/next"
+        android:textColor="#FFF" />
+
+</RelativeLayout>
