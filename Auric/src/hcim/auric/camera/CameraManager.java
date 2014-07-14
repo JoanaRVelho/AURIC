@@ -21,18 +21,17 @@ public class CameraManager {
 			camera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
 		} catch (RuntimeException e) {
 			camera = null;
-			Log.d("SCREEN", e.getMessage());
+			Log.e("SCREEN", e.getMessage());
 		}
 		try {
 			if (camera == null) {
-				Log.d("SCREEN", "esta mal");
 			} else {
 				SurfaceTexture dummySurfaceTextureF = new SurfaceTexture(0);
 				try {
 					camera.setPreviewTexture(dummySurfaceTextureF);
 					camera.startPreview();
 				} catch (Exception e) {
-					e.printStackTrace();
+					Log.e("SCREEN", e.getMessage());
 				}
 
 				camera.takePicture(null, null, callback);

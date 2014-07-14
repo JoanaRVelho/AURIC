@@ -52,7 +52,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	public static Context context;
 	private static final String dateTemplate = "MMMM yyyy";
 
-
 	@Override
 	protected void onResume() {
 		adapter = new GridCellAdapter(getApplicationContext(),
@@ -62,13 +61,15 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		super.onResume();
 	}
-	
-	void init(){
+
+	void init() {
+		context = getApplicationContext();
+		
 		Database.init(context);
 		FaceRecognition.init(context, getFilesDir().toString());
 
 		// start authentication
-		task = new AuditTask();
+		task = new AuditTask(context);
 		task.start();
 		receiver = new AuthenticationReceiver(task);
 		IntentFilter filter = new IntentFilter();
@@ -88,8 +89,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		// actionBar.hide();
 
 		setContentView(R.layout.activity_main);
-
-		context = getApplicationContext();
 
 		init();
 

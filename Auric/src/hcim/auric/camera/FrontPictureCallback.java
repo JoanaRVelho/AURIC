@@ -26,8 +26,7 @@ public class FrontPictureCallback implements Camera.PictureCallback {
 		if(bm == null){
 			Log.d("SCREEN", "NULL BITMAP");
 		}
-		
-		Log.d("SCREEN", "face captured");
+
 		task.addTaskMessage(AuditTask.ACTION_INTRUSION_DETECTION, bm);
 		
 		camera.stopPreview();
