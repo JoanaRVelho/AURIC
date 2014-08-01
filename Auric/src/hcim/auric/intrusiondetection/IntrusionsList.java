@@ -2,6 +2,7 @@ package hcim.auric.intrusiondetection;
 
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
+import hcim.auric.record.RunInteraction;
 
 import java.util.List;
 
@@ -22,21 +23,15 @@ import com.hcim.intrusiondetection.R;
 public class IntrusionsList extends Activity {
 
 	private Context context;
+	private IntrusionsDatabase intrusionsDB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-//		View decorView = getWindow().getDecorView();
-//		int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-//		decorView.setSystemUiVisibility(uiOptions);
-//		ActionBar actionBar = getActionBar();
-//		actionBar.hide();
-		
 		setContentView(R.layout.intrusions_list);
 
-		//CameraManager c = new CameraManager();
-		//c.takePicture();
+		context = this.getApplicationContext();
+		intrusionsDB = IntrusionsDatabase.getInstance(context);
 
 		Bundle extras = getIntent().getExtras();
 		String date = extras.getString("value1");
@@ -44,9 +39,7 @@ public class IntrusionsList extends Activity {
 		TextView t = (TextView) findViewById(R.id.textView1);
 		t.append(" " + date);
 
-		context = this.getApplicationContext();
-		List<Intrusion> intrusions = IntrusionsDatabase
-				.getIntrusionsFromADay(date);
+		List<Intrusion> intrusions = intrusionsDB.getIntrusionsFromADay(date);
 
 		if (intrusions != null)
 			addButtons(intrusions);
@@ -82,8 +75,9 @@ public class IntrusionsList extends Activity {
 
 		@Override
 		public void onClick(View v) {
-			Intent intent = new Intent(getBaseContext(), IntrusionView.class);
-			intent.putExtra("id", intrusion);
+			Intent intent = new Intent(IntrusionsList.this,
+					RunInteraction.class);
+			intent.putExtra("interaction", intrusion);
 			startActivity(intent);
 		}
 

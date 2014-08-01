@@ -24,19 +24,19 @@ public class PersonRecognizer {
 
 	public final static int MAXIMG = 100;
 	FaceRecognizer faceRecognizer;
-	String mPath;
+	String path;
 	int count = 0;
 	Labels labelsFile;
 
 	static final int WIDTH = 128;
 	static final int HEIGHT = 128;
-	private int mProb = 999;
+	private int prob = 999;
 
 	PersonRecognizer(String path) {
 		faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
 				.createLBPHFaceRecognizer(2, 8, 8, 8, 200);
-		mPath = path;
-		labelsFile = new Labels(mPath);
+		this.path = path;
+		labelsFile = new Labels(path);
 
 	}
 
@@ -69,20 +69,20 @@ public class PersonRecognizer {
 		FileOutputStream f;
 		try {
 			f = new FileOutputStream(
-					mPath + description + "-" + count + ".jpg", true);
+					path + description + "-" + count + ".jpg", true);
 			count++;
 			bmp.compress(Bitmap.CompressFormat.JPEG, 100, f);
 			f.close();
 
 		} catch (Exception e) {
-			Log.e("error", e.getCause() + " " + e.getMessage());
+			Log.e("SCREEN", e.getCause() + " " + e.getMessage());
 			e.printStackTrace();
 
 		}
 	}
 
 	public boolean train() {
-		File root = new File(mPath);
+		File root = new File(path);
 
 		FilenameFilter pngFilter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
@@ -102,7 +102,7 @@ public class PersonRecognizer {
 		IplImage img = null;
 		IplImage grayImg;
 
-		int i1 = mPath.length();
+		int i1 = path.length();
 
 		for (File image : imageFiles) {
 			String p = image.getAbsolutePath();
@@ -162,9 +162,9 @@ public class PersonRecognizer {
 		faceRecognizer.predict(ipl, n, p);
 
 		if (n[0] != -1)
-			mProb = (int) p[0];
+			prob = (int) p[0];
 		else
-			mProb = -1;
+			prob = -1;
 		// if ((n[0] != -1)&&(p[0]<95))
 		if (n[0] != -1)
 			return labelsFile.get(n[0]);
@@ -210,8 +210,7 @@ public class PersonRecognizer {
 			bmp.compress(Bitmap.CompressFormat.JPEG, 100, file);
 			file.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Log.e("", e.getMessage() + e.getCause());
+			Log.e("SCREEN", e.getMessage() + e.getCause());
 			e.printStackTrace();
 		}
 
@@ -222,7 +221,7 @@ public class PersonRecognizer {
 	}
 
 	public int getProb() {
-		return mProb;
+		return prob;
 	}
 
 }

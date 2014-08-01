@@ -1,12 +1,12 @@
 package hcim.auric.intrusion;
 
 import hcim.auric.calendar.CalendarManager;
-import hcim.auric.intrusiondetection.MainActivity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 public class Intrusion implements Serializable {
@@ -19,14 +19,14 @@ public class Intrusion implements Serializable {
 	private String date;
 	private String time;
 
-	public Intrusion() {
+	public Intrusion(Context c) {
 		id = CalendarManager.getCurrentDateAndTime();
 		int idx = id.indexOf(" ");
 
 		date = id.substring(0, idx);
 		time = id.substring(idx + 1);
 		
-		log = new Log(MainActivity.context);
+		log = new Log(c); //MainActivity.context
 		images = new ArrayList<Bitmap>();
 	}
 
@@ -34,6 +34,14 @@ public class Intrusion implements Serializable {
 		this.id = id;
 		this.date = date;
 		this.time = time;
+	}
+
+	public Intrusion(String id, String date, String time, String timestamp) {
+		this.id = id;
+		this.date = date;
+		this.time = time;
+		this.log = new Log(timestamp);
+		images = new ArrayList<Bitmap>();
 	}
 
 	public String getDate() {
@@ -86,10 +94,6 @@ public class Intrusion implements Serializable {
 
 	public void stopLogging() {
 		log.stopLogging(); 
-	}
-
-	public void replay() {
-		log.replay();
 	}
 
 	@Override

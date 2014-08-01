@@ -6,25 +6,28 @@ import hcim.auric.intrusion.Log;
 
 import java.util.List;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 public class IntrusionsDatabase {
-	static SQLiteIntrusion intrusionsDB; 
-	static SQLiteLog logsDB;
-	static SQLiteIntrusionPictures intrusionPicturesDB;
+	private static IntrusionsDatabase INSTANCE;
 
-	public static void init(SQLiteIntrusion i, SQLiteIntrusionPictures p,
-			SQLiteLog l) {
-		intrusionsDB = i;
-		logsDB = l;
-		intrusionPicturesDB = p;
+	SQLiteIntrusion intrusionsDB;
+	SQLiteLog logsDB;
+	SQLiteIntrusionPictures intrusionPicturesDB;
+
+	private IntrusionsDatabase(Context c) {
+		intrusionsDB = new SQLiteIntrusion(c);
+		logsDB = new SQLiteLog(c);
+		intrusionPicturesDB = new SQLiteIntrusionPictures(c);
 	}
 
-	public static int getNumberOfLogs() {
+	public int getNumberOfLogs() {
 		return 1;
 	}
 
-	public static List<Intrusion> getIntrusionsFromADay(String date) {
+	public List<Intrusion> getIntrusionsFromADay(String date) {
+		android.util.Log.d("SCREEN","IntrusionsDatabase - date="+date);
 		List<Intrusion> list = intrusionsDB.getAllIntrusionsFromDay(date);
 
 		if (list == null)
@@ -46,20 +49,21 @@ public class IntrusionsDatabase {
 		return list;
 	}
 
-	public static void addIntrusion(Intrusion i) {
+	public void addIntrusion(Intrusion i) {
 		String id = i.getID();
 		List<Bitmap> list = i.getImages();
 
 		intrusionsDB.addIntrusion(id, i.getDate(), i.getTime());
 
-		if(list != null){
+		if (list != null) {
 			for (Bitmap bitmap : list)
 				intrusionPicturesDB.addIntrusionPicture(i.getID(), bitmap);
 		}
 		logsDB.addLog(id, i.getLog());
+		android.util.Log.d("SCREEN", "Intrusions Database - add new Intrusion");
 	}
 
-	public static void removeIntrusion(Intrusion i) {
+	public void removeIntrusion(Intrusion i) {
 		String id = i.getID();
 
 		intrusionsDB.deleteIntrusion(id);
@@ -67,7 +71,7 @@ public class IntrusionsDatabase {
 		logsDB.deleteLog(id);
 	}
 
-	public static Intrusion getIntrusion(String id) {
+	public Intrusion getIntrusion(String id) {
 		Intrusion i = intrusionsDB.getIntrusion(id);
 		List<Bitmap> pics = intrusionPicturesDB.getAllIntrusionPicture(id);
 		String log = logsDB.getLog(id);
@@ -78,16 +82,29 @@ public class IntrusionsDatabase {
 		return i;
 	}
 
-	public static boolean dayOfIntrusion(String theday, String themonth,
-			String theyear) {
-		return dayOfIntrusion(CalendarManager.getDateFormat(theday, themonth, theyear));
+	public boolean dayOfIntrusion(String theday, String themonth, String theyear) {
+		return dayOfIntrusion(CalendarManager.getDateFormat(theday, themonth,
+				theyear));
 	}
 
-	public static boolean dayOfIntrusion(String date_month_year) {
-		List<Intrusion> list =
-				intrusionsDB.getAllIntrusionsFromDay(date_month_year);
+	public boolean dayOfIntrusion(String date_month_year) {
+		List<Intrusion> list = intrusionsDB
+				.getAllIntrusionsFromDay(date_month_year);
 
 		return !(list == null || list.size() == 0);
 	}
 
+	public static IntrusionsDatabase getInstance(Context c) {
+		if (INSTANCE == null)
+			INSTANCE = new IntrusionsDatabase(c);
+		return INSTANCE;
+	}
+
+//	public static IntrusionsDatabase getInstanceForService(Context c) {
+//		if (SERVICE_INSTANCE == null) {
+//			SERVICE_INSTANCE = new IntrusionsDatabase(c);
+//		}
+//
+//		return SERVICE_INSTANCE;
+//	}
 }

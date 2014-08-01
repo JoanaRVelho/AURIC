@@ -9,6 +9,9 @@
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -30,36 +33,92 @@
         </activity>
         <activity android:name="hcim.auric.intrusiondetection.ConfigurationsView" >
         </activity>
-        <activity android:name="hcim.auric.intrusiondetection.OtherFaceConfigView" >
-        </activity>
         <activity android:name="hcim.auric.intrusiondetection.MyFaceConfigView" >
-        </activity>
-        <activity android:name="hcim.auric.intrusiondetection.IntrusionsOverview" >
         </activity>
         <activity android:name="swat.record.RunInteraction" >
         </activity>
-        <activity android:name="hcim.auric.intrusiondetection.IntrusionView" >
-        </activity>
         <activity android:name="hcim.auric.intrusiondetection.IntrusionsList" >
-        </activity>
-        <activity android:name="hcim.auric.intrusiondetection.MyPictureView" >
-        </activity>
-        <activity android:name="hcim.auric.intrusiondetection.CapturedPictureView" >
-        </activity>
-        <activity android:name="hcim.auric.intrusiondetection.Replay" >
         </activity>
 
         <service
-            android:name="hcim.auric.authentication.AuthenticationService"
+            android:name="hcim.auric.authentication.BackgroundService"
             android:enabled="true" >
         </service>
+        <service
+            android:name="mswat.core.activityManager.HierarchicalService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:settingsActivity="mswat.core.activityManager.ServicePreferences" >
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/serviceconfig" />
+        </service>
+
+        <activity
+            android:name="mswat.core.activityManager.ServicePreferences"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.accessibilityservice.SERVICE_SETTINGS" />
+            </intent-filter>
+        </activity>
 
         <receiver
-            android:name="hcim.auric.authentication.AuthenticationReceiver"
+            android:name="hcim.auric.record.InteractionLog"
             android:enabled="true" >
             <intent-filter>
-                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="swat_interaction" />
                 <action android:name="android.intent.action.SCREEN_OFF" />
+            </intent-filter>
+        </receiver>
+        
+        <receiver
+            android:name="mswat.touch.TPRTab2"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="mswat_tpr" />
+                <action android:name="mswat_stop" />
+            </intent-filter>
+        </receiver>
+        
+        <receiver
+            android:name="mswat.touch.TPRNexusS"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="mswat_tpr" />
+                <action android:name="mswat_stop" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="mswat.core.logger.Logger"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="mswat_init" />
+                <action android:name="mswat_stop" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="mswat.core.calibration.CalibrationActivity"
+            android:label="@string/title_activity_calibration" >
+        </activity>
+        <activity
+            android:name="mswat.core.calibration.CalibrationScreen"
+            android:label="@string/title_activity_calibration" >
+        </activity>
+        <activity android:name="hcim.auric.record.RunInteraction" >
+        </activity>
+
+        <receiver
+            android:name="hcim.auric.record.WifiStart"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="mswat_init" />
             </intent-filter>
         </receiver>
     </application>

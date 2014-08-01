@@ -1,9 +1,7 @@
 package hcim.auric.intrusiondetection;
 
-import hcim.auric.authentication.AuditTask;
-import hcim.auric.authentication.AuthenticationReceiver;
 import hcim.auric.calendar.CalendarManager;
-import hcim.auric.database.Database;
+import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.recognition.FaceRecognition;
 
@@ -17,7 +15,6 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -40,62 +37,38 @@ import com.hcim.intrusiondetection.R;
  */
 public class MainActivity extends Activity implements OnClickListener {
 
-	private static AuditTask task = null;
 	private TextView currentMonth;
 	private ImageView prevMonth;
 	private ImageView nextMonth;
 	private GridView calendarView;
 	private GridCellAdapter adapter;
 	private Calendar myCalendar;
-	private AuthenticationReceiver receiver;
 	private int month, year;
-	public static Context context;
 	private static final String dateTemplate = "MMMM yyyy";
-
-	@Override
-	protected void onResume() {
-		adapter = new GridCellAdapter(getApplicationContext(),
-				R.id.calendar_day_gridcell, month, year);
-		adapter.notifyDataSetChanged();
-		calendarView.setAdapter(adapter);
-
-		super.onResume();
-	}
-
-	void init() {
-		context = getApplicationContext();
-		
-		Database.init(context);
-		FaceRecognition.init(context, getFilesDir().toString());
-
-		// start authentication
-		task = new AuditTask(context);
-		task.start();
-		receiver = new AuthenticationReceiver(task);
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(Intent.ACTION_SCREEN_OFF);
-		filter.addAction(Intent.ACTION_SCREEN_ON);
-		registerReceiver(receiver, filter);
+	
+	private Context context;
+	private IntrusionsDatabase intrusionsDB;
+	
+	private void initDatabase() {
+		ConfigurationDatabase.getInstance(context); 
+		intrusionsDB = IntrusionsDatabase.getInstance(context);
+		FaceRecognition.getInstance(context);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// View decorView = getWindow().getDecorView();
-		// int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-		// decorView.setSystemUiVisibility(uiOptions);
-		// ActionBar actionBar = getActionBar();
-		// actionBar.hide();
-
 		setContentView(R.layout.activity_main);
-
-		init();
-
+		
+		context = getApplicationContext();
+		
+		initDatabase();
+//		initButtons();
+	
 		// init layout
 		Button config = (Button) findViewById(R.id.button1);
 		config.setOnClickListener(new OnClickListener() {
-
+	
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(MainActivity.this,
@@ -103,37 +76,42 @@ public class MainActivity extends Activity implements OnClickListener {
 				startActivity(i);
 			}
 		});
-
+	
 		myCalendar = Calendar.getInstance(Locale.getDefault());
 		month = myCalendar.get(Calendar.MONTH) + 1;
 		year = myCalendar.get(Calendar.YEAR);
-
+	
 		prevMonth = (ImageView) this.findViewById(R.id.prevMonth);
 		prevMonth.setOnClickListener(this);
-
+	
 		currentMonth = (TextView) this.findViewById(R.id.currentMonth);
 		currentMonth.setText(DateFormat.format(dateTemplate,
 				myCalendar.getTime()));
-
+	
 		nextMonth = (ImageView) this.findViewById(R.id.nextMonth);
 		nextMonth.setOnClickListener(this);
-
+	
 		calendarView = (GridView) this.findViewById(R.id.calendar);
-
-		adapter = new GridCellAdapter(getApplicationContext(),
+	
+		adapter = new GridCellAdapter(context,
 				R.id.calendar_day_gridcell, month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 	}
 
-	private void setGridCellAdapterToDate(int month, int year) {
-		adapter = new GridCellAdapter(getApplicationContext(),
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onResume() {
+		adapter = new GridCellAdapter(context,
 				R.id.calendar_day_gridcell, month, year);
-		myCalendar.set(year, month - 1, myCalendar.get(Calendar.DAY_OF_MONTH));
-		currentMonth.setText(DateFormat.format(dateTemplate,
-				myCalendar.getTime()));
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
+	
+		super.onResume();
 	}
 
 	@Override
@@ -154,15 +132,20 @@ public class MainActivity extends Activity implements OnClickListener {
 			} else {
 				month++;
 			}
-
+	
 			setGridCellAdapterToDate(month, year);
 		}
-
+	
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	private void setGridCellAdapterToDate(int month, int year) {
+		adapter = new GridCellAdapter(context,
+				R.id.calendar_day_gridcell, month, year);
+		myCalendar.set(year, month - 1, myCalendar.get(Calendar.DAY_OF_MONTH));
+		currentMonth.setText(DateFormat.format(dateTemplate,
+				myCalendar.getTime()));
+		adapter.notifyDataSetChanged();
+		calendarView.setAdapter(adapter);
 	}
 
 	public class GridCellAdapter extends BaseAdapter implements OnClickListener {
@@ -359,7 +342,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				gridcell.setTextColor(Color.BLUE);
 				gridcell.setTypeface(null, Typeface.BOLD);
 			}
-			if (IntrusionsDatabase.dayOfIntrusion(theday, themonth, theyear)) {
+			if (intrusionsDB.dayOfIntrusion(theday, themonth, theyear)) {
 				gridcell.setTextColor(getResources().getColor(R.color.orrange));
 			}
 			return row;
@@ -369,7 +352,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		public void onClick(View view) {
 			String date_month_year = (String) view.getTag();
 
-			if (!IntrusionsDatabase.dayOfIntrusion(date_month_year)) {
+			if (!intrusionsDB.dayOfIntrusion(date_month_year)) {
 				return;
 			}
 
@@ -394,5 +377,35 @@ public class MainActivity extends Activity implements OnClickListener {
 			return currentWeekDay;
 		}
 	}
+	
+/*	void initButtons(){
+		Button on = (Button) findViewById(R.id.on_button);
+		Button off = (Button) findViewById(R.id.off_button);
+		
+		on.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setAction("swat_interaction");
+				intent.putExtra("logging", true);
+				String time = System.currentTimeMillis()+"";
+				Log.d("RESCUE", "folder name:" + time);
+				intent.putExtra("timestamp",time );
+				context.sendBroadcast(intent);
+			}
+		});
+		
+		off.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setAction("swat_interaction");
+				intent.putExtra("logging", false);
+				context.sendBroadcast(intent);
+			}
+		});
+	}*/
 
 }

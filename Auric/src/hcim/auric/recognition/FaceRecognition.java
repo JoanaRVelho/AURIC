@@ -50,14 +50,12 @@ public class FaceRecognition {
 	Labels labelsFile;
 	private Context context;
 
-	public static FaceRecognition getInstance() {
-		return INSTANCE;
-	}
-
-	public static void init(Context c, String filesDir) {
+	public static FaceRecognition getInstance(Context c) {
 		if (INSTANCE == null) {
+			String filesDir = c.getFilesDir().toString();
 			INSTANCE = new FaceRecognition(c, filesDir);
 		}
+		return INSTANCE;
 	}
 
 	public boolean trainPicture(Bitmap rgbBitmap, String name) {
@@ -106,28 +104,6 @@ public class FaceRecognition {
 
 	public void stopTrain() {
 		recognizer.train();
-	}
-
-	/**
-	 * 
-	 * @param grayBitmap : gray scale Bitmap
-	 * @param name : bitmap's name
-	 * @return true if face detected && train successful
-	 */
-	public boolean trainSourcePicture(Bitmap grayBitmap, String name) {
-		Mat grayMat = new Mat();
-
-		Utils.bitmapToMat(grayBitmap, grayMat);
-
-		MatOfRect faces = detect(grayMat);
-		org.opencv.core.Rect[] facesArray = faces.toArray();
-
-		if (facesArray == null || facesArray.length == 0) {
-			return false;
-		} else {
-			train(facesArray, name, grayMat);
-			return true;
-		}
 	}
 
 	MatOfRect detect(Mat gray) {
@@ -180,6 +156,8 @@ public class FaceRecognition {
 		int result = -1;
 		if (resultString.equals(MY_PICTURE_ID)) {
 			result = recognizer.getProb();
+		}else{
+			Log.d("SCREEN", "MATCHS " + resultString);
 		}
 		return result;
 	}

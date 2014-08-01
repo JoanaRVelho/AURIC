@@ -15,64 +15,84 @@ import android.util.Log;
 
 public class Labels {
 
-	String mPath;
+	ArrayList<Label> list = new ArrayList<Label>();
+	String path;
 
 	class Label {
+		String label;
+		int num;
+
 		public Label(String s, int n) {
-			thelabel = s;
+			label = s;
 			num = n;
 		}
-
-		int num;
-		String thelabel;
 	}
 
-	ArrayList<Label> thelist = new ArrayList<Label>();
-
-	public Labels(String Path) {
-		mPath = Path;
+	public Labels(String path) {
+		this.path = path;
 	}
 
 	public boolean isEmpty() {
-		return !(thelist.size() > 0);
+		return !(list.size() > 0);
 	}
 
 	public void add(String s, int n) {
-		thelist.add(new Label(s, n));
+		list.add(new Label(s, n));
 	}
 
 	public String get(int i) {
-		Iterator<Label> Ilabel = thelist.iterator();
+		Iterator<Label> Ilabel = list.iterator();
 		while (Ilabel.hasNext()) {
 			Label l = Ilabel.next();
 			if (l.num == i)
-				return l.thelabel;
+				return l.label;
 		}
 		return "";
 	}
 
 	public int get(String s) {
-		Iterator<Label> Ilabel = thelist.iterator();
-		while (Ilabel.hasNext()) {
-			Label l = Ilabel.next();
-			if (l.thelabel.equalsIgnoreCase(s))
+		Iterator<Label> iterator = list.iterator();
+
+		while (iterator.hasNext()) {
+			Label l = iterator.next();
+			if (l.label.equalsIgnoreCase(s))
 				return l.num;
 		}
 		return -1;
 	}
 
+//	public void save() {
+//		try {
+//			File f = new File(path + "faces.txt");
+//			f.createNewFile();
+//			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+//			Iterator<Label> iterator = list.iterator();
+//			
+//			while (iterator.hasNext()) {
+//				Label l = iterator.next();
+//				bw.write(l.label + "," + l.num);
+//				bw.newLine();
+//			}
+//			bw.close();
+//		} catch (IOException e) {
+//			Log.e("error", e.getMessage() + " " + e.getCause());
+//		}
+//
+//	}
+	
 	public void save() {
 		try {
-			File f = new File(mPath + "faces.txt");
+			File f = new File(path + "faces.txt");
 			f.createNewFile();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-			Iterator<Label> Ilabel = thelist.iterator();
-			while (Ilabel.hasNext()) {
-				Label l = Ilabel.next();
-				bw.write(l.thelabel + "," + l.num);
+			
+			for(Label l : list) {
+				bw.write(l.label + "," + l.num);
 				bw.newLine();
 			}
+			
 			bw.close();
+			
 		} catch (IOException e) {
 			Log.e("error", e.getMessage() + " " + e.getCause());
 		}
@@ -81,19 +101,19 @@ public class Labels {
 
 	public void read() {
 		try {
-			FileInputStream fstream = new FileInputStream(mPath + "faces.txt");
+			FileInputStream fstream = new FileInputStream(path + "faces.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					fstream));
 
 			String strLine;
-			thelist = new ArrayList<Label>();
+			list = new ArrayList<Label>();
 			// Read File Line By Line
 			while ((strLine = br.readLine()) != null) {
 				StringTokenizer tokens = new StringTokenizer(strLine, ",");
 				String s = tokens.nextToken();
 				String sn = tokens.nextToken();
 
-				thelist.add(new Label(s, Integer.parseInt(sn)));
+				list.add(new Label(s, Integer.parseInt(sn)));
 			}
 			br.close();
 			fstream.close();
@@ -104,7 +124,7 @@ public class Labels {
 
 	public int max() {
 		int m = 0;
-		Iterator<Label> Ilabel = thelist.iterator();
+		Iterator<Label> Ilabel = list.iterator();
 		while (Ilabel.hasNext()) {
 			Label l = Ilabel.next();
 			if (l.num > m)

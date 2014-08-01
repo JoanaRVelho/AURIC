@@ -5,22 +5,22 @@ import android.content.Intent;
 
 public class Log {
 	private Context c;
-	private String id;
+	private String timestamp;
 
 	public Log(Context c) {
 		this.c = c;
 	}
 
 	public Log(String log) {
-		this.id = log;
+		this.timestamp = log;
 	}
 
 	public String getId() {
-		return id;
+		return timestamp;
 	}
 
 	public void setId(String id) {
-		this.id = id;
+		this.timestamp = id;
 	}
 
 	public void stopLogging() {
@@ -28,22 +28,18 @@ public class Log {
 		intent.setAction("swat_interaction");
 		intent.putExtra("logging", false);
 		c.sendBroadcast(intent);
-
+		
 	}
 
 	public void startLogging() {
-		this.id = "" + System.currentTimeMillis();
+		this.timestamp = System.currentTimeMillis() + "";
 		Intent intent = new Intent();
 		intent.setAction("swat_interaction");
 		intent.putExtra("logging", true);
-		intent.putExtra("timestamp", id);
+		intent.putExtra("timestamp", timestamp);
+		
+		android.util.Log.d("SCREEN", "timestamp = "+timestamp);
+		
 		c.sendBroadcast(intent);
-
-		//IntrusionsDatabase.currentIntrusion.setLog(this);
 	}
-
-	public void replay() {
-
-	}
-
 }
