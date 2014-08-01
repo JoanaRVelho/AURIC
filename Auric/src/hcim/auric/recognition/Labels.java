@@ -13,6 +13,8 @@ import java.util.StringTokenizer;
 
 import android.util.Log;
 
+//https://github.com/ayuso2013/face-recognition
+
 public class Labels {
 
 	ArrayList<Label> list = new ArrayList<Label>();
