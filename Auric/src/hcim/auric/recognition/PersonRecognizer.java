@@ -20,6 +20,8 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_core.MatVector;
 import com.googlecode.javacv.cpp.opencv_imgproc;
 
+//https://github.com/ayuso2013/face-recognition
+
 public class PersonRecognizer {
 
 	public final static int MAXIMG = 100;
