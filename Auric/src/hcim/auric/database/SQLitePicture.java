@@ -17,7 +17,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "PictureDB";
-	
+
 	private static final String TABLE_PICTURES = "pictures";
 	private static final String KEY_ID = "id";
 	private static final String KEY_BITMAP = "picture";
@@ -49,7 +49,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		values.put(KEY_ID, pic.getName());
 		values.put(KEY_BITMAP, Converter.bitmapToByteArray(pic.getImage()));
 
-		db.insert(TABLE_PICTURES, null,	values); 
+		db.insert(TABLE_PICTURES, null, values);
 
 		db.close();
 	}
@@ -69,7 +69,8 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		String id = cursor.getString(0);
 		byte[] blob = cursor.getBlob(1);
 
-		Picture picture = new Picture(id, (Bitmap) Converter.byteArrayToBitmap(blob));
+		Picture picture = new Picture(id,
+				(Bitmap) Converter.byteArrayToBitmap(blob));
 
 		return picture;
 	}
@@ -83,7 +84,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(query, null);
 
 		Picture pic = null;
-		
+
 		if (cursor.moveToFirst()) {
 			if (cursor.getCount() <= 0)
 				return null;
@@ -103,12 +104,10 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
-		values.put(KEY_BITMAP, Converter.bitmapToByteArray(pic.getImage())); 
+		values.put(KEY_BITMAP, Converter.bitmapToByteArray(pic.getImage()));
 
-		int i = db.update(TABLE_PICTURES,
-				values,
-				KEY_ID + " = '" + pic.getName() + "'",
-				null);
+		int i = db.update(TABLE_PICTURES, values,
+				KEY_ID + " = '" + pic.getName() + "'", null);
 
 		db.close();
 

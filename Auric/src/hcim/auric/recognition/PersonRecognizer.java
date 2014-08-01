@@ -12,6 +12,7 @@ import java.io.FilenameFilter;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -20,9 +21,12 @@ import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_core.MatVector;
 import com.googlecode.javacv.cpp.opencv_imgproc;
 
-//https://github.com/ayuso2013/face-recognition
-
+/**
+ * https://github.com/ayuso2013/face-recognition
+ */
 public class PersonRecognizer {
+
+	private static final String TAG = "AURIC";
 
 	public final static int MAXIMG = 100;
 	FaceRecognizer faceRecognizer;
@@ -42,25 +46,6 @@ public class PersonRecognizer {
 
 	}
 
-	void changeRecognizer(int nRec) {
-		switch (nRec) {
-		case 0:
-			faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
-					.createLBPHFaceRecognizer(1, 8, 8, 8, 100);
-			break;
-		case 1:
-			faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
-					.createFisherFaceRecognizer();
-			break;
-		case 2:
-			faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
-					.createEigenFaceRecognizer();
-			break;
-		}
-		train();
-
-	}
-
 	void add(Mat m, String description) {
 		Bitmap bmp = Bitmap.createBitmap(m.width(), m.height(),
 				Bitmap.Config.ARGB_8888);
@@ -70,16 +55,16 @@ public class PersonRecognizer {
 
 		FileOutputStream f;
 		try {
-			f = new FileOutputStream(
-					path + description + "-" + count + ".jpg", true);
+			f = new FileOutputStream(path + description + "-" + count + ".jpg",
+					true);
 			count++;
 			bmp.compress(Bitmap.CompressFormat.JPEG, 100, f);
 			f.close();
 
 		} catch (Exception e) {
-			Log.e("SCREEN", e.getCause() + " " + e.getMessage());
-			e.printStackTrace();
-
+			Log.e(TAG,
+					"Person Recognizer - " + e.getCause() + " "
+							+ e.getMessage());
 		}
 	}
 
@@ -87,6 +72,7 @@ public class PersonRecognizer {
 		File root = new File(path);
 
 		FilenameFilter pngFilter = new FilenameFilter() {
+			@SuppressLint("DefaultLocale")
 			public boolean accept(File dir, String name) {
 				return name.toLowerCase().endsWith(".jpg");
 			};
@@ -109,10 +95,6 @@ public class PersonRecognizer {
 		for (File image : imageFiles) {
 			String p = image.getAbsolutePath();
 			img = cvLoadImage(p);
-
-			if (img == null)
-				Log.e("Error", "Error cVLoadImage");
-			Log.i("image", p);
 
 			int i2 = p.lastIndexOf("-");
 			int i3 = p.lastIndexOf(".");
@@ -212,8 +194,7 @@ public class PersonRecognizer {
 			bmp.compress(Bitmap.CompressFormat.JPEG, 100, file);
 			file.close();
 		} catch (Exception e) {
-			Log.e("SCREEN", e.getMessage() + e.getCause());
-			e.printStackTrace();
+			Log.e(TAG, "Person Recognizer - " + e.getMessage() + e.getCause());
 		}
 
 	}
@@ -225,5 +206,4 @@ public class PersonRecognizer {
 	public int getProb() {
 		return prob;
 	}
-
 }

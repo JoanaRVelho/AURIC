@@ -25,8 +25,8 @@ public class Intrusion implements Serializable {
 
 		date = id.substring(0, idx);
 		time = id.substring(idx + 1);
-		
-		log = new Log(c); //MainActivity.context
+
+		log = new Log(c); // MainActivity.context
 		images = new ArrayList<Bitmap>();
 	}
 
@@ -93,7 +93,7 @@ public class Intrusion implements Serializable {
 	}
 
 	public void stopLogging() {
-		log.stopLogging(); 
+		log.stopLogging();
 	}
 
 	@Override

@@ -25,27 +25,28 @@ import android.util.Log;
 
 import com.hcim.intrusiondetection.R;
 
-//https://github.com/ayuso2013/face-recognition
-
+/**
+ * https://github.com/ayuso2013/face-recognition
+ */
 public class FaceRecognition {
 
 	private static FaceRecognition INSTANCE;
 
-	private static final String TAG = "FACE RECOGNITION";
+	private static final String TAG = "AURIC";
+
 	static final int MY_PICTURE = 1;
 	static final int OTHER_PICTURE = 2;
 	static final int CHECK = 3;
 	static final long MAX_IMG = 10;
 
 	public static final String MY_PICTURE_ID = "myface";
-	public static final String OTHER_PICTURE_ID = "other";
 
-	private File mCascadeFile;
+	private File cascadeFile;
 	private CascadeClassifier faceDetector;
-	private int mAbsoluteFaceSize = 0;
+	private int absoluteFaceSize = 0;
 
-	private BaseLoaderCallback mLoaderCallback;
-	String mPath = "";
+	private BaseLoaderCallback loaderCallback;
+	String path = "";
 	PersonRecognizer recognizer;
 	int[] labels = new int[(int) MAX_IMG];
 	int countImages = 0;
@@ -93,12 +94,12 @@ public class FaceRecognition {
 		Rect[] facesArray = faces.toArray();
 
 		if (facesArray == null || facesArray.length == 0) {
-			Log.d("SCREEN", "face detection failed");
+			Log.d(TAG, "Face Recognition - face detection failed");
 			return false;
 		} else {
-			Log.d("SCREEN", "face detected");
+			Log.d(TAG, "Face Recognition - face detected");
 			int result = recognize(facesArray, grayMat);
-			Log.d("SCREEN", "result=" + result);
+			Log.d(TAG, "Face Recognition - result = " + result);
 
 			return result > 0 && result < 80;
 		}
@@ -113,27 +114,27 @@ public class FaceRecognition {
 
 		if (faceDetector != null)
 			faceDetector.detectMultiScale(gray, faces, 1.1, 2, 2, new Size(
-					mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
+					absoluteFaceSize, absoluteFaceSize), new Size());
 
 		return faces;
 	}
 
 	FaceRecognition(Context c, String filesDir) {
 		this.context = c;
-		mLoaderCallback = new MyBaseLoaderCallback(c);
+		loaderCallback = new MyBaseLoaderCallback(c);
 
 		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
-				mLoaderCallback)) {
-			Log.e(TAG, "Cannot connect to OpenCV Manager");
+				loaderCallback)) {
+			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
 		}
 
-		mPath = filesDir + "/facerecogOCV/";
+		path = filesDir + "/facerecogOCV/";
 
-		labelsFile = new Labels(mPath);
+		labelsFile = new Labels(path);
 
-		boolean success = (new File(mPath)).mkdirs();
+		boolean success = (new File(path)).mkdirs();
 		if (!success) {
-			Log.e("Error", "Error creating directory");
+			Log.e(TAG, "Face Recognition - Error creating directory");
 		}
 	}
 
@@ -158,8 +159,8 @@ public class FaceRecognition {
 		int result = -1;
 		if (resultString.equals(MY_PICTURE_ID)) {
 			result = recognizer.getProb();
-		}else{
-			Log.d("SCREEN", "MATCHS " + resultString);
+		} else {
+			Log.d(TAG, "Face Recognition - matches " + resultString);
 		}
 		return result;
 	}
@@ -194,17 +195,17 @@ public class FaceRecognition {
 		public void onManagerConnected(int status) {
 			switch (status) {
 			case LoaderCallbackInterface.SUCCESS: {
-				Log.i(TAG, "OpenCV loaded successfully");
+				Log.d(TAG, "Face Recognition - OpenCV loaded successfully");
 
-				recognizer = new PersonRecognizer(mPath);
+				recognizer = new PersonRecognizer(path);
 				recognizer.load();
 
 				try {
 					InputStream is = c.getResources().openRawResource(
 							R.raw.lbpcascade_frontalface);
 					File cascadeDir = c.getDir("cascade", Context.MODE_PRIVATE);
-					mCascadeFile = new File(cascadeDir, "lbpcascade.xml");
-					FileOutputStream os = new FileOutputStream(mCascadeFile);
+					cascadeFile = new File(cascadeDir, "lbpcascade.xml");
+					FileOutputStream os = new FileOutputStream(cascadeFile);
 
 					byte[] buffer = new byte[4096];
 					int bytesRead;
@@ -215,19 +216,22 @@ public class FaceRecognition {
 					os.close();
 
 					faceDetector = new CascadeClassifier(
-							mCascadeFile.getAbsolutePath());
+							cascadeFile.getAbsolutePath());
 					if (faceDetector.empty()) {
-						Log.e(TAG, "Failed to load cascade classifier");
+						Log.e(TAG,
+								"Face Recognition - Failed to load cascade classifier");
 						faceDetector = null;
 					} else
-						Log.i(TAG, "Loaded cascade classifier from "
-								+ mCascadeFile.getAbsolutePath());
+						Log.d(TAG,
+								"Face Recognition - Loaded cascade classifier from "
+										+ cascadeFile.getAbsolutePath());
 
 					cascadeDir.delete();
 
 				} catch (IOException e) {
-					e.printStackTrace();
-					Log.e(TAG, "Failed to load cascade. Exception thrown: " + e);
+					Log.e(TAG,
+							"Face Recognition - Failed to load cascade. Exception thrown: "
+									+ e);
 				}
 			}
 				break;

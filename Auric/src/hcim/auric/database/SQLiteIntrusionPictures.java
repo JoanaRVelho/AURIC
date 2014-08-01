@@ -16,7 +16,7 @@ public class SQLiteIntrusionPictures extends SQLiteOpenHelper {
 
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "IntrusionPicturesDB";
-	
+
 	private static final String TABLE_INTRUSIONS = "intrusionpictures";
 	private static final String KEY_ID = "number";
 	private static final String KEY_INT = "intrusion";
@@ -30,7 +30,8 @@ public class SQLiteIntrusionPictures extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_INTRUSION_TABLE = "CREATE TABLE intrusionpictures ( "
-				+ "number INTEGER PRIMARY KEY AUTOINCREMENT," + "intrusion TEXT, " + "picture BLOB )";
+				+ "number INTEGER PRIMARY KEY AUTOINCREMENT,"
+				+ "intrusion TEXT, " + "picture BLOB )";
 
 		db.execSQL(CREATE_INTRUSION_TABLE);
 	}
@@ -42,7 +43,6 @@ public class SQLiteIntrusionPictures extends SQLiteOpenHelper {
 		this.onCreate(db);
 	}
 
-
 	public void addIntrusionPicture(String intrusionID, Bitmap bitmap) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -50,7 +50,7 @@ public class SQLiteIntrusionPictures extends SQLiteOpenHelper {
 		values.put(KEY_INT, intrusionID);
 		values.put(KEY_PICTURE, Converter.bitmapToByteArray(bitmap));
 
-		db.insert(TABLE_INTRUSIONS, null, values); 
+		db.insert(TABLE_INTRUSIONS, null, values);
 
 		db.close();
 	}
@@ -65,15 +65,15 @@ public class SQLiteIntrusionPictures extends SQLiteOpenHelper {
 	public List<Bitmap> getAllIntrusionPicture(String intrusionID) {
 		List<Bitmap> result = new ArrayList<Bitmap>();
 		Bitmap b;
-		
+
 		SQLiteDatabase db = this.getWritableDatabase();
-		
-		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_INT + " = '" + intrusionID +"'",
-				null, null, null, null, null);
-		
+
+		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_INT
+				+ " = '" + intrusionID + "'", null, null, null, null, null);
+
 		if (cursor == null)
 			return null;
-		
+
 		if (cursor.moveToFirst()) {
 			if (cursor.getCount() <= 0)
 				return null;
@@ -87,8 +87,7 @@ public class SQLiteIntrusionPictures extends SQLiteOpenHelper {
 		return result;
 	}
 
-
-	public void deleteAllIntrusionPicture(String intrusionID){
+	public void deleteAllIntrusionPicture(String intrusionID) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		db.delete(TABLE_INTRUSIONS, KEY_INT + "= '" + intrusionID, null);

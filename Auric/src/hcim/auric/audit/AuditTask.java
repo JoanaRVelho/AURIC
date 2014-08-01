@@ -13,10 +13,10 @@ import android.util.Log;
 public class AuditTask extends AbstractAuditTask {
 	public static final String ACTION_OFF = "OFF";
 	public static final String ACTION_ON = "ON";
-		
+
 	protected FaceRecognition recognizer;
 	protected boolean startLog;
-	  
+
 	public AuditTask(Context c) {
 		super(c);
 
@@ -26,7 +26,7 @@ public class AuditTask extends AbstractAuditTask {
 
 	@Override
 	public void run() {
-		Log.d("SCREEN", "start AuditTask");
+		Log.d(TAG, "AuditTask - start");
 
 		TaskMessage taskMessage;
 		String id;
@@ -37,7 +37,7 @@ public class AuditTask extends AbstractAuditTask {
 					taskMessage = queue.take();
 					id = taskMessage.getID();
 
-					Log.d("SCREEN", "task = " + id);
+					Log.d(TAG, "AuditTask - task = " + id);
 
 					if (id.equals(ACTION_OFF)) {
 						screenOff = true;
@@ -52,7 +52,7 @@ public class AuditTask extends AbstractAuditTask {
 					}
 
 				} catch (InterruptedException e) {
-					Log.e("SCREEN", e.getMessage()+"");
+					Log.e(TAG, "Audit Task - " + e.getMessage());
 				}
 
 			}
@@ -61,7 +61,6 @@ public class AuditTask extends AbstractAuditTask {
 
 	public void actionOn() {
 		if (!startLog) {
-			Log.d("SCREEN", "take picture");
 			camera.takePicture();
 		}
 	}
@@ -69,49 +68,49 @@ public class AuditTask extends AbstractAuditTask {
 	public void actionOff() {
 		if (startLog) {
 			currentIntrusion.stopLogging();
-			Log.d("SCREEN", "stop logging");
-	
+			Log.d(TAG, "AuditTask - stop logging");
+
 			if (timer != null) {
 				timer.cancel();
 				timer = null;
-				
-				Log.d("SCREEN", "STOP periodic thread");
+
+				Log.d(TAG, "AuditTask - stop timer task");
 			}
 			timerTask = null;
-	
+
 			intrusionsDB.addIntrusion(currentIntrusion);
 			currentIntrusion = null;
-	
+
 			notifier.cancelNotification();
 		}
-	
+
 		startLog = false;
 	}
 
 	public void actionNewPicture(Bitmap capturedFace) {
 		boolean intrusion = !recognizer.recognizePicture(capturedFace);
 
-		Log.d("SCREEN", "intrusion=" + intrusion);
+		Log.d(TAG, "AuditTask - intrusion=" + intrusion);
 
 		if (intrusion) {
 			if (!startLog) { // iniciar auditoria
 				startLog = true;
 
-				Log.d("SCREEN", "iniciar auditoria - new Intrusion");
+				Log.d(TAG, "AuditTask - new intrusion, start audit");
 				currentIntrusion = new Intrusion(context);
 				currentIntrusion.addImage(capturedFace);
 				currentIntrusion.startLogging();
-				Log.d("SCREEN", "start logging");
+				Log.d(TAG, "AuditTask - start logging");
 
 				notifier.notifyUser();
 
 				timerTask = new AuricTimerTask(this.camera);
 				timer = new Timer();
-				timer.scheduleAtFixedRate(timerTask, PERIOD,PERIOD);
-				
-				Log.d("SCREEN", "start periodic thread");
+				timer.scheduleAtFixedRate(timerTask, PERIOD, PERIOD);
+
+				Log.d(TAG, "AuditTask - start timer task");
 			} else { // continuar auditoria
-				Log.d("SCREEN", "continuar auditoria");
+				Log.d(TAG, "AuditTask - continue");
 				if (currentIntrusion == null) {
 					return;
 				}
@@ -119,12 +118,12 @@ public class AuditTask extends AbstractAuditTask {
 			}
 		} else {
 			if (startLog) { // parar auditoria
-				Log.d("SCREEN", "parar auditoria");
+				Log.d(TAG, "AuditTask - stop audit");
 
 				if (timer != null) {
 					timer.cancel();
 					timer = null;
-					Log.d("SCREEN", "STOP periodic thread");
+					Log.d(TAG, "AuditTask - stop timer task");
 				}
 				timerTask = null;
 
@@ -135,7 +134,7 @@ public class AuditTask extends AbstractAuditTask {
 				}
 				startLog = false;
 
-				Log.d("SCREEN", "stop logging");
+				Log.d(TAG, "AuditTask - stop logging");
 
 				notifier.cancelNotification();
 			}

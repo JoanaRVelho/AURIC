@@ -45,12 +45,12 @@ public class MainActivity extends Activity implements OnClickListener {
 	private Calendar myCalendar;
 	private int month, year;
 	private static final String dateTemplate = "MMMM yyyy";
-	
+
 	private Context context;
 	private IntrusionsDatabase intrusionsDB;
-	
+
 	private void initDatabase() {
-		ConfigurationDatabase.getInstance(context); 
+		ConfigurationDatabase.getInstance(context);
 		intrusionsDB = IntrusionsDatabase.getInstance(context);
 		FaceRecognition.getInstance(context);
 	}
@@ -59,16 +59,16 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		context = getApplicationContext();
-		
+
 		initDatabase();
-//		initButtons();
-	
+		// initButtons();
+
 		// init layout
 		Button config = (Button) findViewById(R.id.button1);
 		config.setOnClickListener(new OnClickListener() {
-	
+
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(MainActivity.this,
@@ -76,25 +76,25 @@ public class MainActivity extends Activity implements OnClickListener {
 				startActivity(i);
 			}
 		});
-	
+
 		myCalendar = Calendar.getInstance(Locale.getDefault());
 		month = myCalendar.get(Calendar.MONTH) + 1;
 		year = myCalendar.get(Calendar.YEAR);
-	
+
 		prevMonth = (ImageView) this.findViewById(R.id.prevMonth);
 		prevMonth.setOnClickListener(this);
-	
+
 		currentMonth = (TextView) this.findViewById(R.id.currentMonth);
 		currentMonth.setText(DateFormat.format(dateTemplate,
 				myCalendar.getTime()));
-	
+
 		nextMonth = (ImageView) this.findViewById(R.id.nextMonth);
 		nextMonth.setOnClickListener(this);
-	
+
 		calendarView = (GridView) this.findViewById(R.id.calendar);
-	
-		adapter = new GridCellAdapter(context,
-				R.id.calendar_day_gridcell, month, year);
+
+		adapter = new GridCellAdapter(context, R.id.calendar_day_gridcell,
+				month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 	}
@@ -106,11 +106,11 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onResume() {
-		adapter = new GridCellAdapter(context,
-				R.id.calendar_day_gridcell, month, year);
+		adapter = new GridCellAdapter(context, R.id.calendar_day_gridcell,
+				month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
-	
+
 		super.onResume();
 	}
 
@@ -132,15 +132,15 @@ public class MainActivity extends Activity implements OnClickListener {
 			} else {
 				month++;
 			}
-	
+
 			setGridCellAdapterToDate(month, year);
 		}
-	
+
 	}
 
 	private void setGridCellAdapterToDate(int month, int year) {
-		adapter = new GridCellAdapter(context,
-				R.id.calendar_day_gridcell, month, year);
+		adapter = new GridCellAdapter(context, R.id.calendar_day_gridcell,
+				month, year);
 		myCalendar.set(year, month - 1, myCalendar.get(Calendar.DAY_OF_MONTH));
 		currentMonth.setText(DateFormat.format(dateTemplate,
 				myCalendar.getTime()));
@@ -377,35 +377,24 @@ public class MainActivity extends Activity implements OnClickListener {
 			return currentWeekDay;
 		}
 	}
-	
-/*	void initButtons(){
-		Button on = (Button) findViewById(R.id.on_button);
-		Button off = (Button) findViewById(R.id.off_button);
-		
-		on.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent();
-				intent.setAction("swat_interaction");
-				intent.putExtra("logging", true);
-				String time = System.currentTimeMillis()+"";
-				Log.d("RESCUE", "folder name:" + time);
-				intent.putExtra("timestamp",time );
-				context.sendBroadcast(intent);
-			}
-		});
-		
-		off.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent();
-				intent.setAction("swat_interaction");
-				intent.putExtra("logging", false);
-				context.sendBroadcast(intent);
-			}
-		});
-	}*/
+
+	/*
+	 * void initButtons(){ Button on = (Button) findViewById(R.id.on_button);
+	 * Button off = (Button) findViewById(R.id.off_button);
+	 * 
+	 * on.setOnClickListener(new OnClickListener() {
+	 * 
+	 * @Override public void onClick(View v) { Intent intent = new Intent();
+	 * intent.setAction("swat_interaction"); intent.putExtra("logging", true);
+	 * String time = System.currentTimeMillis()+""; Log.d("RESCUE",
+	 * "folder name:" + time); intent.putExtra("timestamp",time );
+	 * context.sendBroadcast(intent); } });
+	 * 
+	 * off.setOnClickListener(new OnClickListener() {
+	 * 
+	 * @Override public void onClick(View v) { Intent intent = new Intent();
+	 * intent.setAction("swat_interaction"); intent.putExtra("logging", false);
+	 * context.sendBroadcast(intent); } }); }
+	 */
 
 }

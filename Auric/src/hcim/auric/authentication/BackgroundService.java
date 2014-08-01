@@ -12,12 +12,11 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.hcim.intrusiondetection.R;
 
 public class BackgroundService extends Service {
-
+	protected static final String TAG = "AURIC";
 	private static final int NOTIFICATION_STICKY = 1;
 
 	private Context context;
@@ -37,8 +36,6 @@ public class BackgroundService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d("SCREEN", "on start command");
-
 		currentMode = getCurrentMode();
 		registerReceiver(currentMode.getReceiver(), currentMode.getFilter());
 		currentMode.getTask().start();
@@ -50,7 +47,6 @@ public class BackgroundService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Log.d("SCREEN", "on destroy method");
 		if (currentMode != null) {
 			currentMode.destroy();
 			unregisterReceiver(currentMode.getReceiver());

@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class ConfigurationDatabase {
 	public static ConfigurationDatabase INSTANCE;
@@ -29,11 +28,11 @@ public class ConfigurationDatabase {
 	private ConfigurationDatabase(Context c) {
 		pictureDB = new SQLitePicture(c);
 		stateDB = new SQLiteState(c);
-		
+
 		myPicture = getMyPicture();
 		mode = getMode();
 
-		if(mode == null){
+		if (mode == null) {
 			stateDB.insertMode(NONE);
 			mode = NONE;
 		}
@@ -73,29 +72,27 @@ public class ConfigurationDatabase {
 				mode = stateDB.getMode();
 			}
 		}
-		Log.d("SCREEN", "mode=" + mode);
 		return mode;
 	}
 
 	public void setMode(String newMode) {
 		stateDB.updateMode(newMode);
 		mode = newMode;
-		Log.d("SCREEN", mode);
 	}
 
-	public static ConfigurationDatabase getInstance(Context c){
-		if(INSTANCE == null){
+	public static ConfigurationDatabase getInstance(Context c) {
+		if (INSTANCE == null) {
 			INSTANCE = new ConfigurationDatabase(c);
 		}
-		
+
 		return INSTANCE;
 	}
-	
-/*	public static ConfigurationDatabase getInstanceForService(Context c){
-		if(SERVICE_INSTANCE == null){
-			SERVICE_INSTANCE = new ConfigurationDatabase(c);
-		}
-		
-		return SERVICE_INSTANCE;
-	}*/
+
+	/*
+	 * public static ConfigurationDatabase getInstanceForService(Context c){
+	 * if(SERVICE_INSTANCE == null){ SERVICE_INSTANCE = new
+	 * ConfigurationDatabase(c); }
+	 * 
+	 * return SERVICE_INSTANCE; }
+	 */
 }

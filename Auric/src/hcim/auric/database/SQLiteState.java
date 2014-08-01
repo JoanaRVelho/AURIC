@@ -24,8 +24,8 @@ public class SQLiteState extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String table = "CREATE TABLE " + TABLE_STATE + " ( "
-				+ KEY_ID + " TEXT PRIMARY KEY, " + KEY_MODE + " TEXT )";
+		String table = "CREATE TABLE " + TABLE_STATE + " ( " + KEY_ID
+				+ " TEXT PRIMARY KEY, " + KEY_MODE + " TEXT )";
 
 		db.execSQL(table);
 	}
@@ -54,7 +54,7 @@ public class SQLiteState extends SQLiteOpenHelper {
 		return mode;
 	}
 
-	public void insertMode(String mode){
+	public void insertMode(String mode) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -65,7 +65,7 @@ public class SQLiteState extends SQLiteOpenHelper {
 
 		db.close();
 	}
-	
+
 	public int updateMode(String mode) {
 		SQLiteDatabase db = this.getWritableDatabase();
 

@@ -13,6 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import android.content.Context;
 
 public abstract class AbstractAuditTask extends Thread {
+	protected static final String TAG = "AURIC";
+
 	public static final String ACTION_NEW_PICTURE = "new picture";
 	public static int PERIOD = 5000;
 
@@ -23,8 +25,8 @@ public abstract class AbstractAuditTask extends Thread {
 	protected IntrusionNotifier notifier;
 	protected LinkedBlockingQueue<TaskMessage> queue;
 	protected IntrusionsDatabase intrusionsDB;
-	protected Context context; 
- 
+	protected Context context;
+
 	protected boolean screenOff;
 
 	public AbstractAuditTask(Context context) {
@@ -38,7 +40,7 @@ public abstract class AbstractAuditTask extends Thread {
 	}
 
 	public void addTaskMessage(TaskMessage msg) {
-		// ignore task ACTION INTRUSION DETECTEION after screen is off
+		// ignore task ACTION NEW PICTURE after screen is off
 		if (screenOff && msg.getID() == ACTION_NEW_PICTURE) {
 			return;
 		}
@@ -55,12 +57,11 @@ public abstract class AbstractAuditTask extends Thread {
 
 	@Override
 	public void interrupt() {
-		if(timer != null){
+		if (timer != null) {
 			timer.cancel();
 			timer = null;
 		}
 		super.interrupt();
 	}
-	
-	
+
 }

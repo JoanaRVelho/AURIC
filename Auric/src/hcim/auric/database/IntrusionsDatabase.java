@@ -27,7 +27,6 @@ public class IntrusionsDatabase {
 	}
 
 	public List<Intrusion> getIntrusionsFromADay(String date) {
-		android.util.Log.d("SCREEN","IntrusionsDatabase - date="+date);
 		List<Intrusion> list = intrusionsDB.getAllIntrusionsFromDay(date);
 
 		if (list == null)
@@ -60,7 +59,6 @@ public class IntrusionsDatabase {
 				intrusionPicturesDB.addIntrusionPicture(i.getID(), bitmap);
 		}
 		logsDB.addLog(id, i.getLog());
-		android.util.Log.d("SCREEN", "Intrusions Database - add new Intrusion");
 	}
 
 	public void removeIntrusion(Intrusion i) {
@@ -100,11 +98,11 @@ public class IntrusionsDatabase {
 		return INSTANCE;
 	}
 
-//	public static IntrusionsDatabase getInstanceForService(Context c) {
-//		if (SERVICE_INSTANCE == null) {
-//			SERVICE_INSTANCE = new IntrusionsDatabase(c);
-//		}
-//
-//		return SERVICE_INSTANCE;
-//	}
+	// public static IntrusionsDatabase getInstanceForService(Context c) {
+	// if (SERVICE_INSTANCE == null) {
+	// SERVICE_INSTANCE = new IntrusionsDatabase(c);
+	// }
+	//
+	// return SERVICE_INSTANCE;
+	// }
 }

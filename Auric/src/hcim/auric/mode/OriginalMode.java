@@ -7,14 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 public class OriginalMode extends AbstractMode {
-		
-	public OriginalMode(Context c){
+
+	public OriginalMode(Context c) {
 		super(c);
-		
+
 		task = new AuditTask(context);
-		
-		receiver = new OriginalReceiver((AuditTask)task);
-		
+
+		receiver = new OriginalReceiver((AuditTask) task);
+
 		filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_SCREEN_OFF);
 		filter.addAction(Intent.ACTION_SCREEN_ON);

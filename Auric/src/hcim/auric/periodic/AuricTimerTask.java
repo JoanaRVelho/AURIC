@@ -6,8 +6,8 @@ import java.util.TimerTask;
 
 public class AuricTimerTask extends TimerTask {
 	CameraManager camera;
-	
-	public AuricTimerTask(CameraManager c){
+
+	public AuricTimerTask(CameraManager c) {
 		this.camera = c;
 	}
 

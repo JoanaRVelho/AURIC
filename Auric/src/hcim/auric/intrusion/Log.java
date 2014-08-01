@@ -28,7 +28,7 @@ public class Log {
 		intent.setAction("swat_interaction");
 		intent.putExtra("logging", false);
 		c.sendBroadcast(intent);
-		
+
 	}
 
 	public void startLogging() {
@@ -37,9 +37,7 @@ public class Log {
 		intent.setAction("swat_interaction");
 		intent.putExtra("logging", true);
 		intent.putExtra("timestamp", timestamp);
-		
-		android.util.Log.d("SCREEN", "timestamp = "+timestamp);
-		
+
 		c.sendBroadcast(intent);
 	}
 }

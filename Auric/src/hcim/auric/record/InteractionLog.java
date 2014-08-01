@@ -28,15 +28,15 @@ public class InteractionLog extends BroadcastReceiver implements IOReceiver,
 	private final String LT = "interactionLog";
 
 	private static SparseArray<Queue<Touch>> interaction;
-	private static  int id_content;
-	private static int id_io; 
+	private static int id_content;
+	private static int id_io;
 	private int monitor;
 	private static int idScreenShot = -1;
 	private static int idScreenTouch = 0;
 	private long time;
 
 	private static String filepath;
-	
+
 	private boolean recording;
 
 	@Override
@@ -90,8 +90,6 @@ public class InteractionLog extends BroadcastReceiver implements IOReceiver,
 		return DESCRIBABLE;
 	}
 
-
-
 	private void screenShot() {
 
 		idScreenShot++;
@@ -103,7 +101,7 @@ public class InteractionLog extends BroadcastReceiver implements IOReceiver,
 				}
 				try {
 					if (idScreenShot != -1) {
-					
+
 						Command command = new Command(0,
 								"/system/bin/screencap -p " + filepath + "/"
 										+ idScreenShot + ".png") {
@@ -154,9 +152,8 @@ public class InteractionLog extends BroadcastReceiver implements IOReceiver,
 		if (intent.getAction().equals("swat_interaction")) {
 			boolean run = intent.getBooleanExtra("logging", false);
 			if (run) {
-				recording=true;
+				recording = true;
 				String folder = intent.getStringExtra("timestamp");
-				Log.d("SCREEN", "interaction timestamp = "+folder);
 
 				filepath = Environment.getExternalStorageDirectory().toString()
 						+ "/intlog/intrusions/" + folder;
@@ -173,34 +170,33 @@ public class InteractionLog extends BroadcastReceiver implements IOReceiver,
 
 				id_content = registerContentReceiver();
 				id_io = registerIOReceiver();
-				Log.d("RESCUE", "REGISTER ID IO:" + id_io );
-				Log.d("RESCUE", "REGISTER ID Content:" + id_content );
-
+				Log.d("RESCUE", "REGISTER ID IO:" + id_io);
+				Log.d("RESCUE", "REGISTER ID Content:" + id_content);
 
 			} else {
 				Log.d(LT, "Stoped recording1");
 				writeLog();
 				CoreController.unregisterIOReceiver(id_io);
 				CoreController.unregisterContent(id_content);
-				Log.d("RESCUE", "UNREGISTER ID IO:" + id_io );
-				Log.d("RESCUE", "UNREGISTER ID Content:" + id_content );
+				Log.d("RESCUE", "UNREGISTER ID IO:" + id_io);
+				Log.d("RESCUE", "UNREGISTER ID Content:" + id_content);
 				idScreenShot = -1;
 				idScreenTouch = 0;
 
 			}
 
-		}else{
-			if(recording){
+		} else {
+			if (recording) {
 				Log.d(LT, "Stoped recording1");
 				writeLog();
 				CoreController.unregisterIOReceiver(id_io);
 				CoreController.unregisterContent(id_content);
-				Log.d("RESCUE", "UNREGISTER ID IO:" + id_io );
-				Log.d("RESCUE", "UNREGISTER ID Content:" + id_content );
+				Log.d("RESCUE", "UNREGISTER ID IO:" + id_io);
+				Log.d("RESCUE", "UNREGISTER ID Content:" + id_content);
 				idScreenShot = -1;
 				idScreenTouch = 0;
 			}
-				
+
 		}
 
 	}

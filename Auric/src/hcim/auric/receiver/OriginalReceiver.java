@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class OriginalReceiver extends AbstractReceiver{ 
+public class OriginalReceiver extends AbstractReceiver {
 	private ConfigurationDatabase configDB;
 
 	public OriginalReceiver(AuditTask task) {
@@ -18,7 +18,7 @@ public class OriginalReceiver extends AbstractReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (configDB.getMyPicture() == null) {
-			Log.d("SCREEN", "DB null get my picture");
+			Log.d(TAG, "DB null");
 			return;
 		}
 

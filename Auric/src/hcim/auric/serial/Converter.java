@@ -36,8 +36,7 @@ public class Converter {
 	}
 
 	public static Bitmap byteArrayToBitmap(byte[] array) {
-		Bitmap bitmap = BitmapFactory.decodeByteArray(array, 0,
-				array.length);
+		Bitmap bitmap = BitmapFactory.decodeByteArray(array, 0, array.length);
 		return bitmap;
 	}
 

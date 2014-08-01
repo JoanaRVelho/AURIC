@@ -6,6 +6,8 @@ import android.hardware.Camera.CameraInfo;
 import android.util.Log;
 
 public class CameraManager {
+	protected static final String TAG = "AURIC";
+
 	private Camera camera;
 	private FrontPictureCallback callback;
 
@@ -21,7 +23,7 @@ public class CameraManager {
 			camera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
 		} catch (RuntimeException e) {
 			camera = null;
-			Log.e("SCREEN", e.getMessage());
+			Log.e(TAG, "CameraManager - " + e.getMessage());
 		}
 		try {
 			if (camera == null) {
@@ -31,7 +33,7 @@ public class CameraManager {
 					camera.setPreviewTexture(dummySurfaceTextureF);
 					camera.startPreview();
 				} catch (Exception e) {
-					Log.e("SCREEN", e.getMessage());
+					Log.e(TAG, "CameraManager - " + e.getMessage());
 				}
 
 				camera.takePicture(null, null, callback);

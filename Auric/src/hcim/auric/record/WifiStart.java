@@ -10,12 +10,12 @@ import android.util.Log;
 public class WifiStart extends BroadcastReceiver implements IOReceiver {
 
 	Context c;
-		
+
 	@Override
 	public int registerIOReceiver() {
 		Log.d("RESCUE", "registerrrd");
 
-		return 	CoreController.registerIOReceiver(this);
+		return CoreController.registerIOReceiver(this);
 
 	}
 
@@ -23,29 +23,28 @@ public class WifiStart extends BroadcastReceiver implements IOReceiver {
 	public void onUpdateIO(int device, int type, int code, int value,
 			int timestamp) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onTouchReceived(int type) {
-		Log.d("RESCUE","type="+ type);
-		if(type==0){
-			
+		Log.d("RESCUE", "type=" + type);
+		if (type == 0) {
+
 			Intent intent = new Intent();
 			intent.setAction("swat_interaction");
 			intent.putExtra("logging", true);
-			String time = System.currentTimeMillis()+"";
+			String time = System.currentTimeMillis() + "";
 			Log.d("RESCUE", "folder name:" + time);
-			intent.putExtra("timestamp",time );
+			intent.putExtra("timestamp", time);
 			c.sendBroadcast(intent);
-		}
-		else{
+		} else {
 			Intent intent = new Intent();
 			intent.setAction("swat_interaction");
 			intent.putExtra("logging", false);
 			c.sendBroadcast(intent);
 		}
-		
+
 	}
 
 	@Override

@@ -53,8 +53,8 @@ public class CalendarManager {
 		s.append(seconds);
 		return s.toString();
 	}
-	
-	public static String getDateFormat(String d, String m, String y){
+
+	public static String getDateFormat(String d, String m, String y) {
 		StringBuilder s = new StringBuilder();
 		s.append(d);
 		s.append("-");

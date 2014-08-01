@@ -24,6 +24,8 @@ import com.hcim.intrusiondetection.R;
 
 public class ConfigurationsView extends Activity {
 	private static final int REQUEST_IMAGE_CAPTURE = 1;
+	private static final String TAG = "AURIC";
+
 	private Spinner spinner;
 	private ImageView img;
 	private String currentMode;
@@ -81,7 +83,7 @@ public class ConfigurationsView extends Activity {
 
 			if (result) {
 				if (myPicture == null) { // first config
-					Log.d("SCREEN", "add all pictures");
+					Log.d(TAG, "Configurations View - add all pictures");
 					addPictures();
 				}
 				myPicture = imageBitmap;
@@ -106,7 +108,7 @@ public class ConfigurationsView extends Activity {
 	}
 
 	private void selectCurrentMode() {
-		Log.d("SCREEN", currentMode);
+		Log.d(TAG, "Configurations View - mode="+ currentMode);
 
 		if (currentMode.equals(ConfigurationDatabase.NONE)) {
 			spinner.setSelection(0);
@@ -130,19 +132,19 @@ public class ConfigurationsView extends Activity {
 		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
 				R.drawable.g);
 		result = recognition.trainPicture(grayBitmap, name);
-		Log.d("SCREEN", "train: " + name + result);
+		Log.d(TAG, "Configurations View - train: " + name + result);
 
 		name = "pic_b";
 		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
 				R.drawable.p);
 		result = recognition.trainPicture(grayBitmap, name);
-		Log.d("SCREEN", "train: " + name + result);
+		Log.d(TAG, "Configurations View - train: " + name + result);
 
 		name = "pic_c";
 		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
 				R.drawable.m);
 		result = recognition.trainPicture(grayBitmap, name);
-		Log.d("SCREEN", "train: " + name + result);
+		Log.d(TAG, "Configurations View - train: " + name + result);
 	}
 
 	private void notifyMode() {

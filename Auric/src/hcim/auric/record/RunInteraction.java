@@ -153,7 +153,7 @@ public class RunInteraction extends Activity {
 		String intrusionID = intent.getStringExtra("interaction");
 		Intrusion i = IntrusionsDatabase.getInstance(context).getIntrusion(
 				intrusionID);
-		String folder = i.getLog().getId()+"";
+		String folder = i.getLog().getId() + "";
 		imgIntruser = i.getImages();
 
 		dv = new DrawingView(this);
@@ -175,7 +175,8 @@ public class RunInteraction extends Activity {
 		img = (ImageView) findViewById(R.id.screenshot);
 
 		ImageView iv = (ImageView) findViewById(R.id.img_intruser);
-		Bitmap bm = (imgIntruser == null || imgIntruser.size()==0) ? null : imgIntruser.get(0);
+		Bitmap bm = (imgIntruser == null || imgIntruser.size() == 0) ? null
+				: imgIntruser.get(0);
 		if (bm != null) {
 			iv.setImageBitmap(bm);
 
@@ -477,7 +478,7 @@ public class RunInteraction extends Activity {
 		public void handleMessage(Message msg) {
 			if (msg.what == UPDATE_IMAGE) {
 				Bitmap bm = BitmapFactory.decodeFile(imgBasePath
-						+ (int)((Integer)(msg.obj)) + ".png");
+						+ (int) ((Integer) (msg.obj)) + ".png");
 				if (bm != null) {
 					img.setImageBitmap(bm);
 					img.invalidate();
@@ -495,9 +496,9 @@ public class RunInteraction extends Activity {
 					background.setVisibility(View.VISIBLE);
 					play = false;
 				}
-				
+
 				Bitmap bm = BitmapFactory.decodeFile(imgBasePath
-						+ (int)((Integer) msg.obj) + ".png");
+						+ (int) ((Integer) msg.obj) + ".png");
 				if (bm != null) {
 					img.setImageBitmap(bm);
 					img.invalidate();

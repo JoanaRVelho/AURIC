@@ -13,9 +13,12 @@ import java.util.StringTokenizer;
 
 import android.util.Log;
 
-//https://github.com/ayuso2013/face-recognition
-
+/**
+ * https://github.com/ayuso2013/face-recognition
+ */
 public class Labels {
+
+	private static final String TAG = "AURIC";
 
 	ArrayList<Label> list = new ArrayList<Label>();
 	String path;
@@ -63,40 +66,21 @@ public class Labels {
 		return -1;
 	}
 
-//	public void save() {
-//		try {
-//			File f = new File(path + "faces.txt");
-//			f.createNewFile();
-//			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-//			Iterator<Label> iterator = list.iterator();
-//			
-//			while (iterator.hasNext()) {
-//				Label l = iterator.next();
-//				bw.write(l.label + "," + l.num);
-//				bw.newLine();
-//			}
-//			bw.close();
-//		} catch (IOException e) {
-//			Log.e("error", e.getMessage() + " " + e.getCause());
-//		}
-//
-//	}
-	
 	public void save() {
 		try {
 			File f = new File(path + "faces.txt");
 			f.createNewFile();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-			
-			for(Label l : list) {
+
+			for (Label l : list) {
 				bw.write(l.label + "," + l.num);
 				bw.newLine();
 			}
-			
+
 			bw.close();
-			
+
 		} catch (IOException e) {
-			Log.e("error", e.getMessage() + " " + e.getCause());
+			Log.e(TAG, "Labels - " + e.getMessage() + " " + e.getCause());
 		}
 
 	}
@@ -109,7 +93,7 @@ public class Labels {
 
 			String strLine;
 			list = new ArrayList<Label>();
-			// Read File Line By Line
+
 			while ((strLine = br.readLine()) != null) {
 				StringTokenizer tokens = new StringTokenizer(strLine, ",");
 				String s = tokens.nextToken();
@@ -120,7 +104,7 @@ public class Labels {
 			br.close();
 			fstream.close();
 		} catch (IOException e) {
-			Log.e("error", e.getMessage() + " " + e.getCause());
+			Log.e(TAG, "Labels - " + e.getMessage() + " " + e.getCause());
 		}
 	}
 

@@ -23,7 +23,7 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 
 	@Override
 	public void run() {
-		Log.d("SCREEN", "start task");
+		Log.d(TAG, "WifiDemoAuditTask - start task");
 		TaskMessage taskMessage;
 		String id;
 		while (true) {
@@ -32,22 +32,20 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 					taskMessage = queue.take();
 					id = taskMessage.getID();
 
-					Log.d("SCREEN", "task=" + id);
+					Log.d(TAG, "WifiDemoAuditTask - task=" + id);
 
 					if (id.equals(ACTION_STOP)) {
 						screenOff = true;
 						actionStop();
-					}
-					else if (id.equals(ACTION_START)) {
+					} else if (id.equals(ACTION_START)) {
 						screenOff = false;
-						actionStart(taskMessage.getTimestamp()+"");
-					}
-					else if (id.equals(ACTION_NEW_PICTURE)) {
+						actionStart(taskMessage.getTimestamp() + "");
+					} else if (id.equals(ACTION_NEW_PICTURE)) {
 						actionNewPicture(taskMessage.getPic());
 					}
 
 				} catch (InterruptedException e) {
-					Log.e("SCREEN", e.getMessage());
+					Log.e(TAG, "WifiDemoAuditTask - " + e.getMessage());
 				}
 
 			}
@@ -56,24 +54,21 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 
 	@SuppressLint("SimpleDateFormat")
 	public void actionStart(String timestamp) {
-		Log.d("SCREEN", timestamp);
 		long timestampLong = Long.valueOf(timestamp);
 		Date d = new Date(timestampLong);
 		Format f = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
-	
+
 		String id = f.format(d).toString();
-		if(id.charAt(0) == '0')
+		if (id.charAt(0) == '0')
 			id = id.substring(1);
 		String[] array = id.split(" ");
-		
-		Log.d("SCREEN","WifiTask - id="+id + " data="+array[0]+ " horas="+ array[1]);
-	
+
 		currentIntrusion = new Intrusion(id, array[0], array[1], timestamp);
-		
+
 		timerTask = new AuricTimerTask(this.camera);
 		timer = new Timer();
 		timer.scheduleAtFixedRate(timerTask, 0, PERIOD);
-	
+
 		notifier.notifyUser();
 	}
 
@@ -81,20 +76,20 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 		if (timer != null) {
 			timer.cancel();
 			timer = null;
-			Log.d("SCREEN", "STOP periodic thread");
+			Log.d(TAG, "WifiDemoAuditTask - stop timer task");
 		}
 		timerTask = null;
-	
+
 		intrusionsDB.addIntrusion(currentIntrusion);
 		currentIntrusion = null;
-	
+
 		if (notifier != null) {
 			notifier.cancelNotification();
 		}
 	}
 
 	public void actionNewPicture(Bitmap bm) {
-		if(currentIntrusion != null){
+		if (currentIntrusion != null) {
 			currentIntrusion.addImage(bm);
 		}
 	}
