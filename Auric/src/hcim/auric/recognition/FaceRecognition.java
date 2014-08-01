@@ -25,6 +25,8 @@ import android.util.Log;
 
 import com.hcim.intrusiondetection.R;
 
+//https://github.com/ayuso2013/face-recognition
+
 public class FaceRecognition {
 
 	private static FaceRecognition INSTANCE;
