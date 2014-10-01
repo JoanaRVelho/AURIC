@@ -1,12 +1,10 @@
 package hcim.auric.audit;
 
 import hcim.auric.intrusion.Intrusion;
-import hcim.auric.periodic.AuricTimerTask;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Timer;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -65,20 +63,13 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 
 		currentIntrusion = new Intrusion(id, array[0], array[1], timestamp);
 
-		timerTask = new AuricTimerTask(this.camera);
-		timer = new Timer();
-		timer.scheduleAtFixedRate(timerTask, 0, PERIOD);
+		startTimerTask(false);
 
 		notifier.notifyUser();
 	}
 
 	public void actionStop() {
-		if (timer != null) {
-			timer.cancel();
-			timer = null;
-			Log.d(TAG, "WifiDemoAuditTask - stop timer task");
-		}
-		timerTask = null;
+		stopTimerTask();
 
 		intrusionsDB.addIntrusion(currentIntrusion);
 		currentIntrusion = null;

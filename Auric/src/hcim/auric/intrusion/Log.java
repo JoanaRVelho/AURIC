@@ -5,22 +5,22 @@ import android.content.Intent;
 
 public class Log {
 	private Context c;
-	private String timestamp;
+	private String id; //timestamp
 
 	public Log(Context c) {
 		this.c = c;
 	}
 
 	public Log(String log) {
-		this.timestamp = log;
+		this.id = log;
 	}
 
-	public String getId() {
-		return timestamp;
+	public String getID() {
+		return id;
 	}
 
-	public void setId(String id) {
-		this.timestamp = id;
+	public void setID(String id) {
+		this.id = id;
 	}
 
 	public void stopLogging() {
@@ -32,11 +32,11 @@ public class Log {
 	}
 
 	public void startLogging() {
-		this.timestamp = System.currentTimeMillis() + "";
+		this.id = System.currentTimeMillis() + "";
 		Intent intent = new Intent();
 		intent.setAction("swat_interaction");
 		intent.putExtra("logging", true);
-		intent.putExtra("timestamp", timestamp);
+		intent.putExtra("timestamp", id);
 
 		c.sendBroadcast(intent);
 	}

@@ -3,6 +3,7 @@ package hcim.auric.audit;
 import hcim.auric.authentication.IntrusionNotifier;
 import hcim.auric.camera.CameraManager;
 import hcim.auric.camera.FrontPictureCallback;
+import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.periodic.AuricTimerTask;
@@ -11,16 +12,17 @@ import java.util.Timer;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import android.content.Context;
+import android.util.Log;
 
 public abstract class AbstractAuditTask extends Thread {
 	protected static final String TAG = "AURIC";
 
 	public static final String ACTION_NEW_PICTURE = "new picture";
-	public static int PERIOD = 5000;
 
-	protected AuricTimerTask timerTask;
-	protected Timer timer;
+	private AuricTimerTask timerTask;
+	private Timer timer;
 	protected CameraManager camera;
+
 	protected Intrusion currentIntrusion;
 	protected IntrusionNotifier notifier;
 	protected LinkedBlockingQueue<TaskMessage> queue;
@@ -64,4 +66,24 @@ public abstract class AbstractAuditTask extends Thread {
 		super.interrupt();
 	}
 
+	protected void startTimerTask(boolean delay) {
+		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
+		int period = db.getCameraCaptureOption();
+		
+		timerTask = new AuricTimerTask(this.camera);
+		timer = new Timer();
+		timer.scheduleAtFixedRate(timerTask, delay ? period : 0, period);
+		
+		Log.d(TAG, "AuditTask - start timer task");
+	}
+
+	protected void stopTimerTask() {
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+			
+			Log.d(TAG, "AuditTask - stop timer task");
+		}
+		timerTask = null;
+	}
 }

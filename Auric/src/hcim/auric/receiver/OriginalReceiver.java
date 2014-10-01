@@ -2,22 +2,22 @@ package hcim.auric.receiver;
 
 import hcim.auric.audit.AuditTask;
 import hcim.auric.audit.TaskMessage;
-import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.database.PicturesDatabase;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 public class OriginalReceiver extends AbstractReceiver {
-	private ConfigurationDatabase configDB;
+	private PicturesDatabase picturesDB;
 
 	public OriginalReceiver(AuditTask task) {
 		this.task = task;
-		configDB = ConfigurationDatabase.getInstance(task.getContext());
+		picturesDB = PicturesDatabase.getInstance(task.getContext());
 	}
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (configDB.getMyPicture() == null) {
+		if (picturesDB.getMyPicture() == null) {
 			Log.d(TAG, "DB null");
 			return;
 		}

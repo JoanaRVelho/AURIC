@@ -1,6 +1,7 @@
 package hcim.auric.intrusion;
 
 import hcim.auric.calendar.CalendarManager;
+import hcim.auric.recognition.Picture;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class Intrusion implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String id;
-	private List<Bitmap> images;
+	private List<Picture> images;
 	private Log log;
 	private String date;
 	private String time;
@@ -27,7 +28,7 @@ public class Intrusion implements Serializable {
 		time = id.substring(idx + 1);
 
 		log = new Log(c); // MainActivity.context
-		images = new ArrayList<Bitmap>();
+		images = new ArrayList<Picture>();
 	}
 
 	public Intrusion(String id, String date, String time) {
@@ -41,7 +42,7 @@ public class Intrusion implements Serializable {
 		this.date = date;
 		this.time = time;
 		this.log = new Log(timestamp);
-		images = new ArrayList<Bitmap>();
+		images = new ArrayList<Picture>();
 	}
 
 	public String getDate() {
@@ -68,16 +69,16 @@ public class Intrusion implements Serializable {
 		this.id = id;
 	}
 
-	public List<Bitmap> getImages() {
+	public List<Picture> getImages() {
 		return images;
 	}
 
-	public void setImages(List<Bitmap> images) {
+	public void setImages(List<Picture> images) {
 		this.images = images;
 	}
 
 	public void addImage(Bitmap capturedFace) {
-		this.images.add(capturedFace);
+		this.images.add(new Picture(null, null,capturedFace));
 	}
 
 	public Log getLog() {

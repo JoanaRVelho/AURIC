@@ -23,7 +23,7 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="hcim.auric.intrusiondetection.MainActivity"
+            android:name="hcim.auric.activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,13 +31,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="hcim.auric.intrusiondetection.ConfigurationsView" >
-        </activity>
-        <activity android:name="hcim.auric.intrusiondetection.MyFaceConfigView" >
+        <activity android:name="hcim.auric.activities.ConfigurationsActivity" >
         </activity>
         <activity android:name="swat.record.RunInteraction" >
         </activity>
-        <activity android:name="hcim.auric.intrusiondetection.IntrusionsList" >
+        <activity android:name="hcim.auric.activities.IntrusionsListActivity" >
+        </activity>
+        <activity android:name="hcim.auric.activities.passcode.InsertPasscode" >
+        </activity>
+        <activity android:name="hcim.auric.activities.passcode.ConfirmAndTurnOffPasscode" >
+        </activity>
+        <activity android:name="hcim.auric.activities.passcode.Unlock" >
+        </activity>
+        <activity android:name="hcim.auric.activities.passcode.ConfirmAndChangePasscode" >
+        </activity>
+        <activity android:name="hcim.auric.activities.passcode.UnlockConfiguration" >
+        </activity>
+        <activity android:name="hcim.auric.activities.passcode.UnlockIntrusionList" >
+        </activity>
+         <activity android:name="hcim.auric.activities.images.FullIntruderPicture" >
+        </activity>
+         <activity android:name="hcim.auric.activities.images.IntruderPictureGrid" >
+        </activity>
+         <activity android:name="hcim.auric.activities.images.RecognizedPicturesGrid" >
+        </activity>
+        <activity android:name="hcim.auric.activities.images.FullPicture" >
         </activity>
 
         <service
@@ -76,7 +94,6 @@
                 <action android:name="android.intent.action.SCREEN_OFF" />
             </intent-filter>
         </receiver>
-        
         <receiver
             android:name="mswat.touch.TPRTab2"
             android:enabled="true" >
@@ -85,7 +102,6 @@
                 <action android:name="mswat_stop" />
             </intent-filter>
         </receiver>
-        
         <receiver
             android:name="mswat.touch.TPRNexusS"
             android:enabled="true" >

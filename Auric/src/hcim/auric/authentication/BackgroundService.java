@@ -1,7 +1,7 @@
 package hcim.auric.authentication;
 
+import hcim.auric.activities.MainActivity;
 import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.intrusiondetection.MainActivity;
 import hcim.auric.mode.AbstractMode;
 import hcim.auric.mode.OriginalMode;
 import hcim.auric.mode.WifiDemoMode;
@@ -12,6 +12,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.hcim.intrusiondetection.R;
 
@@ -56,6 +57,7 @@ public class BackgroundService extends Service {
 
 	private AbstractMode getCurrentMode() {
 		modeDescription = configDB.getMode();
+		Log.d(TAG, modeDescription);
 
 		if (modeDescription != null) {
 			if (modeDescription.equals(ConfigurationDatabase.ORIGINAL_MODE)) {

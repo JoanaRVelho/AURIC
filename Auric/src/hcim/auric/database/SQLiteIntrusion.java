@@ -20,7 +20,9 @@ public class SQLiteIntrusion extends SQLiteOpenHelper {
 	private static final String KEY_ID = "id";
 	private static final String KEY_DATE = "date";
 	private static final String KEY_TIME = "time";
-	private static final String[] COLUMNS = { KEY_ID, KEY_DATE, KEY_TIME };
+	private static final String KEY_LOG = "log";
+	private static final String[] COLUMNS = { KEY_ID, KEY_DATE, KEY_TIME,
+			KEY_LOG };
 
 	public SQLiteIntrusion(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,26 +30,28 @@ public class SQLiteIntrusion extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String CREATE_INTRUSION_TABLE = "CREATE TABLE intrusions ( "
-				+ "id TEXT PRIMARY KEY, " + "date TEXT, " + "time TEXT )";
+		String CREATE_INTRUSION_TABLE = "CREATE TABLE " + TABLE_INTRUSIONS
+				+ " ( " + KEY_ID + " TEXT PRIMARY KEY, " + KEY_DATE + " TEXT, "
+				+ KEY_TIME + " TEXT, " + KEY_LOG + " TEXT )";
 
 		db.execSQL(CREATE_INTRUSION_TABLE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS intrusions");
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_INTRUSIONS);
 
 		this.onCreate(db);
 	}
 
-	public void addIntrusion(String id, String date, String time) {
+	public void addIntrusion(Intrusion i) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
-		values.put(KEY_ID, id);
-		values.put(KEY_DATE, date);
-		values.put(KEY_TIME, time);
+		values.put(KEY_ID, i.getID());
+		values.put(KEY_DATE, i.getDate());
+		values.put(KEY_TIME, i.getTime());
+		values.put(KEY_LOG, i.getLog().getID());
 
 		db.insert(TABLE_INTRUSIONS, null, values);
 
@@ -67,7 +71,7 @@ public class SQLiteIntrusion extends SQLiteOpenHelper {
 			return null;
 
 		Intrusion intrusion = new Intrusion(cursor.getString(0),
-				cursor.getString(1), cursor.getString(2));
+				cursor.getString(1), cursor.getString(2), cursor.getString(3));
 
 		return intrusion;
 	}
@@ -97,7 +101,7 @@ public class SQLiteIntrusion extends SQLiteOpenHelper {
 				return null;
 			do {
 				i = new Intrusion(cursor.getString(0), cursor.getString(1),
-						cursor.getString(2));
+						cursor.getString(2), cursor.getString(3));
 
 				result.add(i);
 			} while (cursor.moveToNext());
@@ -109,7 +113,7 @@ public class SQLiteIntrusion extends SQLiteOpenHelper {
 	public void deleteIntrusion(String id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
-		db.delete(TABLE_INTRUSIONS, KEY_ID + "= '" + id, null);
+		db.delete(TABLE_INTRUSIONS, KEY_ID + "= '" + id + "'", null);
 
 		db.close();
 	}

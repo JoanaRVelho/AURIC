@@ -1,69 +1,79 @@
 package hcim.auric.database;
 
-import hcim.auric.recognition.Picture;
-
-import java.util.List;
-
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.res.Resources;
+
+import com.hcim.intrusiondetection.R;
 
 public class ConfigurationDatabase {
-	public static ConfigurationDatabase INSTANCE;
-	public static ConfigurationDatabase SERVICE_INSTANCE;
+	public static final String TAG = "AURIC";
 
-	public static final String MY_PICTURE_ID = "myface";
+	private static ConfigurationDatabase INSTANCE;
 
-	public static final String ORIGINAL_MODE = "Original Mode";
-	public static final String WIFI_MODE = "Laboratory Test Mode";
-	public static final String NONE = "None";
+	/** Mode **/
+	public static String ORIGINAL_MODE;;
+	public static String WIFI_MODE;
+	public static String NONE;
 
-	private SQLitePicture pictureDB;
 	private SQLiteState stateDB;
 
-	private Picture myPicture;
-	private List<Picture> allPictures;
-
 	private String mode;
+	private int screenshotOpt;
+	private int cameraCapture;
+
+	private int defaultScreenshotOpts;
+	private int defaultCameraCapture;
+	private String defaultMode;
+
+	public static ConfigurationDatabase getInstance(Context c) {
+		if (INSTANCE == null) {
+			INSTANCE = new ConfigurationDatabase(c);
+		}
+
+		return INSTANCE;
+	}
 
 	private ConfigurationDatabase(Context c) {
-		pictureDB = new SQLitePicture(c);
 		stateDB = new SQLiteState(c);
 
-		myPicture = getMyPicture();
+		// default options
+		initDefaultOptions(c);
+
 		mode = getMode();
+		cameraCapture = getCameraCaptureOption();
+		screenshotOpt = getScreenshotOptions();
 
 		if (mode == null) {
-			stateDB.insertMode(NONE);
-			mode = NONE;
+			stateDB.insertMode(defaultMode);
+			mode = defaultMode;
+		}
+		if (cameraCapture <= 0) {
+			stateDB.insertCameraCaptureOption(defaultCameraCapture);
+			cameraCapture = defaultCameraCapture;
+		}
+		if (screenshotOpt <= 0) {
+			stateDB.insertScreenshotOption(defaultScreenshotOpts);
+			screenshotOpt = defaultScreenshotOpts;
 		}
 	}
 
-	public Picture getMyPicture() {
-		if (myPicture == null)
-			if (pictureDB != null)
-				myPicture = pictureDB.getPicture(MY_PICTURE_ID);
+	private void initDefaultOptions(Context c) {
+		Resources r = c.getResources();
 
-		return myPicture;
-	}
+		String firstElem = r.getStringArray(R.array.camera_capture_array)[0];
+		String[] split = firstElem.split(" ");
+		defaultCameraCapture = Integer.parseInt(split[0]);
 
-	public void setMyPicture(Bitmap bitmap) {
-		Picture pic = new Picture(MY_PICTURE_ID, bitmap);
+		firstElem = r.getStringArray(R.array.screenshot_array)[0];
+		split = firstElem.split(" ");
+		defaultScreenshotOpts = Integer.parseInt(split[0]);
 
-		if (myPicture == null)
-			pictureDB.addPicture(pic);
-		else
-			pictureDB.updatePicture(pic);
+		String[] elements = r.getStringArray(R.array.mode_array);
+		NONE = elements[0];
+		WIFI_MODE = elements[1];
+		ORIGINAL_MODE = elements[2];
+		defaultMode = NONE;
 
-		myPicture = pic;
-	}
-
-	public List<Picture> getAllPictures() {
-		if (allPictures == null) {
-			if (pictureDB != null) {
-				allPictures = pictureDB.getAllPictures();
-			}
-		}
-		return allPictures;
 	}
 
 	public String getMode() {
@@ -76,23 +86,80 @@ public class ConfigurationDatabase {
 	}
 
 	public void setMode(String newMode) {
-		stateDB.updateMode(newMode);
-		mode = newMode;
-	}
-
-	public static ConfigurationDatabase getInstance(Context c) {
-		if (INSTANCE == null) {
-			INSTANCE = new ConfigurationDatabase(c);
+		if (stateDB != null) {
+			stateDB.updateMode(newMode);
+			mode = newMode;
 		}
-
-		return INSTANCE;
 	}
 
-	/*
-	 * public static ConfigurationDatabase getInstanceForService(Context c){
-	 * if(SERVICE_INSTANCE == null){ SERVICE_INSTANCE = new
-	 * ConfigurationDatabase(c); }
-	 * 
-	 * return SERVICE_INSTANCE; }
-	 */
+	public boolean isDeviceSharingEnabled() {
+		if (stateDB != null)
+			return stateDB.getDeviceSharingMode();
+		return false;
+	}
+
+	public void enableDeviceSharing(boolean b) {
+		if (stateDB != null)
+			stateDB.updateDeviceSharingMode(b);
+	}
+
+	public String getPasscode() {
+		if (stateDB != null) {
+			return stateDB.getPasscode();
+		}
+		return null;
+	}
+
+	public void setPasscode(String s) {
+		if (stateDB != null) {
+			if (hasPasscode()) {
+				stateDB.updatePasscode(s);
+			} else {
+				stateDB.insertPasscode(s);
+			}
+		}
+	}
+
+	public boolean hasPasscode() {
+		return getPasscode() != null;
+	}
+
+	public void deletePasscode() {
+		stateDB.deletePasscode();
+	}
+
+	public int getCameraCaptureOption() {
+		if (cameraCapture <= 0) {
+			if (stateDB != null) {
+				cameraCapture = stateDB.getCameraCaptureOption();
+			}
+		}
+		return cameraCapture;
+	}
+
+	public void setCameraCaptureOption(int period) {
+		if (stateDB != null) {
+			stateDB.updateCameraCaptureOption(period);
+			cameraCapture = period;
+		}
+	}
+
+	public int getScreenshotOptions() {
+		if (screenshotOpt <= 0) {
+			if (stateDB != null) {
+				screenshotOpt = stateDB.getScreenshotOption();
+			}
+		}
+		return screenshotOpt;
+	}
+
+	public void setScreenshotOptions(int s) {
+		if (stateDB != null) {
+			stateDB.updateScreenshotOption(s);
+			screenshotOpt = s;
+		}
+	}
+
+
+
 }

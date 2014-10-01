@@ -10,7 +10,7 @@ public abstract class AbstractMode {
 	protected IntentFilter filter;
 	protected AbstractAuditTask task;
 	protected Context context;
-
+	
 	public AbstractMode(Context c) {
 		context = c;
 	}

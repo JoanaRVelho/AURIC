@@ -1,5 +1,7 @@
 package hcim.auric.recognition;
 
+import hcim.auric.database.PicturesDatabase;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,7 +41,8 @@ public class FaceRecognition {
 	static final int CHECK = 3;
 	static final long MAX_IMG = 10;
 
-	public static final String MY_PICTURE_ID = "myface";
+	public static final String MY_PICTURE_TYPE = "myface";
+	public static final String INTRUDER_PICTURE_TYPE = "intruder";
 
 	private File cascadeFile;
 	private CascadeClassifier faceDetector;
@@ -61,6 +64,13 @@ public class FaceRecognition {
 		return INSTANCE;
 	}
 
+	/**
+	 * Add a Picture to the Database
+	 * 
+	 * @param rgbBitmap
+	 * @param name
+	 * @return true if succeeded, false otherwise
+	 */
 	public boolean trainPicture(Bitmap rgbBitmap, String name) {
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
 
@@ -103,6 +113,25 @@ public class FaceRecognition {
 
 			return result > 0 && result < 80;
 		}
+	}
+	
+	public boolean detectFace(Bitmap rgbBitmap){
+		Bitmap grayBitmap = convertToGray(rgbBitmap);
+
+		Mat rgbMat = new Mat();
+		Mat grayMat = new Mat();
+
+		Utils.bitmapToMat(rgbBitmap, rgbMat);
+		Utils.bitmapToMat(grayBitmap, grayMat);
+
+		MatOfRect faces = detect(grayMat);
+		Rect[] facesArray = faces.toArray();
+
+		if (facesArray == null || facesArray.length == 0) {
+			Log.d(TAG, "Face Recognition - face detection failed");
+			return false;
+		}
+		return true;
 	}
 
 	public void stopTrain() {
@@ -155,9 +184,10 @@ public class FaceRecognition {
 		Mat m = new Mat();
 		m = grayMat.submat(facesArray[0]);
 		String resultString = recognizer.predict(m);
+		PicturesDatabase db = PicturesDatabase.getInstance(context);
 
 		int result = -1;
-		if (resultString.equals(MY_PICTURE_ID)) {
+		if (db.isMyPicture(resultString)) {
 			result = recognizer.getProb();
 		} else {
 			Log.d(TAG, "Face Recognition - matches " + resultString);
@@ -241,5 +271,10 @@ public class FaceRecognition {
 				break;
 			}
 		}
+	}
+
+	public void untrainPicture(String picID) {
+		// TODO Auto-generated method stub
+
 	}
 }

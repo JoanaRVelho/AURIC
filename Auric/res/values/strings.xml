@@ -19,11 +19,43 @@
     <string name="lab_test">Laboratory Test Mode</string>
     <string name="mode">AURIC Mode</string>
     <string name="save">Save</string>
+    <string name="input">Input</string>
+    <string name="device_sharing">Device Sharing</string>
+    <string name="period">Camera Capture Period</string>
+    <string name="screenshots">Screenshots Period</string>
+    <string name="advanced">Advanced Settings</string>
+    <string name="passcode_title">Passcode</string>
+    <string name="passcode">Passcode Lock</string>
+    <string name="passcode_change">Change Passcode</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <string name="zero">0</string>
+    <string name="del">del</string>
+    <string name="intruser">Intruser Pictures</string>
+    <string name="all_imgs">All Pictures</string>
+    <string name="double_tap">Double tap to identify this picture</string>
 
     <string-array name="mode_array">
         <item>None</item>
         <item>Laboratory Test Mode</item>
         <item>Original Mode</item>
+    </string-array>
+    <string-array name="camera_capture_array">
+        <item>5000 miliseconds</item>
+        <item>8000 miliseconds</item>
+        <item>10000 miliseconds</item>
+    </string-array>
+    <string-array name="screenshot_array">
+        <item>300 miliseconds</item>
+        <item>500 miliseconds</item>
+        <item>1000 miliseconds</item>
     </string-array>
 
 </resources>

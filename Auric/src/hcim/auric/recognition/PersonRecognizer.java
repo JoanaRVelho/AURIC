@@ -141,7 +141,6 @@ public class PersonRecognizer {
 		int n[] = new int[1];
 		double p[] = new double[1];
 		IplImage ipl = matToIplImage(m, WIDTH, HEIGHT);
-		// IplImage ipl = MatToIplImage(m,-1, -1);
 
 		faceRecognizer.predict(ipl, n, p);
 
@@ -149,7 +148,7 @@ public class PersonRecognizer {
 			prob = (int) p[0];
 		else
 			prob = -1;
-		// if ((n[0] != -1)&&(p[0]<95))
+		
 		if (n[0] != -1)
 			return labelsFile.get(n[0]);
 		else

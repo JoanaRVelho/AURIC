@@ -1,7 +1,9 @@
 package hcim.auric.record;
 
+import hcim.auric.activities.images.IntruderPictureGrid;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
+import hcim.auric.recognition.Picture;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +17,9 @@ import mswat.core.macro.Touch;
 import mswat.touch.TouchRecognizer;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,6 +40,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
@@ -48,15 +53,18 @@ import android.widget.TextView;
 import com.hcim.intrusiondetection.R;
 
 public class RunInteraction extends Activity {
+	private Intrusion intrusion;
+
 	private final static String LT = "interactionLog";
 	private SparseArray<Queue<Touch>> interaction;
 	private ImageView img;
 	private ImageView background;
 	private ImageView playImg;
+	private ImageView intruderImg;
 	private LinearLayout slideIndicator;
 	private int swipeIndex;
 	private ArrayList<ImageView> swipeClues;
-	private List<Bitmap> imgIntruser;
+	private List<Bitmap> intruderList;
 
 	String imgBasePath;
 	String imgBasePathIntruser;
@@ -111,10 +119,9 @@ public class RunInteraction extends Activity {
 		public void run() {
 			intruser_img_index++;
 
-			ImageView iv = (ImageView) findViewById(R.id.img_intruser);
-			Bitmap bm = imgIntruser.get(intruser_img_index);
+			Bitmap bm = intruderList.get(intruser_img_index);
 			if (bm != null) {
-				iv.setImageBitmap(bm);
+				intruderImg.setImageBitmap(bm);
 			}
 
 			if (intruser_img_index < numberImg - 1 && time >= 0) {
@@ -146,15 +153,16 @@ public class RunInteraction extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		Intent intent = getIntent();
-		// String folder = intent.getStringExtra("interaction");
 
 		context = getApplicationContext();
 
 		String intrusionID = intent.getStringExtra("interaction");
-		Intrusion i = IntrusionsDatabase.getInstance(context).getIntrusion(
+		intrusion = IntrusionsDatabase.getInstance(context).getIntrusion(
 				intrusionID);
-		String folder = i.getLog().getId() + "";
-		imgIntruser = i.getImages();
+
+		String folder = intrusion.getLog().getID() + "";
+
+		intruderList = Picture.getBitmapList(intrusion.getImages());
 
 		dv = new DrawingView(this);
 		dv.setZOrderOnTop(true);
@@ -174,11 +182,24 @@ public class RunInteraction extends Activity {
 
 		img = (ImageView) findViewById(R.id.screenshot);
 
-		ImageView iv = (ImageView) findViewById(R.id.img_intruser);
-		Bitmap bm = (imgIntruser == null || imgIntruser.size() == 0) ? null
-				: imgIntruser.get(0);
+		intruderImg = (ImageView) findViewById(R.id.img_intruser);
+		intruderImg.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (playImg.getVisibility() == View.VISIBLE) {
+					Intent i = new Intent(RunInteraction.this,
+							IntruderPictureGrid.class);
+					i.putExtra(IntruderPictureGrid.EXTRA_ID, intrusion.getID());
+					startActivity(i);
+				}
+			}
+		});
+
+		Bitmap bm = (intruderList == null || intruderList.size() == 0) ? null
+				: intruderList.get(0);
 		if (bm != null) {
-			iv.setImageBitmap(bm);
+			intruderImg.setImageBitmap(bm);
 
 		}
 		slideIndicator = (LinearLayout) findViewById(R.id.slideIndicator);
@@ -570,11 +591,31 @@ public class RunInteraction extends Activity {
 	 * @param totalTime2
 	 */
 	private void loadIntruserRecord() {
-		numberImg = imgIntruser.size();
+		numberImg = intruderList.size();
 		intruser_img_index = 0;
 
 		delay = totalTime / numberImg * 1000;
 		handler_photos.postDelayed(runnable_photos, delay);
+	}
+
+	public void onClickTrashButton(View v) {
+		AlertDialog.Builder alertDialog;
+		alertDialog = new AlertDialog.Builder(this);
+		alertDialog.setTitle("Delete Intrusion Log");
+		alertDialog
+				.setMessage("Are you sure that you want to delete this intrusion log?");
+		alertDialog.setPositiveButton("YES",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						IntrusionsDatabase intDB = IntrusionsDatabase
+								.getInstance(context);
+						intDB.removeIntrusion(intrusion);
+
+						finish();
+					}
+				});
+		alertDialog.setNegativeButton("NO", null);
+		alertDialog.show();
 	}
 
 }
