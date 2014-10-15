@@ -82,4 +82,9 @@ public class Picture {
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		return "Picture [id=" + id + ", type=" + type + "]";
+	}
+
 }

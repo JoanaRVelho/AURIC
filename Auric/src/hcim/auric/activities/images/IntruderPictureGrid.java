@@ -48,7 +48,7 @@ public class IntruderPictureGrid extends PicturesGrid {
 
 		Intent i = new Intent(getApplicationContext(),
 				FullIntruderPicture.class);
-		i.putExtra(FullIntruderPicture.EXTRA_ID, selected.getID());
+		i.putExtra(FullPicture.EXTRA_ID, selected.getID());
 		startActivityForResult(i, 0);
 	}
 

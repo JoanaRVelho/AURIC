@@ -48,7 +48,7 @@ public class ImageAdapter extends BaseAdapter {
 	@SuppressLint("ViewHolder")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Picture p = pictures.get(position);
-		
+
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -63,11 +63,13 @@ public class ImageAdapter extends BaseAdapter {
 		face.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
 		String type = p.getType();
-		if ( type!= null) {
+		if (type != null) {
 			if (type.equals(FaceRecognition.MY_PICTURE_TYPE)) {
 				typeIcon.setImageResource(R.drawable.green);
 			} else if (type.equals(FaceRecognition.INTRUDER_PICTURE_TYPE)) {
 				typeIcon.setImageResource(R.drawable.red);
+			}else{
+				typeIcon.setVisibility(View.INVISIBLE);
 			}
 		}
 		gridView.setLayoutParams(new GridView.LayoutParams(300, 300));
@@ -75,26 +77,24 @@ public class ImageAdapter extends BaseAdapter {
 		return gridView;
 	}
 
-/*	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		Picture picture = pictures.get(position);
-		String type = picture.getType();
-
-		ImageView img = new ImageView(context);// :(
-		img.setImageBitmap(picture.getImage());
-		img.setLayoutParams(new GridView.LayoutParams(300, 300));
-		img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-		if (type == null) {
-			img.setBackgroundResource(R.drawable.border_black);
-		} else if (type.equals(FaceRecognition.MY_PICTURE_TYPE)) {
-			img.setBackgroundResource(R.drawable.border_green);
-		} else if (type.equals(FaceRecognition.INTRUDER_PICTURE_TYPE)) {
-			img.setBackgroundResource(R.drawable.border_red);
-		}
-
-		return img;
-
-	 }
+	/*
+	 * @Override public View getView(int position, View convertView, ViewGroup
+	 * parent) { Picture picture = pictures.get(position); String type =
+	 * picture.getType();
+	 * 
+	 * ImageView img = new ImageView(context);// :(
+	 * img.setImageBitmap(picture.getImage()); img.setLayoutParams(new
+	 * GridView.LayoutParams(300, 300));
+	 * img.setScaleType(ImageView.ScaleType.CENTER_CROP);
+	 * 
+	 * if (type == null) { img.setBackgroundResource(R.drawable.border_black); }
+	 * else if (type.equals(FaceRecognition.MY_PICTURE_TYPE)) {
+	 * img.setBackgroundResource(R.drawable.border_green); } else if
+	 * (type.equals(FaceRecognition.INTRUDER_PICTURE_TYPE)) {
+	 * img.setBackgroundResource(R.drawable.border_red); }
+	 * 
+	 * return img;
+	 * 
+	 * }
 	 */
 }

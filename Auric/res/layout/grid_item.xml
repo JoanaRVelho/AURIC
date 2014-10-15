@@ -12,8 +12,8 @@
 
      <ImageView
          android:id="@+id/type_icon"
-         android:layout_width="5mm"
-         android:layout_height="5mm"
+         android:layout_width="4mm"
+         android:layout_height="4mm"
          android:layout_alignBottom="@+id/img_face"
          android:layout_alignRight="@+id/img_face"
          android:src="@drawable/black" />

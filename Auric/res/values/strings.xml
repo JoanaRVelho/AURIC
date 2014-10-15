@@ -41,6 +41,13 @@
     <string name="intruser">Intruser Pictures</string>
     <string name="all_imgs">All Pictures</string>
     <string name="double_tap">Double tap to identify this picture</string>
+    <string name="sun">Sun</string>
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thu">Thu</string>
+    <string name="fri">Fri</string>
+    <string name="sat">Sat</string>
 
     <string-array name="mode_array">
         <item>None</item>

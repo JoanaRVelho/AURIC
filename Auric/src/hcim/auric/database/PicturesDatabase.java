@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class PicturesDatabase {
 	public static final String TAG = "AURIC";
-	private static final String MAIN_PICTURE = "main_picture";
+	public static final String MAIN_PICTURE = "main_picture";
 
 	private static PicturesDatabase INSTANCE;
 	private SQLitePicture pictureDB;
@@ -49,9 +49,10 @@ public class PicturesDatabase {
 
 		myPicture = pic;
 
-		Log.d(TAG,
-				"setMyPicture: Picture ID=" + pic.getID() + ", type="
-						+ pic.getType());
+//		Log.d(TAG,
+//				"setMyPicture: Picture ID=" + pic.getID() + ", type="
+//						+ pic.getType());
+		printList();
 	}
 
 	public void addPicture(Picture p) {
@@ -61,6 +62,7 @@ public class PicturesDatabase {
 					"addPicture: Picture ID=" + p.getID() + ", type="
 							+ p.getType());
 		}
+		printList();
 	}
 
 	public List<Picture> getAllPictures() {
@@ -114,5 +116,27 @@ public class PicturesDatabase {
 			return pictureDB.getPicture(id);
 		}
 		return null;
+	}
+	
+	public void printList(){
+		if (pictureDB != null) {
+			List<Picture> list = pictureDB.getAllPictures();
+			StringBuilder s = new StringBuilder();
+			for(Picture p :list){
+				s.append(p.toString()+"\n");
+			}
+			Log.i("AURIC",s.toString());
+		}
+	}
+
+	public boolean hasPicture(String id) {		
+		return getPicture(id) != null;
+	}
+
+	public void setPictureType(Picture p) {
+		if(pictureDB != null){
+			pictureDB.setPictureType(p);
+		}
+		
 	}
 }

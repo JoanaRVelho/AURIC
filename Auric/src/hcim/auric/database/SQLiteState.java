@@ -61,6 +61,7 @@ public class SQLiteState extends SQLiteOpenHelper {
 			return null;
 
 		String mode = cursor.getString(1);
+		db.close();
 
 		return mode;
 	}
@@ -109,6 +110,7 @@ public class SQLiteState extends SQLiteOpenHelper {
 			updateDeviceSharingMode(false);
 			return false;
 		}
+		db.close();
 
 		return mode.equals(SHARE_MODE);
 	}
@@ -153,6 +155,7 @@ public class SQLiteState extends SQLiteOpenHelper {
 			return null;
 
 		String mode = cursor.getString(1);
+		db.close();
 
 		return mode;
 	}
@@ -194,6 +197,7 @@ public class SQLiteState extends SQLiteOpenHelper {
 			return -1;
 
 		String mode = cursor.getString(1);
+		db.close();
 
 		return Integer.parseInt(mode);
 	}
@@ -235,6 +239,8 @@ public class SQLiteState extends SQLiteOpenHelper {
 			return -1;
 
 		String mode = cursor.getString(1);
+		
+		db.close();
 
 		return Integer.parseInt(mode);
 	}

@@ -159,7 +159,4 @@ public class ConfigurationDatabase {
 			screenshotOpt = s;
 		}
 	}
-
-
-
 }

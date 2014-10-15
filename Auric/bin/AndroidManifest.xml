@@ -9,12 +9,13 @@
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -31,7 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="hcim.auric.activities.ConfigurationsActivity" >
+        <activity android:name="hcim.auric.activities.SettingsActivity" >
         </activity>
         <activity android:name="swat.record.RunInteraction" >
         </activity>
@@ -49,13 +50,13 @@
         </activity>
         <activity android:name="hcim.auric.activities.passcode.UnlockIntrusionList" >
         </activity>
-         <activity android:name="hcim.auric.activities.images.FullIntruderPicture" >
+        <activity android:name="hcim.auric.activities.images.FullIntruderPicture" >
         </activity>
-         <activity android:name="hcim.auric.activities.images.IntruderPictureGrid" >
+        <activity android:name="hcim.auric.activities.images.IntruderPictureGrid" >
         </activity>
-         <activity android:name="hcim.auric.activities.images.RecognizedPicturesGrid" >
+        <activity android:name="hcim.auric.activities.images.RecognizedPicturesGrid" >
         </activity>
-        <activity android:name="hcim.auric.activities.images.FullPicture" >
+        <activity android:name="hcim.auric.activities.images.FullRecognizedPicture" >
         </activity>
 
         <service
@@ -87,7 +88,7 @@
         </activity>
 
         <receiver
-            android:name="hcim.auric.record.InteractionLog"
+            android:name="hcim.auric.record.screen.InteractionLog"
             android:enabled="true" >
             <intent-filter>
                 <action android:name="swat_interaction" />
@@ -127,11 +128,11 @@
             android:name="mswat.core.calibration.CalibrationScreen"
             android:label="@string/title_activity_calibration" >
         </activity>
-        <activity android:name="hcim.auric.record.RunInteraction" >
+        <activity android:name="hcim.auric.record.screen.RunInteraction" >
         </activity>
 
         <receiver
-            android:name="hcim.auric.record.WifiStart"
+            android:name="hcim.auric.record.screen.WifiStart"
             android:enabled="true" >
             <intent-filter>
                 <action android:name="mswat_init" />

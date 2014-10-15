@@ -2,7 +2,7 @@ package hcim.auric.activities;
 
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
-import hcim.auric.record.RunInteraction;
+import hcim.auric.record.screen.RunInteraction;
 
 import java.util.List;
 
@@ -41,12 +41,16 @@ public class IntrusionsListActivity extends Activity {
 		date = extras.getString("value1");
 	
 		TextView t = (TextView) findViewById(R.id.textView1);
-		t.append(" " + date);
+		t.setText(date + " Intrusion");
 	
-		List<Intrusion> intrusions = intrusionsDB.getIntrusionsFromADay(date);
+		List<Intrusion> intrusions = intrusionsDB.getIntrusionsDataFromADay(date);
 	
-		if (intrusions != null)
+		if (intrusions != null){
+			if(intrusions.size() > 1)
+				t.append("s");
+			
 			addButtons(intrusions);
+		}
 	}
 
 
@@ -56,7 +60,7 @@ public class IntrusionsListActivity extends Activity {
 		if(((LinearLayout) layout).getChildCount() > 0) 
 		    ((LinearLayout) layout).removeAllViews(); 
 		
-		List<Intrusion> intrusions = intrusionsDB.getIntrusionsFromADay(date);
+		List<Intrusion> intrusions = intrusionsDB.getIntrusionsDataFromADay(date);
 		
 		if(intrusions == null || intrusions.size() == 0)
 			finish();
@@ -78,7 +82,7 @@ public class IntrusionsListActivity extends Activity {
 
 				for (Intrusion i : intrusions) {
 					Button b = new Button(context);
-					b.setText(i.toString());
+					b.setText("Intrusion " +i.getTime());
 					b.setTextColor(Color.WHITE);
 					b.setBackgroundDrawable(d);
 					layout.addView(b);

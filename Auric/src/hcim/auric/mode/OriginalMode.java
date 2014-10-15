@@ -2,7 +2,6 @@ package hcim.auric.mode;
 
 import hcim.auric.audit.AuditTask;
 import hcim.auric.audit.AuditTaskWithDeviceSharing;
-import hcim.auric.audit.AuditTaskWithoutDeviceSharing;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.receiver.OriginalReceiver;
 import android.content.Context;
@@ -17,7 +16,7 @@ public class OriginalMode extends AbstractMode {
 		boolean sharing = ConfigurationDatabase.getInstance(c).isDeviceSharingEnabled();
 
 		task = sharing ? new AuditTaskWithDeviceSharing(context)
-				: new AuditTaskWithoutDeviceSharing(context);
+				: new AuditTask(context);
 
 		receiver = new OriginalReceiver((AuditTask) task);
 

@@ -38,7 +38,8 @@ import com.hcim.intrusiondetection.R;
  * CustomCalendarAndroid - https://github.com/manishsri01/CustomCalendarAndroid
  */
 public class MainActivity extends Activity implements OnClickListener {
-
+	public static final String TAG = "AURIC";
+	
 	private TextView currentMonth;
 	private ImageView prevMonth;
 	private ImageView nextMonth;
@@ -60,7 +61,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.calendar);
 
 		context = getApplicationContext();
 
@@ -80,7 +81,7 @@ public class MainActivity extends Activity implements OnClickListener {
 					startActivity(i);
 				} else {
 					Intent i = new Intent(MainActivity.this,
-							ConfigurationsActivity.class);
+							SettingsActivity.class);
 					startActivity(i);
 				}
 			}
@@ -337,7 +338,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			// Set the Day GridCell
 			gridcell.setText(theday);
-			gridcell.setTag(theday + "-" + themonth + "-" + theyear);
+			gridcell.setTag(CalendarManager.getDateFormat(theday, themonth, theyear));
 
 			if (day_color[1].equals("GREY")) {
 				gridcell.setTextColor(getResources()
@@ -395,24 +396,4 @@ public class MainActivity extends Activity implements OnClickListener {
 			return currentWeekDay;
 		}
 	}
-
-	/*
-	 * void initButtons(){ Button on = (Button) findViewById(R.id.on_button);
-	 * Button off = (Button) findViewById(R.id.off_button);
-	 * 
-	 * on.setOnClickListener(new OnClickListener() {
-	 * 
-	 * @Override public void onClick(View v) { Intent intent = new Intent();
-	 * intent.setAction("swat_interaction"); intent.putExtra("logging", true);
-	 * String time = System.currentTimeMillis()+""; Log.d("RESCUE",
-	 * "folder name:" + time); intent.putExtra("timestamp",time );
-	 * context.sendBroadcast(intent); } });
-	 * 
-	 * off.setOnClickListener(new OnClickListener() {
-	 * 
-	 * @Override public void onClick(View v) { Intent intent = new Intent();
-	 * intent.setAction("swat_interaction"); intent.putExtra("logging", false);
-	 * context.sendBroadcast(intent); } }); }
-	 */
-
 }

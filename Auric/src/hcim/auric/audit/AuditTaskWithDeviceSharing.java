@@ -26,9 +26,7 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 			currentIntrusion.stopLogging();
 			Log.d(TAG, "AuditTask - stop logging");
 
-			intrusionsDB.addIntrusion(currentIntrusion);
 			currentIntrusion = null;
-
 			notifier.cancelNotification();
 		}
 
@@ -47,7 +45,11 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 
 				Log.d(TAG, "AuditTask - new intrusion, start audit");
 				currentIntrusion = new Intrusion(context);
-				currentIntrusion.addImage(capturedFace);
+				
+				intrusionsDB.insertIntrusionData(currentIntrusion);
+				intrusionsDB.insertPictureOfTheIntruder(
+						currentIntrusion.getID(), capturedFace);
+				
 				currentIntrusion.startLogging();
 				Log.d(TAG, "AuditTask - start logging");
 
@@ -59,7 +61,8 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 				if (currentIntrusion == null) {
 					return;
 				}
-				currentIntrusion.addImage(capturedFace);
+				intrusionsDB.insertPictureOfTheIntruder(
+						currentIntrusion.getID(), capturedFace);
 			}
 		} else {
 			if (startLog) { // parar auditoria
@@ -67,7 +70,7 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 
 				if (currentIntrusion != null) {
 					currentIntrusion.stopLogging();
-					intrusionsDB.removeIntrusion(currentIntrusion);
+					intrusionsDB.deleteIntrusion(currentIntrusion.getID());
 					currentIntrusion = null;
 				}
 				startLog = false;

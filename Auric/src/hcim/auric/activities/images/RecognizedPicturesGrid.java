@@ -19,7 +19,7 @@ public class RecognizedPicturesGrid extends PicturesGrid {
 
 	@Override
 	protected void onPictureSelected(Picture p, int position) {
-		Intent i = new Intent(getApplicationContext(), FullPicture.class);
+		Intent i = new Intent(getApplicationContext(), FullRecognizedPicture.class);
 		i.putExtra(FullPicture.EXTRA_ID, p.getID());
 		startActivity(i);
 	}

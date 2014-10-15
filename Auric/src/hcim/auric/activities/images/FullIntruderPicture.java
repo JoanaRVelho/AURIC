@@ -4,38 +4,21 @@ import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
-import hcim.auric.utils.StringGenerator;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.hcim.intrusiondetection.R;
-
-public class FullIntruderPicture extends Activity {
-	public static final String EXTRA_ID = "extra";
-	
-	private Picture picture;
-	
+public class FullIntruderPicture extends FullPicture {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.full_image);
 
-		Bundle extras = getIntent().getExtras();
-		String id = extras.getString(EXTRA_ID);
-		IntrusionsDatabase db = IntrusionsDatabase.getInstance(this);
-		picture = db.getIntruserPicture(id);
-
-		ImageView imageView = (ImageView) findViewById(R.id.full_image_view);
-		imageView.setImageBitmap(picture.getImage());
-		
-		Toast.makeText(this, "Double tap to identify this picture.", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "Double tap to identify this picture.",
+				Toast.LENGTH_LONG).show();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -67,7 +50,7 @@ public class FullIntruderPicture extends Activity {
 	private DialogInterface.OnClickListener getPositiveButtonOnClickListener() {
 		return new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				update(FaceRecognition.MY_PICTURE_TYPE);
+				updateFaceRecognitionData(FaceRecognition.MY_PICTURE_TYPE);
 
 				Intent data = new Intent();
 				data.putExtra("return", FaceRecognition.MY_PICTURE_TYPE);
@@ -81,7 +64,7 @@ public class FullIntruderPicture extends Activity {
 	private DialogInterface.OnClickListener getNegativeButtonOnClickListener() {
 		return new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				update(FaceRecognition.INTRUDER_PICTURE_TYPE);
+				updateFaceRecognitionData(FaceRecognition.INTRUDER_PICTURE_TYPE);
 
 				Intent data = new Intent();
 				data.putExtra("return", FaceRecognition.MY_PICTURE_TYPE);
@@ -92,23 +75,38 @@ public class FullIntruderPicture extends Activity {
 		};
 	}
 
-	void update(String type) {
-		if (picture.getID() == null)
-			picture.setID(StringGenerator.generateString());
-
+	private void updateFaceRecognitionData(String type) {
 		picture.setType(type);
 
-		FaceRecognition f = FaceRecognition
+		FaceRecognition recognition = FaceRecognition
 				.getInstance(FullIntruderPicture.this);
-		f.trainPicture(picture.getImage(), picture.getID());
+		recognition.trainPicture(picture.getImage(), picture.getID());
 
-		PicturesDatabase db = PicturesDatabase
+		PicturesDatabase picturesDB = PicturesDatabase
 				.getInstance(FullIntruderPicture.this);
-		db.addPicture(picture);
 
-		Toast.makeText(FullIntruderPicture.this,
-				"Face Recognition: picture added", Toast.LENGTH_SHORT).show();
+		String msg;
+
+		if (picturesDB.hasPicture(picture.getID())) {
+			picturesDB.setPictureType(picture);
+			msg = "picture updated";
+		} else {
+			picturesDB.addPicture(picture);
+			msg = "picture added";
+		}
+
+		IntrusionsDatabase intrusionDB = IntrusionsDatabase.getInstance(this);
+		intrusionDB.updatePictureType(picture);
+
+		Toast.makeText(FullIntruderPicture.this, "Face Recognition: " + msg,
+				Toast.LENGTH_SHORT).show();
 		finish();
+	}
+
+	@Override
+	protected Picture getPicture(String id) {
+		IntrusionsDatabase db = IntrusionsDatabase.getInstance(this);
+		return db.getPictureOfTheIntruder(id);
 	}
 
 }

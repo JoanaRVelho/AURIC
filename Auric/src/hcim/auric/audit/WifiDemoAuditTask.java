@@ -1,6 +1,7 @@
 package hcim.auric.audit;
 
-import hcim.auric.intrusion.Intrusion;
+import hcim.auric.calendar.CalendarManager;
+import hcim.auric.intrusion.IntrusionFactory;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -54,14 +55,22 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 	public void actionStart(String timestamp) {
 		long timestampLong = Long.valueOf(timestamp);
 		Date d = new Date(timestampLong);
-		Format f = new SimpleDateFormat("dd-MMMM-yyyy HH:mm:ss");
+		Format f = new SimpleDateFormat("dd-MMMM-yyyy-HH-mm-ss");
 
-		String id = f.format(d).toString();
-		if (id.charAt(0) == '0')
-			id = id.substring(1);
-		String[] array = id.split(" ");
+		String calendar = f.format(d).toString();
+		if (calendar.charAt(0) == '0')
+			calendar = calendar.substring(1);
 
-		currentIntrusion = new Intrusion(id, array[0], array[1], timestamp);
+		String[] array = calendar.split("-");
+
+		String date = CalendarManager.getDateFormat(array[0], array[1],
+				array[2]);
+		String time = CalendarManager.getTimeFormat(array[3], array[4],
+				array[5]);
+
+		currentIntrusion = IntrusionFactory.createIntrusion(calendar, date,
+				time);
+		intrusionsDB.insertIntrusionData(currentIntrusion);
 
 		startTimerTask(false);
 
@@ -71,7 +80,6 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 	public void actionStop() {
 		stopTimerTask();
 
-		intrusionsDB.addIntrusion(currentIntrusion);
 		currentIntrusion = null;
 
 		if (notifier != null) {
@@ -81,7 +89,8 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 
 	public void actionNewPicture(Bitmap bm) {
 		if (currentIntrusion != null) {
-			currentIntrusion.addImage(bm);
+			intrusionsDB.insertPictureOfTheIntruder(currentIntrusion.getID(),
+					bm);
 		}
 	}
 }

@@ -82,8 +82,8 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 	public String getPictureType(String id) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		String query = "SELECT * FROM " + TABLE_PICTURES
-				+ " WHERE " + KEY_ID + " = '" + id + "'";
+		String query = "SELECT * FROM " + TABLE_PICTURES + " WHERE " + KEY_ID
+				+ " = '" + id + "'";
 
 		Cursor cursor = db.rawQuery(query, null);
 
@@ -95,7 +95,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 		String result = cursor.getString(1);
 		db.close();
-		
+
 		return result;
 	}
 
@@ -160,6 +160,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 			} while (cursor.moveToNext());
 		}
+		db.close();
 
 		return result;
 	}
@@ -185,6 +186,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 			} while (cursor.moveToNext());
 		}
+		db.close();
 
 		return result;
 	}
@@ -211,7 +213,17 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 			} while (cursor.moveToNext());
 		}
-
+		db.close();
 		return result;
+	}
+
+	public void setPictureType(Picture p) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_TYPE, p.getType());
+		db.update(TABLE_PICTURES, values, "KEY_ID ='" + p.getID() + "'", null);
+
+		db.close();
 	}
 }

@@ -20,41 +20,41 @@ public final class R {
 		public static final int activity_vertical_margin = 0x7f0a0012;
 	}
 	public static final class drawable {
-		public static final int ic_launcher = 0x7f02006e;
-		public static final int reddot = 0x7f020076;
+		public static final int ic_launcher = 0x7f02006c;
+		public static final int reddot = 0x7f020074;
 	}
 	public static final class id {
-		public static final int RelativeLayout01 = 0x7f07004a;
-		public static final int TableLayout01 = 0x7f07004b;
-		public static final int TextViewA = 0x7f07004c;
-		public static final int TextViewB = 0x7f07004d;
-		public static final int TextViewC = 0x7f07004e;
-		public static final int TextViewD = 0x7f07004f;
-		public static final int TextViewE = 0x7f070050;
-		public static final int TextViewF = 0x7f070051;
-		public static final int TextViewG = 0x7f070052;
-		public static final int TextViewH = 0x7f070053;
-		public static final int TextViewI = 0x7f070054;
-		public static final int TextViewJ = 0x7f070055;
-		public static final int TextViewK = 0x7f070056;
-		public static final int TextViewL = 0x7f070057;
-		public static final int TextViewM = 0x7f070058;
-		public static final int TextViewN = 0x7f070059;
-		public static final int TextViewO = 0x7f07005a;
-		public static final int TextViewP = 0x7f07005b;
-		public static final int TextViewQ = 0x7f07005c;
-		public static final int TextViewR = 0x7f07005d;
-		public static final int TextViewS = 0x7f07005e;
-		public static final int TextViewT = 0x7f07005f;
-		public static final int TextViewText = 0x7f070066;
-		public static final int TextViewU = 0x7f070060;
-		public static final int TextViewV = 0x7f070061;
-		public static final int TextViewW = 0x7f070062;
-		public static final int TextViewX = 0x7f070063;
-		public static final int TextViewY = 0x7f070064;
-		public static final int TextViewZ = 0x7f070065;
-		public static final int action_settings = 0x7f070098;
-		public static final int button1 = 0x7f070043;
+		public static final int RelativeLayout01 = 0x7f070043;
+		public static final int TableLayout01 = 0x7f070044;
+		public static final int TextViewA = 0x7f070045;
+		public static final int TextViewB = 0x7f070046;
+		public static final int TextViewC = 0x7f070047;
+		public static final int TextViewD = 0x7f070048;
+		public static final int TextViewE = 0x7f070049;
+		public static final int TextViewF = 0x7f07004a;
+		public static final int TextViewG = 0x7f07004b;
+		public static final int TextViewH = 0x7f07004c;
+		public static final int TextViewI = 0x7f07004d;
+		public static final int TextViewJ = 0x7f07004e;
+		public static final int TextViewK = 0x7f07004f;
+		public static final int TextViewL = 0x7f070050;
+		public static final int TextViewM = 0x7f070051;
+		public static final int TextViewN = 0x7f070052;
+		public static final int TextViewO = 0x7f070053;
+		public static final int TextViewP = 0x7f070054;
+		public static final int TextViewQ = 0x7f070055;
+		public static final int TextViewR = 0x7f070056;
+		public static final int TextViewS = 0x7f070057;
+		public static final int TextViewT = 0x7f070058;
+		public static final int TextViewText = 0x7f07005f;
+		public static final int TextViewU = 0x7f070059;
+		public static final int TextViewV = 0x7f07005a;
+		public static final int TextViewW = 0x7f07005b;
+		public static final int TextViewX = 0x7f07005c;
+		public static final int TextViewY = 0x7f07005d;
+		public static final int TextViewZ = 0x7f07005e;
+		public static final int action_settings = 0x7f070099;
+		public static final int button1 = 0x7f070042;
 		public static final int imageButton1 = 0x7f070040;
 		public static final int listview = 0x7f070041;
 		public static final int textView1 = 0x7f07003f;
@@ -62,8 +62,8 @@ public final class R {
 	public static final class layout {
 		public static final int activity_calibration = 0x7f030017;
 		public static final int activity_listviewexampleactivity = 0x7f030018;
-		public static final int activity_run_macro = 0x7f03001a;
-		public static final int autonavkeyboard = 0x7f03001b;
+		public static final int activity_run_macro = 0x7f030019;
+		public static final int autonavkeyboard = 0x7f03001a;
 	}
 	public static final class menu {
 		public static final int calibration = 0x7f0f0000;

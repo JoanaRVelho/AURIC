@@ -1,13 +1,13 @@
 package hcim.auric.activities.passcode;
 
-import hcim.auric.activities.ConfigurationsActivity;
+import hcim.auric.activities.SettingsActivity;
 import android.content.Intent;
 
 public class UnlockConfiguration extends Unlock{
 
 	@Override
 	protected void passcodeCorrect() {
-		Intent i = new Intent(this, ConfigurationsActivity.class);
+		Intent i = new Intent(this, SettingsActivity.class);
 		startActivityForResult(i, 0);
 	}
 

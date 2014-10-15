@@ -1,6 +1,5 @@
 package hcim.auric.utils;
 
-import java.util.UUID;
 
 public class StringGenerator {
 	/**
@@ -9,6 +8,7 @@ public class StringGenerator {
 	 * @return
 	 */
 	public static String generateString() {
-		return UUID.randomUUID().toString();
+		//return UUID.randomUUID().toString();
+		return System.currentTimeMillis() + "";
 	}
 }

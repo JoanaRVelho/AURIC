@@ -18,9 +18,9 @@
         android:id="@+id/background1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scaleType="fitXY"
         android:alpha="0.3"
-        android:background="#FFFFFF" />
+        android:background="#FFFFFF"
+        android:scaleType="fitXY" />
 
     <ImageView
         android:id="@+id/play"
@@ -51,15 +51,15 @@
 
     <TextView
         android:id="@+id/timer"
-         android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:background="@drawable/timer"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
-        android:textColor="#000000"
-        android:text="" />
+        android:text=""
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/img_intruser"
@@ -67,17 +67,15 @@
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:scaleType="fitXY"
         android:alpha="0.9"
-        />
+        android:scaleType="fitXY" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/trash"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/trash_icon"
-        android:onClick="onClickTrashButton" />
+        android:background="@drawable/trash_icon2" />
 
 </RelativeLayout>

@@ -36,13 +36,10 @@ public class FaceRecognition {
 
 	private static final String TAG = "AURIC";
 
-	static final int MY_PICTURE = 1;
-	static final int OTHER_PICTURE = 2;
-	static final int CHECK = 3;
-	static final long MAX_IMG = 10;
-
+	public static final long MAX_IMG = 10;
 	public static final String MY_PICTURE_TYPE = "myface";
 	public static final String INTRUDER_PICTURE_TYPE = "intruder";
+	public static final String UNKNOWN_PICTURE_TYPE = "unknown";
 
 	private File cascadeFile;
 	private CascadeClassifier faceDetector;
@@ -58,7 +55,7 @@ public class FaceRecognition {
 
 	public static FaceRecognition getInstance(Context c) {
 		if (INSTANCE == null) {
-			String filesDir = c.getFilesDir().toString();
+			String filesDir = c.getExternalFilesDir(null).toString();
 			INSTANCE = new FaceRecognition(c, filesDir);
 		}
 		return INSTANCE;
@@ -114,7 +111,7 @@ public class FaceRecognition {
 			return result > 0 && result < 80;
 		}
 	}
-	
+
 	public boolean detectFace(Bitmap rgbBitmap){
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
 
@@ -186,11 +183,11 @@ public class FaceRecognition {
 		String resultString = recognizer.predict(m);
 		PicturesDatabase db = PicturesDatabase.getInstance(context);
 
+		Log.d(TAG, "Face Recognition - matches " + resultString);
+		
 		int result = -1;
 		if (db.isMyPicture(resultString)) {
 			result = recognizer.getProb();
-		} else {
-			Log.d(TAG, "Face Recognition - matches " + resultString);
 		}
 		return result;
 	}
@@ -264,11 +261,11 @@ public class FaceRecognition {
 									+ e);
 				}
 			}
-				break;
+			break;
 			default: {
 				super.onManagerConnected(status);
 			}
-				break;
+			break;
 			}
 		}
 	}

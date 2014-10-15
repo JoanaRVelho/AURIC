@@ -6,7 +6,7 @@ import hcim.auric.camera.FrontPictureCallback;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
-import hcim.auric.periodic.AuricTimerTask;
+import hcim.auric.record.IntruderCaptureTask;
 
 import java.util.Timer;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,7 +19,7 @@ public abstract class AbstractAuditTask extends Thread {
 
 	public static final String ACTION_NEW_PICTURE = "new picture";
 
-	private AuricTimerTask timerTask;
+	private IntruderCaptureTask timerTask;
 	private Timer timer;
 	protected CameraManager camera;
 
@@ -53,7 +53,7 @@ public abstract class AbstractAuditTask extends Thread {
 		return context;
 	}
 
-	public AuricTimerTask getTimerTask() {
+	public IntruderCaptureTask getTimerTask() {
 		return timerTask;
 	}
 
@@ -70,7 +70,7 @@ public abstract class AbstractAuditTask extends Thread {
 		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
 		int period = db.getCameraCaptureOption();
 		
-		timerTask = new AuricTimerTask(this.camera);
+		timerTask = new IntruderCaptureTask(this.camera);
 		timer = new Timer();
 		timer.scheduleAtFixedRate(timerTask, delay ? period : 0, period);
 		

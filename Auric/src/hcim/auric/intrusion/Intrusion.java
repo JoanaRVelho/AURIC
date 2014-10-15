@@ -3,46 +3,31 @@ package hcim.auric.intrusion;
 import hcim.auric.calendar.CalendarManager;
 import hcim.auric.recognition.Picture;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Intent;
 
-public class Intrusion implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class Intrusion {
+	private Context context;
 
 	private String id;
-	private List<Picture> images;
-	private Log log;
 	private String date;
 	private String time;
 
-	public Intrusion(Context c) {
-		id = CalendarManager.getCurrentDateAndTime();
-		int idx = id.indexOf(" ");
+	private List<Picture> images;
 
-		date = id.substring(0, idx);
-		time = id.substring(idx + 1);
+	public Intrusion(Context context) {
+		this.context = context;
 
-		log = new Log(c); // MainActivity.context
-		images = new ArrayList<Picture>();
+		Calendar c = Calendar.getInstance();
+		date = CalendarManager.getDateFormat(c);
+		time = CalendarManager.getTimeFormat(c);
+		id = CalendarManager.getTimestampFormat(c);
 	}
 
-	public Intrusion(String id, String date, String time) {
-		this.id = id;
-		this.date = date;
-		this.time = time;
-	}
-
-	public Intrusion(String id, String date, String time, String timestamp) {
-		this.id = id;
-		this.date = date;
-		this.time = time;
-		this.log = new Log(timestamp);
-		images = new ArrayList<Picture>();
+	Intrusion() {
 	}
 
 	public String getDate() {
@@ -77,28 +62,25 @@ public class Intrusion implements Serializable {
 		this.images = images;
 	}
 
-	public void addImage(Bitmap capturedFace) {
-		this.images.add(new Picture(null, null,capturedFace));
-	}
-
-	public Log getLog() {
-		return log;
-	}
-
-	public void setLog(Log log) {
-		this.log = log;
+	public void stopLogging() {
+		Intent intent = new Intent();
+		intent.setAction("swat_interaction");
+		intent.putExtra("logging", false);
+		context.sendBroadcast(intent);
 	}
 
 	public void startLogging() {
-		log.startLogging();
-	}
+		Intent intent = new Intent();
+		intent.setAction("swat_interaction");
+		intent.putExtra("logging", true);
+		intent.putExtra("timestamp", id);
 
-	public void stopLogging() {
-		log.stopLogging();
+		context.sendBroadcast(intent);
 	}
 
 	@Override
 	public String toString() {
-		return "Intrusion " + time;
+		return "Intrusion [id=" + id + ", date=" + date + ", time=" + time
+				+ "]";
 	}
 }

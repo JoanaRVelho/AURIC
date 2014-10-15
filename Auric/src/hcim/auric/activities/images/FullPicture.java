@@ -1,19 +1,26 @@
 package hcim.auric.activities.images;
 
-import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.hcim.intrusiondetection.R;
 
-public class FullPicture extends Activity {
+public abstract class FullPicture extends Activity {
 	public static final String EXTRA_ID = "extra";
 
+	static final String TAG = "AURIC";
+
 	protected Picture picture;
+
+	public Picture getPicture() {
+		return picture;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -22,24 +29,32 @@ public class FullPicture extends Activity {
 
 		Bundle extras = getIntent().getExtras();
 		String id = extras.getString(EXTRA_ID);
-		PicturesDatabase db = PicturesDatabase.getInstance(this);
-		picture = db.getPicture(id);
+
+		picture = getPicture(id);
 
 		ImageView imageView = (ImageView) findViewById(R.id.full_image_view);
 		imageView.setImageBitmap(picture.getImage());
 
-		String txt = null;
+		String type = picture.getType();
+		Log.i(TAG, picture.toString());
 
-		if (picture.getType() != null) {
-			if (picture.getType().equals(FaceRecognition.INTRUDER_PICTURE_TYPE))
-				txt = "This is an intruder.";
-			if (picture.getType().equals(FaceRecognition.MY_PICTURE_TYPE))
-				txt="This is you.";
+		if (type != null) {
+			if (type.equals(FaceRecognition.INTRUDER_PICTURE_TYPE))
+				setBackground(Color.rgb(204, 0, 0));
+
+			if (type.equals(FaceRecognition.MY_PICTURE_TYPE))
+				setBackground(Color.rgb(112, 173, 71));
+			
+			if(type.equals(FaceRecognition.UNKNOWN_PICTURE_TYPE))
+				setBackground(Color.BLACK);
 		}
-		// txt+=" Double Tap to change.";
-		if (txt != null)
-			Toast.makeText(this, txt, Toast.LENGTH_LONG).show();
-		
 	}
+
+	protected void setBackground(int color) {
+		LinearLayout l = (LinearLayout)findViewById(R.id.background);
+		l.setBackgroundColor(color);
+	}
+
+	protected abstract Picture getPicture(String id);
 
 }
