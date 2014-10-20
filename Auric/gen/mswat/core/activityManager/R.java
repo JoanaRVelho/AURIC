@@ -20,8 +20,8 @@ public final class R {
 		public static final int activity_vertical_margin = 0x7f0a0012;
 	}
 	public static final class drawable {
-		public static final int ic_launcher = 0x7f02006c;
-		public static final int reddot = 0x7f020074;
+		public static final int ic_launcher = 0x7f02006b;
+		public static final int reddot = 0x7f020076;
 	}
 	public static final class id {
 		public static final int RelativeLayout01 = 0x7f070043;
@@ -53,7 +53,7 @@ public final class R {
 		public static final int TextViewX = 0x7f07005c;
 		public static final int TextViewY = 0x7f07005d;
 		public static final int TextViewZ = 0x7f07005e;
-		public static final int action_settings = 0x7f070099;
+		public static final int action_settings = 0x7f07009a;
 		public static final int button1 = 0x7f070042;
 		public static final int imageButton1 = 0x7f070040;
 		public static final int listview = 0x7f070041;

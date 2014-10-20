@@ -3,17 +3,21 @@
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/lightgray" >
+    android:background="@color/lightgray"
+    android:orientation="vertical" >
 
-    <!--<TextView
+    <!--
+        <TextView
         android:id="@+id/msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/double_tap" />-->
- 
-    <ImageView android:id="@+id/full_image_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
- 
+        android:text="@string/double_tap" />
+    -->
+
+    <ImageView
+        android:id="@+id/full_image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:contentDescription="@string/picture" />
+
 </LinearLayout>

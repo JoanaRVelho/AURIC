@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">AURIC</string>
+     <string name="description">log description</string>
     <string name="action_settings">Settings</string>
     <string name="configurations">Settings</string>
     <string name="logs">Logs</string>
@@ -18,8 +19,6 @@
     <string name="original_mode">Original Mode</string>
     <string name="lab_test">Laboratory Test Mode</string>
     <string name="mode">AURIC Mode</string>
-    <string name="save">Save</string>
-    <string name="input">Input</string>
     <string name="device_sharing">Device Sharing</string>
     <string name="period">Camera Capture Period</string>
     <string name="screenshots">Screenshots Period</string>
@@ -40,7 +39,6 @@
     <string name="del">del</string>
     <string name="intruser">Intruser Pictures</string>
     <string name="all_imgs">All Pictures</string>
-    <string name="double_tap">Double tap to identify this picture</string>
     <string name="sun">Sun</string>
     <string name="mon">Mon</string>
     <string name="tue">Tue</string>
@@ -59,6 +57,7 @@
         <item>8000 miliseconds</item>
         <item>10000 miliseconds</item>
     </string-array>
+    
     <string-array name="screenshot_array">
         <item>300 miliseconds</item>
         <item>500 miliseconds</item>

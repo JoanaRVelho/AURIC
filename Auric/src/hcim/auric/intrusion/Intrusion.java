@@ -10,11 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 
 public class Intrusion {
+	public static final int UNCHECKED = 0;
+	public static final int FALSE_INTRUSION = 1;
+	public static final int REAL_INTRUSION = 2;
+
 	private Context context;
 
 	private String id;
 	private String date;
 	private String time;
+	private int tag;
 
 	private List<Picture> images;
 
@@ -25,9 +30,30 @@ public class Intrusion {
 		date = CalendarManager.getDateFormat(c);
 		time = CalendarManager.getTimeFormat(c);
 		id = CalendarManager.getTimestampFormat(c);
+		tag = UNCHECKED;
 	}
 
 	Intrusion() {
+	}
+
+	public boolean isRealIntrusion() {
+		return tag == REAL_INTRUSION;
+	}
+
+	public boolean isFalseIntrusion() {
+		return tag == FALSE_INTRUSION;
+	}
+
+	public boolean isChecked() {
+		return tag != UNCHECKED;
+	}
+
+	public void markAsRealIntrusion() {
+		this.tag = REAL_INTRUSION;
+	}
+
+	public void markAsFalseIntrusion() {
+		this.tag = FALSE_INTRUSION;
 	}
 
 	public String getDate() {
@@ -40,6 +66,14 @@ public class Intrusion {
 
 	public String getTime() {
 		return time;
+	}
+
+	public int getTag() {
+		return tag;
+	}
+
+	public void setTag(int tag) {
+		this.tag = tag;
 	}
 
 	public void setTime(String time) {
@@ -81,6 +115,7 @@ public class Intrusion {
 	@Override
 	public String toString() {
 		return "Intrusion [id=" + id + ", date=" + date + ", time=" + time
-				+ "]";
+				+ ", tag=" + tag + "]";
 	}
+
 }

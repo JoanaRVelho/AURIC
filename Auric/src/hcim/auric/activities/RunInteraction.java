@@ -1,9 +1,10 @@
-package hcim.auric.record.screen;
+package hcim.auric.activities;
 
 import hcim.auric.activities.images.IntruderPictureGrid;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.Picture;
+import hcim.auric.record.screen.OnSwipeTouchListener;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -54,20 +55,31 @@ import com.hcim.intrusiondetection.R;
 public class RunInteraction extends Activity {
 	private Intrusion intrusion;
 
-	private SparseArray<Queue<Touch>> interaction;
-	private ImageView img;
-	private ImageView background;
-	private ImageView playImg;
-	private ImageView intruderImg;
-	private LinearLayout slideIndicator;
-	private int swipeIndex;
-	private ArrayList<ImageView> swipeClues;
-	private List<Bitmap> intruderList;
-	private Button trash;
+	@Override
+	public void finish() {
 
-	private String imgBasePath;
-	private final int UPDATE_IMAGE = 0;
-	private final int RESET = 1;
+		if (intrusion.isChecked()) {
+			super.finish();
+		}else{
+			markIntrusionAlertDialog();
+		}
+	}
+
+	private SparseArray<Queue<Touch>> interaction;
+	private static ImageView img;
+	private static ImageView background;
+	private static ImageView playImg;
+	private ImageView intruderImg;
+	private static LinearLayout slideIndicator;
+	private static int swipeIndex;
+	private static ArrayList<ImageView> swipeClues;
+	private List<Bitmap> intruderList;
+	private static Button trash;
+	private static TextView timerTextView;
+
+	private static String imgBasePath;
+	private static final int UPDATE_IMAGE = 0;
+	private static final int RESET = 1;
 
 	private int currentImage;
 	private String imgPath;
@@ -81,7 +93,7 @@ public class RunInteraction extends Activity {
 	private static final String TAG = "AURIC";
 
 	private int nav_command;
-	private boolean play;
+	private static boolean play;
 	private boolean reseting;
 	private DrawingView dv;
 
@@ -92,14 +104,13 @@ public class RunInteraction extends Activity {
 	private Handler handlerTimer = new Handler();
 	private Runnable runnable = new Runnable() {
 		public void run() {
-			TextView t = (TextView) findViewById(R.id.timer);
 			time--;
-			t.setText((totalTime - time) + "/" + totalTime + "s");
+			timerTextView.setText((totalTime - time) + "/" + totalTime + "s");
 			if (time >= 0) {
-				handler.postDelayed(runnable, interval);
+				screenshotHandler.postDelayed(runnable, interval);
 
 			} else {
-				t.setText("");
+				timerTextView.setText("");
 			}
 
 		}
@@ -219,6 +230,9 @@ public class RunInteraction extends Activity {
 
 			}
 		});
+		
+		timerTextView = (TextView) findViewById(R.id.timer);
+		timerTextView.setVisibility(View.INVISIBLE);
 
 		slideIndicator = (LinearLayout) findViewById(R.id.slideIndicator);
 		swipeClues = new ArrayList<ImageView>();
@@ -284,12 +298,14 @@ public class RunInteraction extends Activity {
 					play = true;
 					background.setVisibility(View.INVISIBLE);
 					trash.setVisibility(View.INVISIBLE);
+					timerTextView.setVisibility(View.VISIBLE);
 					playImg.setVisibility(View.INVISIBLE);
 					slideIndicator.setVisibility(View.INVISIBLE);
 
 				} else {
 					playImg.setVisibility(View.VISIBLE);
 					trash.setVisibility(View.VISIBLE);
+					timerTextView.setVisibility(View.INVISIBLE);
 					slideIndicator.setVisibility(View.VISIBLE);
 					background.setVisibility(View.VISIBLE);
 					nav_command = STOP;
@@ -340,12 +356,12 @@ public class RunInteraction extends Activity {
 						q.add(new Touch(Integer.parseInt(split[1]), Integer
 								.parseInt(split[2]),
 								Integer.parseInt(split[3]), Double
-										.parseDouble(split[4])));
+								.parseDouble(split[4])));
 					} else
 						q.add(new Touch(Integer.parseInt(split[1]), Integer
 								.parseInt(split[2]),
 								Integer.parseInt(split[3]), Double
-										.parseDouble(split[4])));
+								.parseDouble(split[4])));
 				}
 				lastTouchTime = Double.parseDouble(split[4]);
 			}
@@ -388,16 +404,16 @@ public class RunInteraction extends Activity {
 			if (!existsImage(index)) {
 				return false;
 			} else {
-				Message msg = handler.obtainMessage();
+				Message msg = screenshotHandler.obtainMessage();
 				msg.what = UPDATE_IMAGE;
 				msg.obj = index;
-				handler.sendMessage(msg);
+				screenshotHandler.sendMessage(msg);
 				return true;
 			}
 		case PLAY:
 		case PLAY_ALL:
 			if (interaction.get(index) != null
-					&& interaction.get(index).peek() != null && time <= -1) {
+			&& interaction.get(index).peek() != null && time <= -1) {
 				setTimerReproduction(index);
 				loadIntruserRecord();
 			}
@@ -426,10 +442,10 @@ public class RunInteraction extends Activity {
 		reseting = true;
 		if (image) {
 			currentImage = 0;
-			Message msg = handler.obtainMessage();
+			Message msg = screenshotHandler.obtainMessage();
 			msg.what = RESET;
 			msg.obj = 0;
-			handler.sendMessage(msg);
+			screenshotHandler.sendMessage(msg);
 		}
 		loadInteraction();
 	}
@@ -442,10 +458,10 @@ public class RunInteraction extends Activity {
 			return;
 		}
 		if (q != null && q.size() > 0) {
-			Message msg = handler.obtainMessage();
+			Message msg = screenshotHandler.obtainMessage();
 			msg.what = UPDATE_IMAGE;
 			msg.obj = index;
-			handler.sendMessage(msg);
+			screenshotHandler.sendMessage(msg);
 		}
 		new Thread() {
 			public void run() {
@@ -490,7 +506,7 @@ public class RunInteraction extends Activity {
 	/**
 	 * Changes the background screenshot
 	 */
-	final Handler handler = new Handler() {
+	static final Handler screenshotHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			if (msg.what == UPDATE_IMAGE) {
@@ -510,6 +526,7 @@ public class RunInteraction extends Activity {
 							R.drawable.circle_selected);
 					playImg.setVisibility(View.VISIBLE);
 					trash.setVisibility(View.VISIBLE);
+					timerTextView.setVisibility(View.INVISIBLE);
 					slideIndicator.setVisibility(View.VISIBLE);
 					background.setVisibility(View.VISIBLE);
 					play = false;
@@ -593,24 +610,54 @@ public class RunInteraction extends Activity {
 		handler_photos.postDelayed(runnable_photos, delay);
 	}
 
-	public void onClickTrashButton(View v) {
+	public void trashButtonAlertDialog() {
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(this);
 		alertDialog.setTitle("Delete Intrusion Log");
 		alertDialog
-				.setMessage("Are you sure that you want to delete this intrusion log?");
+		.setMessage("Are you sure that you want to delete this intrusion log?");
 		alertDialog.setPositiveButton("YES",
 				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						IntrusionsDatabase intDB = IntrusionsDatabase
-								.getInstance(context);
-						intDB.deleteIntrusion(intrusion.getID());
+			public void onClick(DialogInterface dialog, int which) {
+				IntrusionsDatabase intDB = IntrusionsDatabase
+						.getInstance(context);
+				intDB.deleteIntrusion(intrusion.getID());
 
-						finish();
-					}
-				});
+				finish();
+			}
+		});
 		alertDialog.setNegativeButton("NO", null);
 		alertDialog.show();
 	}
 
+	private void markIntrusionAlertDialog() {
+		AlertDialog.Builder alertDialog;
+		alertDialog = new AlertDialog.Builder(this);
+		alertDialog.setTitle("Intrusion");
+		alertDialog.setMessage("Is this a real intrusion?");
+		alertDialog.setPositiveButton("YES",
+				new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				IntrusionsDatabase intDB = IntrusionsDatabase
+						.getInstance(context);
+				intrusion.markAsRealIntrusion();
+				intDB.updateIntrusion(intrusion);
+
+				RunInteraction.super.finish();
+			}
+		});
+
+		alertDialog.setNegativeButton("NO",
+				new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				IntrusionsDatabase intDB = IntrusionsDatabase
+						.getInstance(context);
+				intrusion.markAsFalseIntrusion();
+				intDB.updateIntrusion(intrusion);
+
+				RunInteraction.super.finish();
+			}
+		});
+		alertDialog.show();
+	}
 }

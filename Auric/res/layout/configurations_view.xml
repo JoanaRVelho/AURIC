@@ -41,6 +41,7 @@
 
             <ImageView
                 android:id="@+id/mypicture"
+                android:contentDescription="@string/mypicture"
                 android:layout_width="122dp"
                 android:layout_height="216dp"
                 android:layout_alignParentLeft="true"

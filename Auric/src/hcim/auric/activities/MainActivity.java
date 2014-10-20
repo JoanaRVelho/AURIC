@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -107,6 +108,16 @@ public class MainActivity extends Activity implements OnClickListener {
 				month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
+		
+		
+		checkSettings();
+	}
+
+	private void checkSettings() {
+		if(! CheckSettings.isAccessibilitySettingsOn(context)){
+			startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+			//startActivity(new Intent(this, HierarchicalService.class));
+		}
 	}
 
 	@Override

@@ -89,7 +89,7 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 				b = (Bitmap) Converter.byteArrayToBitmap(cursor.getBlob(2));
 				type = cursor.getString(0);
 				p = new Picture(id, type, b);
-				
+
 				result.add(p);
 			} while (cursor.moveToNext());
 		}
@@ -134,7 +134,8 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 
 		ContentValues values = new ContentValues();
 		values.put(KEY_TYPE, p.getType());
-		db.update(TABLE_INTRUSIONS, values, "KEY_ID ='" + p.getID() + "'", null);
+		db.update(TABLE_INTRUSIONS, values, KEY_ID + "='" + p.getID() + "'",
+				null);
 
 		db.close();
 	}

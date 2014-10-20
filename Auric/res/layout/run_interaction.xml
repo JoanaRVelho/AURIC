@@ -12,6 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/screenshots"
         android:scaleType="fitXY" />
 
     <ImageView
@@ -20,6 +21,7 @@
         android:layout_height="fill_parent"
         android:alpha="0.3"
         android:background="#FFFFFF"
+        android:contentDescription="@string/screenshots"
         android:scaleType="fitXY" />
 
     <ImageView
@@ -29,6 +31,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/replay"
         android:src="@drawable/play" />
 
     <LinearLayout
@@ -68,6 +71,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:alpha="0.9"
+        android:contentDescription="@string/intruser"
         android:scaleType="fitXY" />
 
     <Button

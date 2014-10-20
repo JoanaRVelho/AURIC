@@ -3,6 +3,7 @@ package hcim.auric.database;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.IntrusionFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +22,9 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	private static final String KEY_ID = "id";
 	private static final String KEY_DATE = "date";
 	private static final String KEY_TIME = "time";
-	private static final String[] COLUMNS = { KEY_ID, KEY_DATE, KEY_TIME };
+	private static final String KEY_TAG = "tag";
+	private static final String[] COLUMNS = { KEY_ID, KEY_DATE, KEY_TIME,
+			KEY_TAG };
 
 	public SQLiteIntrusionData(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,7 +34,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_INTRUSION_TABLE = "CREATE TABLE " + TABLE_INTRUSIONS
 				+ " ( " + KEY_ID + " TEXT PRIMARY KEY, " + KEY_DATE + " TEXT, "
-				+ KEY_TIME + " TEXT )";
+				+ KEY_TIME + " TEXT, " + KEY_TAG + " INTEGER )";
 
 		db.execSQL(CREATE_INTRUSION_TABLE);
 	}
@@ -50,6 +53,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		values.put(KEY_ID, i.getID());
 		values.put(KEY_DATE, i.getDate());
 		values.put(KEY_TIME, i.getTime());
+		values.put(KEY_TAG, i.getTag());
 
 		db.insert(TABLE_INTRUSIONS, null, values);
 
@@ -68,8 +72,9 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		if (cursor.getCount() <= 0)
 			return null;
 
-		Intrusion intrusion = IntrusionFactory.createIntrusion(cursor.getString(0),
-				cursor.getString(1), cursor.getString(2));
+		Intrusion intrusion = IntrusionFactory.createIntrusion(
+				cursor.getString(0), cursor.getString(1), cursor.getString(2),
+				cursor.getInt(3));
 
 		db.close();
 
@@ -86,7 +91,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	public List<Intrusion> getAllIntrusionsFromDay(String date) {
 		List<Intrusion> result = new LinkedList<Intrusion>();
 
-		SQLiteDatabase db = this.getWritableDatabase();
+		SQLiteDatabase db = this.getReadableDatabase();
 
 		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_DATE
 				+ "='" + date + "'", null, null, null, null, null);
@@ -101,7 +106,8 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 				return null;
 			do {
 				i = IntrusionFactory.createIntrusion(cursor.getString(0),
-						cursor.getString(1), cursor.getString(2));
+						cursor.getString(1), cursor.getString(2),
+						cursor.getInt(3));
 
 				result.add(i);
 			} while (cursor.moveToNext());
@@ -118,4 +124,111 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	public List<Intrusion> getFalseIntrusions() {
+		List<Intrusion> result = new ArrayList<Intrusion>();
+
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_TAG + "="
+				+ Intrusion.FALSE_INTRUSION, null, null, null, null, null);
+
+		Intrusion i = null;
+
+		if (cursor.moveToFirst()) {
+			if (cursor.getCount() <= 0)
+				return null;
+			do {
+				i = IntrusionFactory.createIntrusion(cursor.getString(0),
+						cursor.getString(1), cursor.getString(2),
+						cursor.getInt(3));
+				result.add(i);
+
+			} while (cursor.moveToNext());
+		}
+		db.close();
+
+		return result;
+	}
+
+	public int numberOfFalseIntrusions() {
+		List<Intrusion> list = getFalseIntrusions();
+
+		return list == null ? 0 : list.size();
+	}
+
+	public List<Intrusion> getRealIntrusions() {
+		List<Intrusion> result = new ArrayList<Intrusion>();
+
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_TAG + "="
+				+ Intrusion.REAL_INTRUSION, null, null, null, null, null);
+
+		Intrusion i = null;
+
+		if (cursor.moveToFirst()) {
+			if (cursor.getCount() <= 0)
+				return null;
+			do {
+				i = IntrusionFactory.createIntrusion(cursor.getString(0),
+						cursor.getString(1), cursor.getString(2),
+						cursor.getInt(3));
+				result.add(i);
+
+			} while (cursor.moveToNext());
+		}
+		db.close();
+
+		return result;
+	}
+
+	public int numberOfRealIntrusions() {
+		List<Intrusion> list = getRealIntrusions();
+
+		return list.size();
+	}
+
+	public List<Intrusion> getUncheckedIntrusions() {
+		List<Intrusion> result = new ArrayList<Intrusion>();
+
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_TAG + "="
+				+ Intrusion.UNCHECKED, null, null, null, null, null);
+
+		Intrusion i = null;
+
+		if (cursor.moveToFirst()) {
+			if (cursor.getCount() <= 0)
+				return null;
+			do {
+				i = IntrusionFactory.createIntrusion(cursor.getString(0),
+						cursor.getString(1), cursor.getString(2),
+						cursor.getInt(3));
+				result.add(i);
+
+			} while (cursor.moveToNext());
+		}
+		db.close();
+
+		return result;
+	}
+
+	public int numberOfUncheckedIntrusions() {
+		List<Intrusion> list = getUncheckedIntrusions();
+
+		return list.size();
+	}
+
+	public void updateIntrusionTag(Intrusion i) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_TAG, i.getTag());
+		db.update(TABLE_INTRUSIONS, values, KEY_ID + "='" + i.getID() + "'",
+				null);
+
+		db.close();
+
+	}
 }
