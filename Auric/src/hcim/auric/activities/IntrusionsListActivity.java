@@ -1,7 +1,11 @@
 package hcim.auric.activities;
 
+import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
+import hcim.auric.record.screen.mswat_lib.RunInteraction;
+import hcim.auric.record.screen.screencast_root.RunScreencast;
+import hcim.auric.record.screen.textlog.timeline.TimelineActivity;
 
 import java.util.List;
 
@@ -74,7 +78,7 @@ public class IntrusionsListActivity extends Activity {
 		runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
 			@Override
-			public void run() {
+			public void run() {				
 				Drawable realInt = getResources().getDrawable(
 						R.drawable.mark_real);
 				Drawable falseInt = getResources().getDrawable(
@@ -86,18 +90,18 @@ public class IntrusionsListActivity extends Activity {
 					Button b = new Button(context);
 					b.setText("Intrusion " + i.getTime());
 					b.setTextColor(Color.WHITE);
-					switch(i.getTag()){
-					case Intrusion.UNCHECKED: 
+					switch (i.getTag()) {
+					case Intrusion.UNCHECKED:
 						b.setBackgroundDrawable(unchecked);
 						break;
-					case Intrusion.FALSE_INTRUSION: 
+					case Intrusion.FALSE_INTRUSION:
 						b.setBackgroundDrawable(falseInt);
 						break;
-					case Intrusion.REAL_INTRUSION: 
+					case Intrusion.REAL_INTRUSION:
 						b.setBackgroundDrawable(realInt);
 						break;
 					}
-					
+
 					layout.addView(b);
 					b.setOnClickListener(new IntrusionClickListener(i.getID()));
 				}
@@ -105,6 +109,40 @@ public class IntrusionsListActivity extends Activity {
 		});
 	}
 
+//	private void chooseActivityAlertDiolog(final String intrusion) {
+//		AlertDialog.Builder alertDialog;
+//		alertDialog = new AlertDialog.Builder(IntrusionsListActivity.this);
+//		alertDialog.setTitle("Choose an activity");
+//		alertDialog.setMessage("Timeline or Details?");
+//		alertDialog.setPositiveButton("Timeline",
+//				new DialogInterface.OnClickListener() {
+//					public void onClick(DialogInterface dialog, int which) {
+//						startTimeline(intrusion);
+//					}
+//				});
+//		alertDialog.setNegativeButton("Details",
+//				new DialogInterface.OnClickListener() {
+//					public void onClick(DialogInterface dialog, int which) {
+//						startDetailsView(intrusion);
+//					}
+//				});
+//		alertDialog.show();
+//	}
+	
+	private void startTimeline(String intrusion){
+		Intent intent = new Intent(IntrusionsListActivity.this,
+				TimelineActivity.class);
+		intent.putExtra(TimelineActivity.EXTRA_ID, intrusion);
+		startActivity(intent);
+	}
+
+//	private void startDetailsView(String intrusion){
+//		Intent intent = new Intent(IntrusionsListActivity.this,
+//				RunSimpleText.class);
+//		intent.putExtra(RunSimpleText.EXTRA_ID, intrusion);
+//		startActivity(intent);
+//	}
+	
 	class IntrusionClickListener implements OnClickListener {
 		private String intrusion;
 
@@ -114,10 +152,33 @@ public class IntrusionsListActivity extends Activity {
 
 		@Override
 		public void onClick(View v) {
-			Intent intent = new Intent(IntrusionsListActivity.this,
-					RunInteraction.class);
-			intent.putExtra("interaction", intrusion);
-			startActivity(intent);
+			Intrusion i = IntrusionsDatabase.getInstance(
+					IntrusionsListActivity.this).getIntrusion(intrusion);
+			runActivity(i);
+		}
+
+		private void runActivity(Intrusion i) {
+			String log = i.getLogType();
+			
+			if (log != null) {
+				Intent intent;
+				if (log.equals(ConfigurationDatabase.MSWAT_LIB_LOG)) {
+					intent = new Intent(IntrusionsListActivity.this,
+							RunInteraction.class);
+					intent.putExtra(RunInteraction.EXTRA_ID, intrusion);
+					startActivity(intent);
+				}
+				if (log.equals(ConfigurationDatabase.SCREENCAST_ROOT_LOG)) {
+					intent = new Intent(IntrusionsListActivity.this,
+							RunScreencast.class);
+					intent.putExtra(RunScreencast.EXTRA_ID, intrusion);
+					startActivity(intent);
+				}
+				if (log.equals(ConfigurationDatabase.TEXT_LOG)) {
+					//chooseActivityAlertDiolog(intrusion);
+					startTimeline(intrusion);
+				}
+			}
 		}
 	}
 }

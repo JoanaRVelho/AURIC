@@ -50,6 +50,7 @@ public class BackgroundService extends Service {
 	public void onDestroy() {
 		if (currentMode != null) {
 			currentMode.destroy();
+			
 			unregisterReceiver(currentMode.getReceiver());
 		}
 		super.onDestroy();
@@ -64,8 +65,6 @@ public class BackgroundService extends Service {
 				return new OriginalMode(context);
 			} else if (modeDescription.equals(ConfigurationDatabase.WIFI_MODE)) {
 				return new WifiDemoMode(context);
-			} else if (modeDescription.equals(ConfigurationDatabase.NONE)) {
-				return null;
 			} else {
 				return null;
 			}
@@ -75,7 +74,6 @@ public class BackgroundService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -22,9 +22,10 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	private static final String KEY_ID = "id";
 	private static final String KEY_DATE = "date";
 	private static final String KEY_TIME = "time";
+	private static final String KEY_LOG = "log_type";
 	private static final String KEY_TAG = "tag";
 	private static final String[] COLUMNS = { KEY_ID, KEY_DATE, KEY_TIME,
-			KEY_TAG };
+			KEY_TAG, KEY_LOG };
 
 	public SQLiteIntrusionData(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -34,7 +35,8 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_INTRUSION_TABLE = "CREATE TABLE " + TABLE_INTRUSIONS
 				+ " ( " + KEY_ID + " TEXT PRIMARY KEY, " + KEY_DATE + " TEXT, "
-				+ KEY_TIME + " TEXT, " + KEY_TAG + " INTEGER )";
+				+ KEY_TIME + " TEXT, " + KEY_TAG + " INTEGER, " + KEY_LOG
+				+ " TEXT )";
 
 		db.execSQL(CREATE_INTRUSION_TABLE);
 	}
@@ -54,6 +56,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		values.put(KEY_DATE, i.getDate());
 		values.put(KEY_TIME, i.getTime());
 		values.put(KEY_TAG, i.getTag());
+		values.put(KEY_LOG, i.getLogType());
 
 		db.insert(TABLE_INTRUSIONS, null, values);
 
@@ -74,7 +77,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 
 		Intrusion intrusion = IntrusionFactory.createIntrusion(
 				cursor.getString(0), cursor.getString(1), cursor.getString(2),
-				cursor.getInt(3));
+				cursor.getInt(3), cursor.getString(4));
 
 		db.close();
 
@@ -107,7 +110,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 			do {
 				i = IntrusionFactory.createIntrusion(cursor.getString(0),
 						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3));
+						cursor.getInt(3), cursor.getString(4));
 
 				result.add(i);
 			} while (cursor.moveToNext());
@@ -140,7 +143,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 			do {
 				i = IntrusionFactory.createIntrusion(cursor.getString(0),
 						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3));
+						cursor.getInt(3), cursor.getString(4));
 				result.add(i);
 
 			} while (cursor.moveToNext());
@@ -172,7 +175,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 			do {
 				i = IntrusionFactory.createIntrusion(cursor.getString(0),
 						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3));
+						cursor.getInt(3), cursor.getString(4));
 				result.add(i);
 
 			} while (cursor.moveToNext());
@@ -204,7 +207,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 			do {
 				i = IntrusionFactory.createIntrusion(cursor.getString(0),
 						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3));
+						cursor.getInt(3), cursor.getString(4));
 				result.add(i);
 
 			} while (cursor.moveToNext());

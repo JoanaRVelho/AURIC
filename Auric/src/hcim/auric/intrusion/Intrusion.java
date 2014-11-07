@@ -3,37 +3,30 @@ package hcim.auric.intrusion;
 import hcim.auric.calendar.CalendarManager;
 import hcim.auric.recognition.Picture;
 
-import java.util.Calendar;
 import java.util.List;
-
-import android.content.Context;
-import android.content.Intent;
 
 public class Intrusion {
 	public static final int UNCHECKED = 0;
 	public static final int FALSE_INTRUSION = 1;
 	public static final int REAL_INTRUSION = 2;
 
-	private Context context;
-
 	private String id;
 	private String date;
 	private String time;
 	private int tag;
+	private String logType;
 
 	private List<Picture> images;
 
-	public Intrusion(Context context) {
-		this.context = context;
-
-		Calendar c = Calendar.getInstance();
-		date = CalendarManager.getDateFormat(c);
-		time = CalendarManager.getTimeFormat(c);
-		id = CalendarManager.getTimestampFormat(c);
-		tag = UNCHECKED;
+	Intrusion() {
 	}
 
-	Intrusion() {
+	public Intrusion(String log) {
+		id = CalendarManager.currentTimeMillis();
+		date = CalendarManager.getDate(id);
+		time = CalendarManager.getTime(id);
+		tag = UNCHECKED;
+		logType = log;
 	}
 
 	public boolean isRealIntrusion() {
@@ -68,16 +61,16 @@ public class Intrusion {
 		return time;
 	}
 
+	public void setTime(String time) {
+		this.time = time;
+	}
+
 	public int getTag() {
 		return tag;
 	}
 
 	public void setTag(int tag) {
 		this.tag = tag;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
 	}
 
 	public String getID() {
@@ -88,6 +81,14 @@ public class Intrusion {
 		this.id = id;
 	}
 
+	public String getLogType() {
+		return logType;
+	}
+
+	public void setLogType(String logType) {
+		this.logType = logType;
+	}
+
 	public List<Picture> getImages() {
 		return images;
 	}
@@ -96,26 +97,9 @@ public class Intrusion {
 		this.images = images;
 	}
 
-	public void stopLogging() {
-		Intent intent = new Intent();
-		intent.setAction("swat_interaction");
-		intent.putExtra("logging", false);
-		context.sendBroadcast(intent);
-	}
-
-	public void startLogging() {
-		Intent intent = new Intent();
-		intent.setAction("swat_interaction");
-		intent.putExtra("logging", true);
-		intent.putExtra("timestamp", id);
-
-		context.sendBroadcast(intent);
-	}
-
 	@Override
 	public String toString() {
 		return "Intrusion [id=" + id + ", date=" + date + ", time=" + time
-				+ ", tag=" + tag + "]";
+				+ ", tag=" + tag + ", logType=" + logType + "]";
 	}
-
 }

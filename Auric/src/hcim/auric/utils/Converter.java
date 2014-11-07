@@ -5,10 +5,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 public class Converter {
 
@@ -48,6 +53,28 @@ public class Converter {
 		return result;
 	}
 
+	public static Bitmap drawableToBitmap(Drawable drawable) {
+		if (drawable == null)
+			return null;
+		
+		if (drawable instanceof BitmapDrawable) {
+			return ((BitmapDrawable) drawable).getBitmap();
+		}
 
+		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+				drawable.getIntrinsicHeight(), Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		drawable.draw(canvas);
 
+		return bitmap;
+	}
+
+	public static String listCharSequenceToString(List<CharSequence> text) {
+		StringBuilder sb = new StringBuilder();
+		for (CharSequence s : text) {
+			sb.append(s);
+		}
+		return sb.toString();
+	}
 }

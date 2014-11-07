@@ -6,7 +6,6 @@ import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -51,11 +50,6 @@ public class FullIntruderPicture extends FullPicture {
 		return new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				updateFaceRecognitionData(FaceRecognition.MY_PICTURE_TYPE);
-
-				Intent data = new Intent();
-				data.putExtra("return", FaceRecognition.MY_PICTURE_TYPE);
-				setResult(RESULT_OK, data);
-
 				finish();
 			}
 		};
@@ -65,11 +59,6 @@ public class FullIntruderPicture extends FullPicture {
 		return new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				updateFaceRecognitionData(FaceRecognition.INTRUDER_PICTURE_TYPE);
-
-				Intent data = new Intent();
-				data.putExtra("return", FaceRecognition.MY_PICTURE_TYPE);
-				setResult(RESULT_OK, data);
-
 				finish();
 			}
 		};
@@ -81,6 +70,7 @@ public class FullIntruderPicture extends FullPicture {
 		FaceRecognition recognition = FaceRecognition
 				.getInstance(FullIntruderPicture.this);
 		recognition.trainPicture(picture.getImage(), picture.getID());
+		recognition.stopTrain();
 
 		PicturesDatabase picturesDB = PicturesDatabase
 				.getInstance(FullIntruderPicture.this);

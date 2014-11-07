@@ -17,27 +17,6 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:background="@drawable/gear" />
-
-  <!--      <Button
-            android:id="@+id/off_button"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/button1"
-            android:layout_alignBottom="@+id/button1"
-            android:layout_centerHorizontal="true"
-            android:text="off" />
-
-        <Button
-            android:id="@+id/on_button"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/off_button"
-            android:layout_alignBottom="@+id/off_button"
-            android:layout_toLeftOf="@+id/off_button"
-            android:text="on" />
--->
     </RelativeLayout>
 
     <LinearLayout

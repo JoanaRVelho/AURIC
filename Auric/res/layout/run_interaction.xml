@@ -65,7 +65,7 @@
         android:textColor="@color/white" />
 
     <ImageView
-        android:id="@+id/img_intruser"
+        android:id="@+id/img_intruder"
         android:layout_width="80dp"
         android:layout_height="100dp"
         android:layout_alignParentRight="true"

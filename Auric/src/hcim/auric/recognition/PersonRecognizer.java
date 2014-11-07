@@ -29,13 +29,14 @@ public class PersonRecognizer {
 	private static final String TAG = "AURIC";
 
 	public final static int MAXIMG = 100;
-	FaceRecognizer faceRecognizer;
-	String path;
-	int count = 0;
-	Labels labelsFile;
+	private static final int WIDTH = 128;
+	private static final int HEIGHT = 128;
 
-	static final int WIDTH = 128;
-	static final int HEIGHT = 128;
+	private FaceRecognizer faceRecognizer;
+	private String path;
+	private int count = 0;
+	private Labels labelsFile;
+
 	private int prob = 999;
 
 	PersonRecognizer(String path) {
@@ -55,8 +56,8 @@ public class PersonRecognizer {
 
 		FileOutputStream f;
 		try {
-			f = new FileOutputStream(path + description + "-" + count + ".jpg",
-					true);
+			f = new FileOutputStream(new File(path, description + "-" + count
+					+ ".jpg"), true);
 			count++;
 			bmp.compress(Bitmap.CompressFormat.JPEG, 100, f);
 			f.close();
@@ -68,7 +69,7 @@ public class PersonRecognizer {
 		}
 	}
 
-	public boolean train() {
+	boolean train() {
 		File root = new File(path);
 
 		FilenameFilter pngFilter = new FilenameFilter() {
@@ -127,7 +128,7 @@ public class PersonRecognizer {
 		return true;
 	}
 
-	public boolean canPredict() {
+	boolean canPredict() {
 		if (labelsFile.max() > 1)
 			return true;
 		else
@@ -135,7 +136,7 @@ public class PersonRecognizer {
 
 	}
 
-	public String predict(Mat m) {
+	String predict(Mat m) {
 		if (!canPredict())
 			return "";
 		int n[] = new int[1];
@@ -148,7 +149,7 @@ public class PersonRecognizer {
 			prob = (int) p[0];
 		else
 			prob = -1;
-		
+
 		if (n[0] != -1)
 			return labelsFile.get(n[0]);
 		else
@@ -185,7 +186,7 @@ public class PersonRecognizer {
 		return grayImg;
 	}
 
-	protected void saveBitmap(Bitmap bmp, String path) {
+	void saveBitmap(Bitmap bmp, String path) {
 		FileOutputStream file;
 		try {
 			file = new FileOutputStream(path, true);
@@ -198,11 +199,11 @@ public class PersonRecognizer {
 
 	}
 
-	public void load() {
+	void load() {
 		train();
 	}
 
-	public int getProb() {
+	int getProb() {
 		return prob;
 	}
 }

@@ -19,7 +19,7 @@ public abstract class PicturesGrid extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pictures_grid);
-
+		
 		adapter = getAdapter();
 
 		if (adapter == null) {
@@ -27,7 +27,18 @@ public abstract class PicturesGrid extends Activity {
 					.show();
 			finish();
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		adapter = getAdapter();
 
+		if (adapter == null) {
+			Toast.makeText(this, "No faces were detected!", Toast.LENGTH_LONG)
+					.show();
+			finish();
+		}
+		
 		GridView gridView = (GridView) findViewById(R.id.grid_view);
 		gridView.setAdapter(adapter);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
@@ -40,6 +51,7 @@ public abstract class PicturesGrid extends Activity {
 				onPictureSelected(selected, position);
 			}
 		});
+		super.onResume();
 	}
 
 	protected abstract ImageAdapter getAdapter();

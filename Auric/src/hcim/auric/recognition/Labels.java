@@ -17,11 +17,10 @@ import android.util.Log;
  * https://github.com/ayuso2013/face-recognition
  */
 public class Labels {
-
 	private static final String TAG = "AURIC";
 
-	ArrayList<Label> list = new ArrayList<Label>();
-	String path;
+	private ArrayList<Label> list = new ArrayList<Label>();
+	private String path;
 
 	class Label {
 		String label;
@@ -68,7 +67,7 @@ public class Labels {
 
 	public void save() {
 		try {
-			File f = new File(path + "faces.txt");
+			File f = new File(path, "faces.txt");
 			f.createNewFile();
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 
@@ -87,7 +86,8 @@ public class Labels {
 
 	public void read() {
 		try {
-			FileInputStream fstream = new FileInputStream(path + "faces.txt");
+			FileInputStream fstream = new FileInputStream(new File(path,
+					"faces.txt"));
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					fstream));
 

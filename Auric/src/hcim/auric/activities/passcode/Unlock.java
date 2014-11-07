@@ -1,31 +1,36 @@
 package hcim.auric.activities.passcode;
 
 import hcim.auric.database.ConfigurationDatabase;
+import android.content.Intent;
 
-
-public abstract class Unlock extends PasscodeActivity {	
+public class Unlock extends PasscodeActivity {
 	private static final String UNLOCK_MESSAGE = "Type in passcode:";
-	
+	public static final String EXTRA_ID = "extra";
+
+	private boolean check;
+
 	@Override
 	protected void initActivity() {
 		setMessage(UNLOCK_MESSAGE);
-		
-//		Bundle extras = getIntent().getExtras();
-//		String value1 = extras.getString();
 	}
 
 	@Override
 	protected void afterEnteringPasscode(String enteredPasscode) {
 		ConfigurationDatabase db = ConfigurationDatabase.getInstance(this);
 		String passcode = db.getPasscode();
-		
-		if(passcode.equals(enteredPasscode)){
-			passcodeCorrect();
-		}
-		else{
+
+		check = passcode.equals(enteredPasscode);
+		if (check) {
 			finish();
 		}
 	}
 
-	protected abstract void passcodeCorrect();
+	@Override
+	public void finish() {
+		Intent data = new Intent();
+		data.putExtra(EXTRA_ID, check);
+		setResult(RESULT_OK, data);
+		super.finish();
+		super.finish();
+	}
 }

@@ -63,7 +63,8 @@ public class AuditTask extends AbstractAuditTask {
 
 	public void actionOff() {
 		if (startLog) {
-			currentIntrusion.stopLogging();
+			log.stopLogging();
+			intrusionsDB.insertIntrusionData(currentIntrusion);
 			Log.d(TAG, "AuditTask - stop logging");
 
 			stopTimerTask();
@@ -85,13 +86,12 @@ public class AuditTask extends AbstractAuditTask {
 				startLog = true;
 
 				Log.d(TAG, "AuditTask - new intrusion, start audit");
-				currentIntrusion = new Intrusion(context);
-				
-				intrusionsDB.insertIntrusionData(currentIntrusion);
+				currentIntrusion = new Intrusion(log.type());
+
 				intrusionsDB.insertPictureOfTheIntruder(
 						currentIntrusion.getID(), capturedFace);
-				
-				currentIntrusion.startLogging();
+
+				log.startLogging(currentIntrusion.getID());
 				Log.d(TAG, "AuditTask - start logging");
 
 				notifier.notifyUser();
@@ -113,8 +113,9 @@ public class AuditTask extends AbstractAuditTask {
 				stopTimerTask();
 
 				if (currentIntrusion != null) {
-					currentIntrusion.stopLogging();
-					intrusionsDB.deleteIntrusion(currentIntrusion.getID());
+					log.stopLogging();
+					intrusionsDB
+							.deleteIntrusion(currentIntrusion.getID(), true);
 					currentIntrusion = null;
 				}
 				startLog = false;

@@ -50,7 +50,7 @@ public abstract class FullPicture extends Activity {
 		}
 	}
 
-	protected void setBackground(int color) {
+	private void setBackground(int color) {
 		LinearLayout l = (LinearLayout)findViewById(R.id.background);
 		l.setBackgroundColor(color);
 	}

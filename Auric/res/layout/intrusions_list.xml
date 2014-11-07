@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/lightgray" >
+    android:background="@color/lightgray"
+    android:orientation="vertical" >
 
     <TextView
         android:id="@+id/textView1"
@@ -37,12 +37,19 @@
 
     <ImageView
         android:id="@+id/description"
-        android:contentDescription="@string/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"/>
-       <!-- android:src="@drawable/description"  --> 
-        
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/description"
+        android:src="@drawable/description" 
+        android:visibility="invisible" />
+     
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+    </ImageView>
 
 </RelativeLayout>

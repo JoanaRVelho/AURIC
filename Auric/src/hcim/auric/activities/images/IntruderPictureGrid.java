@@ -14,7 +14,6 @@ import android.os.Bundle;
 public class IntruderPictureGrid extends PicturesGrid {
 	public static final String EXTRA_ID = "extra";
 
-	private int selectedLocation;
 
 	@Override
 	protected ImageAdapter getAdapter() {
@@ -44,28 +43,10 @@ public class IntruderPictureGrid extends PicturesGrid {
 
 	@Override
 	protected void onPictureSelected(Picture selected, int position) {
-		selectedLocation = position;
-
 		Intent i = new Intent(getApplicationContext(),
 				FullIntruderPicture.class);
 		i.putExtra(FullPicture.EXTRA_ID, selected.getID());
-		startActivityForResult(i, 0);
+		startActivity(i);
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == RESULT_OK && requestCode == 0) {
-			if (data.hasExtra("return")) {
-				String type = (String) data.getExtras().getString("return");
-				adapter.setPictureType(type, selectedLocation);
-				selectedLocation = -1;
-			}
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		adapter.notifyDataSetChanged();
-		super.onResume();
-	}
 }

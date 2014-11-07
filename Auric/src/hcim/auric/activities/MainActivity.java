@@ -1,7 +1,6 @@
 package hcim.auric.activities;
 
-import hcim.auric.activities.passcode.UnlockConfiguration;
-import hcim.auric.activities.passcode.UnlockIntrusionList;
+import hcim.auric.activities.passcode.Unlock;
 import hcim.auric.calendar.CalendarManager;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
@@ -17,10 +16,11 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +40,7 @@ import com.hcim.intrusiondetection.R;
  */
 public class MainActivity extends Activity implements OnClickListener {
 	public static final String TAG = "AURIC";
-	
+
 	private TextView currentMonth;
 	private ImageView prevMonth;
 	private ImageView nextMonth;
@@ -49,6 +49,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	private Calendar myCalendar;
 	private int month, year;
 	private static final String dateTemplate = "MMMM yyyy";
+
+	private static final int UNLOCK_CODE = 20;
 
 	private Context context;
 	private IntrusionsDatabase intrusionsDB;
@@ -74,17 +76,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onClick(View v) {
-				ConfigurationDatabase db = ConfigurationDatabase
-						.getInstance(context);
-				if (db.hasPasscode()) {
-					Intent i = new Intent(MainActivity.this,
-							UnlockConfiguration.class);
-					startActivity(i);
-				} else {
-					Intent i = new Intent(MainActivity.this,
-							SettingsActivity.class);
-					startActivity(i);
-				}
+				startSettingsActivity();
 			}
 		});
 
@@ -108,21 +100,16 @@ public class MainActivity extends Activity implements OnClickListener {
 				month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
-		
-		
-		checkSettings();
-	}
-
-	private void checkSettings() {
-		if(! CheckSettings.isAccessibilitySettingsOn(context)){
-			startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-			//startActivity(new Intent(this, HierarchicalService.class));
-		}
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == UNLOCK_CODE && resultCode == RESULT_OK) {
+			boolean b = data.getBooleanExtra(Unlock.EXTRA_ID, false);
+
+			if (!b)
+				finish();
+		}
 	}
 
 	@Override
@@ -132,7 +119,38 @@ public class MainActivity extends Activity implements OnClickListener {
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 
+		unlock();
+		firstLaunch();
+		
 		super.onResume();
+	}
+
+	private void unlock() {
+		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
+		
+		if (db.hasPasscode()) {
+			Intent i = new Intent(MainActivity.this, Unlock.class);
+			startActivityForResult(i, UNLOCK_CODE);
+		}
+	}
+
+	private void firstLaunch() {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(getBaseContext());
+		boolean previouslyStarted = prefs.getBoolean(
+				getString(R.string.pref_previously_started), false);
+		if (!previouslyStarted) {
+			SharedPreferences.Editor edit = prefs.edit();
+			edit.putBoolean(getString(R.string.pref_previously_started),
+					Boolean.TRUE);
+			edit.commit();
+			startSettingsActivity();
+		}
+	}
+
+	private void startSettingsActivity() {
+		Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+		startActivity(i);
 	}
 
 	@Override
@@ -349,7 +367,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			// Set the Day GridCell
 			gridcell.setText(theday);
-			gridcell.setTag(CalendarManager.getDateFormat(theday, themonth, theyear));
+			gridcell.setTag(CalendarManager.getDateFormat(theday, themonth,
+					theyear));
 
 			if (day_color[1].equals("GREY")) {
 				gridcell.setTextColor(getResources()
@@ -376,19 +395,11 @@ public class MainActivity extends Activity implements OnClickListener {
 			if (!intrusionsDB.dayOfIntrusion(date_month_year)) {
 				return;
 			}
-			
-			ConfigurationDatabase db = ConfigurationDatabase
-					.getInstance(context);
-			if (db.hasPasscode()) {
-				Intent i = new Intent(MainActivity.this,
-						UnlockIntrusionList.class);
-				i.putExtra("value1", date_month_year);
-				startActivity(i);
-			} else {
-				Intent i = new Intent(MainActivity.this, IntrusionsListActivity.class);
-				i.putExtra("value1", date_month_year);
-				startActivity(i);
-			}
+
+			Intent i = new Intent(MainActivity.this,
+					IntrusionsListActivity.class);
+			i.putExtra("value1", date_month_year);
+			startActivity(i);
 		}
 
 		public int getCurrentDayOfMonth() {

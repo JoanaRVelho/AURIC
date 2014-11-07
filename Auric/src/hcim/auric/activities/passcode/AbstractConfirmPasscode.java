@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.util.Log;
 
 public abstract class AbstractConfirmPasscode extends PasscodeActivity {
-	private static final String CONFIRM = "Type in password";
+	private static final String CONFIRM = "Type in password:";
 
 	@Override
 	protected void initActivity() {

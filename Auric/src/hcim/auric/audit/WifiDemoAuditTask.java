@@ -1,6 +1,7 @@
 package hcim.auric.audit;
 
 import hcim.auric.calendar.CalendarManager;
+import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.IntrusionFactory;
 
@@ -69,8 +70,9 @@ public class WifiDemoAuditTask extends AbstractAuditTask {
 		String time = CalendarManager.getTimeFormat(array[3], array[4],
 				array[5]);
 
+		String logType = ConfigurationDatabase.getInstance(context).getLogType();
 		currentIntrusion = IntrusionFactory.createIntrusion(timestamp, date,
-				time, Intrusion.UNCHECKED);
+				time, Intrusion.UNCHECKED, logType);
 		intrusionsDB.insertIntrusionData(currentIntrusion);
 
 		startTimerTask(false);

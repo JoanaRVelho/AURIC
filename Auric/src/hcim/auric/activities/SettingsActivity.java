@@ -9,6 +9,7 @@ import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
+import hcim.auric.record.screen.LogManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,6 +27,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -40,6 +44,8 @@ public class SettingsActivity extends Activity {
 	private ConfigurationDatabase configDB;
 	private PicturesDatabase picturesDB;
 
+	private Switch onOff;
+
 	private Spinner modeSpinner;
 	private String currentMode;
 	private CheckBox deviceSharing;
@@ -53,26 +59,22 @@ public class SettingsActivity extends Activity {
 	private Button changePasscode;
 	private Switch passcodeSwitch;
 
-	private Spinner cameraCapturesOptions;
-	private String currentCameraCapture;
-
-	private Spinner screenshotOptions;
-	private String currentScreenshot;
-
-	private boolean startService;
+	private Spinner logSpinner;
+	private String currentLogType;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.configurations_view);
+		setContentView(R.layout.settings_view);
 
 		context = getApplicationContext();
 		configDB = ConfigurationDatabase.getInstance(context);
 		picturesDB = PicturesDatabase.getInstance(context);
-		
-		startService = false;
 
 		initView();
+		setElementsVisibility();
+
+		stopBackgroundService();
 	}
 
 	@Override
@@ -94,7 +96,6 @@ public class SettingsActivity extends Activity {
 
 			if (result) {
 				if (myPicture == null) { // first config
-					Log.d(TAG, "Configurations View - add all pictures");
 					addPictures();
 				}
 				myPicture = imageBitmap;
@@ -112,21 +113,88 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
+	private boolean pictureChecked() {
+//		if (configDB.getMode() == ConfigurationDatabase.ORIGINAL_MODE)
+//			return picturesDB.getMyPicture() != null;
+//		
+//		return true;
+		return picturesDB.getMyPicture() != null;
+	}
+
+	private boolean readyToStart() {
+		return (onOff.isChecked() && settingsChecked() && pictureChecked());
+	}
+
+	/**
+	 * 
+	 * @return false if accessibility service is needed and not enabled, true
+	 *         otherwise
+	 */
+	private boolean settingsChecked() {
+		String type = configDB.getLogType();
+
+		if (LogManager.hasAccessibilityService(type)) {
+			return LogManager.accessibilityServiceEnabled(context, type);
+		}
+
+		return true;
+	}
+
 	@Override
 	public void finish() {
-		if (startService)
-			startBackgroundService();
+		printStatus();
 
-		//notifyMode();
-		super.finish();
+		if (readyToStart()) {
+			startBackgroundService();
+			super.finish();
+		} else {
+			if (!onOff.isChecked()) {
+				super.finish();
+			} else {
+				if (!pictureChecked()) {
+					Toast.makeText(this, "Missing Picture!", Toast.LENGTH_LONG)
+							.show();
+				} else if (!settingsChecked()) {
+					startActivity(new Intent(
+							Settings.ACTION_ACCESSIBILITY_SETTINGS));
+				}
+			}
+		}
+	}
+
+	private void printStatus() {
+		Log.i(TAG,
+				"SettingsActivity - STATUS: "
+						+ (configDB.isIntrusionDetectorActive() ? "ON" : "OFF"));
+		Log.i(TAG, "SettingsActivity - MODE: " + configDB.getMode());
+		Log.i(TAG, "SettingsActivity - LOG TYPE: " + configDB.getLogType());
+		Log.i(TAG,
+				"SettingsActivity - HAS PICTURE: "
+						+ (picturesDB.getMyPicture() != null));
 	}
 
 	private void initView() {
+		initOnOffSwitch();
 		initModeSection();
 		initPictureSection();
 		initPasscodeSection();
-		initCameraCaptureOptions();
-		initScreenshotsOptions();
+		initLogOptions();
+	}
+
+	private void initOnOffSwitch() {
+		onOff = (Switch) findViewById(R.id.on_off);
+		onOff.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				configDB.setIntrusionDetectorActivity(onOff.isChecked());
+				setElementsVisibility();
+			}
+		});
+
+		boolean b = configDB.isIntrusionDetectorActive();
+		onOff.setChecked(b);
 	}
 
 	private void initModeSection() {
@@ -141,8 +209,6 @@ public class SettingsActivity extends Activity {
 			@Override
 			public void onItemSelected(AdapterView<?> parentView,
 					View selectedItemView, int position, long id) {
-				stopBackgroundService();
-				startService = true;
 				changeMode();
 				enableCheckBox();
 			}
@@ -178,18 +244,19 @@ public class SettingsActivity extends Activity {
 				dispatchTakePictureIntent();
 			}
 		});
-		
+
 		allPictures = (Button) findViewById(R.id.all_imgs_button);
 		allPictures.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(SettingsActivity.this, RecognizedPicturesGrid.class);
+				Intent i = new Intent(SettingsActivity.this,
+						RecognizedPicturesGrid.class);
 				startActivity(i);
 			}
 		});
-		
-		if(picturesDB.numberOfIntrusions() > 1 ){
+
+		if (picturesDB.numberOfIntrusions() > 1) {
 			allPictures.setEnabled(true);
 			allPictures.setVisibility(View.VISIBLE);
 		}
@@ -208,7 +275,6 @@ public class SettingsActivity extends Activity {
 							InsertPasscode.class);
 					startActivity(i);
 				} else {
-					Log.d("AURIC", "change");
 					Intent i = new Intent(SettingsActivity.this,
 							ConfirmAndTurnOffPasscode.class);
 					startActivity(i);
@@ -221,7 +287,7 @@ public class SettingsActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				if(passcodeSwitch.isChecked()){
+				if (passcodeSwitch.isChecked()) {
 					Intent i = new Intent(SettingsActivity.this,
 							ConfirmAndChangePasscode.class);
 					startActivity(i);
@@ -230,21 +296,17 @@ public class SettingsActivity extends Activity {
 		});
 	}
 
-	private void initCameraCaptureOptions() {
-		cameraCapturesOptions = (Spinner) findViewById(R.id.camera_capture_opt);
+	private void initLogOptions() {
+		logSpinner = (Spinner) findViewById(R.id.log_options);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this, R.array.camera_capture_array,
-				android.R.layout.simple_spinner_item);
+				this, R.array.log_array, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		cameraCapturesOptions.setAdapter(adapter);
-		cameraCapturesOptions
-		.setOnItemSelectedListener(new OnItemSelectedListener() {
+		logSpinner.setAdapter(adapter);
+		logSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parentView,
 					View selectedItemView, int position, long id) {
-				startService = true;
-				stopBackgroundService();
-				changeCameraCaptureOptions();
+				changeLogType();
 			}
 
 			@Override
@@ -253,73 +315,41 @@ public class SettingsActivity extends Activity {
 
 		});
 
-		selectCurrentCameraOptions();
+		selectCurrentLogType();
 	}
 
-	private void initScreenshotsOptions() {
-		screenshotOptions = (Spinner) findViewById(R.id.screenshot_opt);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this, R.array.screenshot_array,
-				android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		screenshotOptions.setAdapter(adapter);
-		screenshotOptions
-		.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parentView,
-					View selectedItemView, int position, long id) {
-				startService = true;
-				stopBackgroundService();
-				changeScreenshotsOptions();
-			}
+	private void setElementsVisibility() {
+		View scroll = (View) findViewById(R.id.config_scroll);
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parentView) {
-			}
-
-		});
-
-		selectCurrentScreenshotsOptions();
+		if (onOff.isChecked())
+			scroll.setVisibility(View.VISIBLE);
+		else
+			scroll.setVisibility(View.INVISIBLE);
 	}
 
 	private void selectCurrentMode() {
 		currentMode = configDB.getMode();
 
-		Log.d(TAG, "Configurations View - mode=" + currentMode);
+		Log.d(TAG, "SettingsActivity - MODE: " + currentMode);
 
-		if (currentMode.equals(ConfigurationDatabase.NONE)) {
-			modeSpinner.setSelection(0);
-		}
 		if (currentMode.equals(ConfigurationDatabase.WIFI_MODE)) {
 			modeSpinner.setSelection(1);
 		}
 		if (currentMode.equals(ConfigurationDatabase.ORIGINAL_MODE)) {
-			modeSpinner.setSelection(2);
+			modeSpinner.setSelection(0);
 		}
 	}
 
-	private void selectCurrentCameraOptions() {
-		currentCameraCapture = configDB.getCameraCaptureOption() + " miliseconds";
-		
-		Log.d("AURIC","camera = "+ currentCameraCapture);
-		Resources res = getResources();
-		String[] options = res.getStringArray(R.array.camera_capture_array);
-		for (int i = 0; i < options.length; i++) {
-			if (options[i].equals(currentCameraCapture)) {
-				cameraCapturesOptions.setSelection(i);
-			}
-		}
-	}
+	private void selectCurrentLogType() {
+		currentLogType = configDB.getLogType();
+		Log.d(TAG, "SettingsActivity - LOG: " + currentLogType);
 
-	private void selectCurrentScreenshotsOptions() {
-		currentScreenshot = configDB.getScreenshotOptions() + " miliseconds";
-		Log.d("AURIC","screen = "+ currentScreenshot);
 		Resources res = getResources();
-		String[] options = res.getStringArray(R.array.screenshot_array);
+		String[] options = res.getStringArray(R.array.log_array);
+
 		for (int i = 0; i < options.length; i++) {
-			if (options[i].equals(currentScreenshot)) {
-				screenshotOptions.setSelection(i);
-				
+			if (options[i].equals(currentLogType)) {
+				logSpinner.setSelection(i);
 			}
 		}
 	}
@@ -334,84 +364,18 @@ public class SettingsActivity extends Activity {
 		configDB.enableDeviceSharing(deviceSharing.isChecked());
 
 		currentMode = selectedMode;
-		
-		if (currentMode.equals(ConfigurationDatabase.NONE))
-			startService = false;
 	}
 
-	private void changeCameraCaptureOptions() {
-		String selected = (String) cameraCapturesOptions.getSelectedItem();
-		String[] split = selected.split(" ");
-		int newCameraCaptureOpt = Integer.parseInt(split[0]);
+	private void changeLogType() {
+		String selected = (String) logSpinner.getSelectedItem();
 
-		if (currentCameraCapture.equals(selected)) {
+		if (currentLogType.equals(selected)) {
 			return;
 		}
-		
-		configDB.setCameraCaptureOption(newCameraCaptureOpt);
-		currentCameraCapture = selected;
+
+		configDB.setLogType(selected);
+		currentLogType = selected;
 	}
-
-	private void changeScreenshotsOptions() {
-		String selected = (String) screenshotOptions.getSelectedItem();
-		String[] split = selected.split(" ");
-		int newScreenshotOpt = Integer.parseInt(split[0]);
-
-		if (currentScreenshot.equals(screenshotOptions)) {
-			return;
-		}
-		
-		configDB.setScreenshotOptions(newScreenshotOpt);
-		currentScreenshot = selected;
-	}
-
-	private void addPictures() {
-		FaceRecognition recognition = FaceRecognition.getInstance(context);
-		Context context = getApplicationContext();
-		String name;
-		Bitmap grayBitmap;
-		boolean result;
-
-		name = "pic_a";
-		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.g);
-		result = recognition.trainPicture(grayBitmap, name);
-		Log.d(TAG, "Configurations View - train: " + name + result);
-
-		name = "pic_b";
-		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.p);
-		result = recognition.trainPicture(grayBitmap, name);
-		Log.d(TAG, "Configurations View - train: " + name + result);
-
-		name = "pic_c";
-		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.m);
-		result = recognition.trainPicture(grayBitmap, name);
-		Log.d(TAG, "Configurations View - train: " + name + result);
-	}
-
-/*	private void notifyMode() {
-		String msg = null;
-
-		if (currentMode.equals(ConfigurationDatabase.NONE)) {
-			msg = "Mode: none";
-		}
-		if (currentMode.equals(ConfigurationDatabase.WIFI_MODE)) {
-			msg = "Mode: Laboratory Test Mode";
-		}
-		if (currentMode.equals(ConfigurationDatabase.ORIGINAL_MODE)) {
-			if (deviceSharing.isChecked())
-				msg = "Mode: Original Mode with Device Sharing";
-			else
-				msg = "Mode: Original Mode without Device Sharing";
-		}
-
-		if (msg != null) {
-			Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG)
-			.show();
-		}
-	}*/
 
 	private void dispatchTakePictureIntent() {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -433,14 +397,36 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void stopBackgroundService() {
-		if (!currentMode.equals(ConfigurationDatabase.NONE))
+		if (onOff.isChecked())
 			stopService(new Intent(SettingsActivity.this,
 					BackgroundService.class));
 	}
 
 	private void startBackgroundService() {
-		if (!currentMode.equals(ConfigurationDatabase.NONE))
+		if (onOff.isChecked())
 			startService(new Intent(SettingsActivity.this,
 					BackgroundService.class));
+	}
+
+	private void addPictures() {
+		FaceRecognition recognition = FaceRecognition.getInstance(context);
+		Context context = getApplicationContext();
+		String name;
+		Bitmap grayBitmap;
+
+		name = "pic_a";
+		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
+				R.drawable.g);
+		recognition.trainPicture(grayBitmap, name);
+
+		name = "pic_b";
+		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
+				R.drawable.p);
+		recognition.trainPicture(grayBitmap, name);
+
+		name = "pic_c";
+		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
+				R.drawable.m);
+		recognition.trainPicture(grayBitmap, name);
 	}
 }

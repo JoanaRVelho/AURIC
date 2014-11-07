@@ -23,7 +23,9 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 		stopTimerTask();
 
 		if (startLog) {
-			currentIntrusion.stopLogging();
+			log.stopLogging();
+			//currentIntrusion.stopLogging();
+			intrusionsDB.insertIntrusionData(currentIntrusion);
 			Log.d(TAG, "AuditTask - stop logging");
 
 			currentIntrusion = null;
@@ -44,13 +46,13 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 				startLog = true;
 
 				Log.d(TAG, "AuditTask - new intrusion, start audit");
-				currentIntrusion = new Intrusion(context);
+				currentIntrusion = new Intrusion(log.type());
 				
-				intrusionsDB.insertIntrusionData(currentIntrusion);
 				intrusionsDB.insertPictureOfTheIntruder(
 						currentIntrusion.getID(), capturedFace);
 				
-				currentIntrusion.startLogging();
+			//	currentIntrusion.startLogging();
+				log.startLogging(currentIntrusion.getID());
 				Log.d(TAG, "AuditTask - start logging");
 
 				notifier.notifyUser();
@@ -61,6 +63,7 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 				if (currentIntrusion == null) {
 					return;
 				}
+				
 				intrusionsDB.insertPictureOfTheIntruder(
 						currentIntrusion.getID(), capturedFace);
 			}
@@ -69,13 +72,14 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 				Log.d(TAG, "AuditTask - stop audit");
 
 				if (currentIntrusion != null) {
-					currentIntrusion.stopLogging();
-					intrusionsDB.deleteIntrusion(currentIntrusion.getID());
+					log.stopLogging();
+					//currentIntrusion.stopLogging();
+					Log.d(TAG, "AuditTask - stop logging");
+					
+					intrusionsDB.insertIntrusionData(currentIntrusion);
 					currentIntrusion = null;
 				}
 				startLog = false;
-
-				Log.d(TAG, "AuditTask - stop logging");
 
 				notifier.cancelNotification();
 			}

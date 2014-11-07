@@ -19,7 +19,6 @@ public class IntrusionsDatabase {
 
 	private SQLiteIntrusionData intrusionsDB;
 	private SQLiteIntruderPictures intrusionsPicturesDB;
-
 	public static IntrusionsDatabase getInstance(Context c) {
 		if (INSTANCE == null)
 			INSTANCE = new IntrusionsDatabase(c);
@@ -49,8 +48,10 @@ public class IntrusionsDatabase {
 		return i;
 	}
 
-	public void deleteIntrusion(String id) {
-		intrusionsDB.deleteIntrusion(id);
+	public void deleteIntrusion(String id, boolean onlyPictures) {
+		if(!onlyPictures)
+			intrusionsDB.deleteIntrusion(id);
+		
 		intrusionsPicturesDB.deleteAllPictures(id);
 	}
 	
@@ -160,7 +161,7 @@ public class IntrusionsDatabase {
 		
 		return -1;
 	}
-
+	
 	private IntrusionsDatabase(Context c) {
 		intrusionsDB = new SQLiteIntrusionData(c);
 		intrusionsPicturesDB = new SQLiteIntruderPictures(c);

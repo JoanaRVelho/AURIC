@@ -1,6 +1,7 @@
 package hcim.auric.recognition;
 
 import hcim.auric.database.PicturesDatabase;
+import hcim.auric.utils.FileManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,17 +47,14 @@ public class FaceRecognition {
 	private int absoluteFaceSize = 0;
 
 	private BaseLoaderCallback loaderCallback;
-	String path = "";
-	PersonRecognizer recognizer;
-	int[] labels = new int[(int) MAX_IMG];
-	int countImages = 0;
-	Labels labelsFile;
+	private String path;
+	private PersonRecognizer recognizer;
+	private int countImages = 0;
 	private Context context;
 
 	public static FaceRecognition getInstance(Context c) {
 		if (INSTANCE == null) {
-			String filesDir = c.getExternalFilesDir(null).toString();
-			INSTANCE = new FaceRecognition(c, filesDir);
+			INSTANCE = new FaceRecognition(c);
 		}
 		return INSTANCE;
 	}
@@ -112,7 +110,7 @@ public class FaceRecognition {
 		}
 	}
 
-	public boolean detectFace(Bitmap rgbBitmap){
+	public boolean detectFace(Bitmap rgbBitmap) {
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
 
 		Mat rgbMat = new Mat();
@@ -135,7 +133,39 @@ public class FaceRecognition {
 		recognizer.train();
 	}
 
-	MatOfRect detect(Mat gray) {
+	public void untrainPicture(String picID) {
+		// TODO Auto-generated method stub
+	
+	}
+
+	private FaceRecognition(Context c) {
+		this.context = c;
+		loaderCallback = new MyBaseLoaderCallback(c);
+
+		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
+				loaderCallback)) {
+			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
+		}
+
+		FileManager fileManager = new FileManager(c);
+		path = fileManager.getOpenCVDirectory();
+
+		new Labels(path);
+
+		File f = new File(path);
+		if (!f.exists()) {
+			boolean success = f.mkdirs();
+			if (!success) {
+				Log.e(TAG, "Face Recognition - Error creating directory");
+			} else {
+				Log.i(TAG, "Face Recognition - Directory created");
+			}
+		} else {
+			Log.i(TAG, "Face Recognition - Directory already exists");
+		}
+	}
+
+	private MatOfRect detect(Mat gray) {
 		MatOfRect faces = new MatOfRect();
 
 		if (faceDetector != null)
@@ -145,26 +175,7 @@ public class FaceRecognition {
 		return faces;
 	}
 
-	FaceRecognition(Context c, String filesDir) {
-		this.context = c;
-		loaderCallback = new MyBaseLoaderCallback(c);
-
-		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
-				loaderCallback)) {
-			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
-		}
-
-		path = filesDir + "/facerecogOCV/";
-
-		labelsFile = new Labels(path);
-
-		boolean success = (new File(path)).mkdirs();
-		if (!success) {
-			Log.e(TAG, "Face Recognition - Error creating directory");
-		}
-	}
-
-	void train(Rect[] facesArray, String name, Mat rgbMat) {
+	private void train(Rect[] facesArray, String name, Mat rgbMat) {
 		Mat m = new Mat();
 		Rect r = facesArray[0];
 
@@ -177,14 +188,14 @@ public class FaceRecognition {
 
 	}
 
-	int recognize(Rect[] facesArray, Mat grayMat) {
+	private int recognize(Rect[] facesArray, Mat grayMat) {
 		Mat m = new Mat();
 		m = grayMat.submat(facesArray[0]);
 		String resultString = recognizer.predict(m);
 		PicturesDatabase db = PicturesDatabase.getInstance(context);
 
 		Log.d(TAG, "Face Recognition - matches " + resultString);
-		
+
 		int result = -1;
 		if (db.isMyPicture(resultString)) {
 			result = recognizer.getProb();
@@ -192,7 +203,7 @@ public class FaceRecognition {
 		return result;
 	}
 
-	static Bitmap convertToGray(Bitmap img) {
+	private static Bitmap convertToGray(Bitmap img) {
 		int width, height;
 		height = img.getHeight();
 		width = img.getWidth();
@@ -261,17 +272,12 @@ public class FaceRecognition {
 									+ e);
 				}
 			}
-			break;
+				break;
 			default: {
 				super.onManagerConnected(status);
 			}
-			break;
+				break;
 			}
 		}
-	}
-
-	public void untrainPicture(String picID) {
-		// TODO Auto-generated method stub
-
 	}
 }

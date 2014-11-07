@@ -4,15 +4,16 @@ import hcim.auric.database.ConfigurationDatabase;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.widget.Toast;
 
+public class InsertPasscode extends PasscodeActivity {
 
-public class InsertPasscode extends PasscodeActivity{
-
-	private static final String CONFIG_PASSCODE_PHASE1 = "Type in new passcode:";
+	private static final String CONFIG_PASSCODE_PHASE1 = "Type in new passcode: (at least 6 characters)";
 	private static final String CONFIG_PASSCODE_PHASE2 = "Type new passcode again:";
+	private static final int MIN = 6;
 
 	private String passcode;
-	
+
 	@Override
 	protected void initActivity() {
 		setMessage(CONFIG_PASSCODE_PHASE1);
@@ -21,20 +22,26 @@ public class InsertPasscode extends PasscodeActivity{
 
 	@Override
 	protected void afterEnteringPasscode(String enteredPasscode) {
-		Log.d("AURIC", "entered pass="+enteredPasscode);
-		Log.d("AURIC", "passcode="+passcode);
-		
-		if(passcode == null){
-			passcode = enteredPasscode;
-			setMessage(CONFIG_PASSCODE_PHASE2);
+		Log.d("AURIC", "entered pass=" + enteredPasscode);
+		Log.d("AURIC", "passcode=" + passcode);
+
+		if (passcode == null) {
 			resetView();
-		}else{
-			if(passcode.equals(enteredPasscode)){
-				ConfigurationDatabase db = ConfigurationDatabase.getInstance(this);
+			if (enteredPasscode == null || enteredPasscode.length() < MIN) {
+				Toast.makeText(this,
+						"Password must have at least " + MIN + " characters!",
+						Toast.LENGTH_LONG).show();
+			} else {
+				passcode = enteredPasscode;
+				setMessage(CONFIG_PASSCODE_PHASE2);
+			}
+		} else {
+			if (passcode.equals(enteredPasscode)) {
+				ConfigurationDatabase db = ConfigurationDatabase
+						.getInstance(this);
 				db.setPasscode(passcode);
 				configurationComplete();
-			}
-			else{
+			} else {
 				restartConfiguration();
 			}
 		}
@@ -44,11 +51,11 @@ public class InsertPasscode extends PasscodeActivity{
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(InsertPasscode.this);
 		alertDialog.setTitle("Different Passcode");
-		alertDialog.setMessage("The passcodes inserted are different!\nAURIC will restart passcode configutation.");
+		alertDialog
+				.setMessage("The passcodes inserted are different!\nAURIC will restart passcode configutation.");
 		alertDialog.setNeutralButton("OK",
 				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int which) {
+					public void onClick(DialogInterface dialog, int which) {
 						passcode = null;
 						setMessage(CONFIG_PASSCODE_PHASE1);
 						resetView();
@@ -57,16 +64,16 @@ public class InsertPasscode extends PasscodeActivity{
 
 		alertDialog.show();
 	}
-	
+
 	private void configurationComplete() {
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(InsertPasscode.this);
 		alertDialog.setTitle("Passcode Configuration Complete");
-		alertDialog.setMessage("Passcode configuration is completed! Do not forget your passcode!");
+		alertDialog
+				.setMessage("Passcode configuration is completed! Do not forget your passcode!");
 		alertDialog.setNeutralButton("OK",
 				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int which) {
+					public void onClick(DialogInterface dialog, int which) {
 						finish();
 					}
 				});

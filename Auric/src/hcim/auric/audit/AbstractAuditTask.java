@@ -7,6 +7,7 @@ import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.record.IntruderCaptureTask;
+import hcim.auric.record.screen.LogManager;
 
 import java.util.Timer;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,6 +19,7 @@ public abstract class AbstractAuditTask extends Thread {
 	protected static final String TAG = "AURIC";
 
 	public static final String ACTION_NEW_PICTURE = "new picture";
+	public static final int CAMERA_PERIOD_MILIS = 5000; // 5 seconds
 
 	private IntruderCaptureTask timerTask;
 	private Timer timer;
@@ -27,6 +29,7 @@ public abstract class AbstractAuditTask extends Thread {
 	protected IntrusionNotifier notifier;
 	protected LinkedBlockingQueue<TaskMessage> queue;
 	protected IntrusionsDatabase intrusionsDB;
+	protected hcim.auric.record.screen.Log log;
 	protected Context context;
 
 	protected boolean screenOff;
@@ -39,6 +42,10 @@ public abstract class AbstractAuditTask extends Thread {
 		this.intrusionsDB = IntrusionsDatabase.getInstance(context);
 		this.screenOff = false;
 		this.timer = new Timer();
+		
+		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
+		String type = db.getLogType();
+		this.log = LogManager.getSelectedLog(type, context);
 	}
 
 	public void addTaskMessage(TaskMessage msg) {
@@ -59,6 +66,8 @@ public abstract class AbstractAuditTask extends Thread {
 
 	@Override
 	public void interrupt() {
+		log.stopLogging();
+		
 		if (timer != null) {
 			timer.cancel();
 			timer = null;
@@ -67,13 +76,11 @@ public abstract class AbstractAuditTask extends Thread {
 	}
 
 	protected void startTimerTask(boolean delay) {
-		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
-		int period = db.getCameraCaptureOption();
-		
 		timerTask = new IntruderCaptureTask(this.camera);
 		timer = new Timer();
-		timer.scheduleAtFixedRate(timerTask, delay ? period : 0, period);
-		
+		timer.scheduleAtFixedRate(timerTask, delay ? CAMERA_PERIOD_MILIS : 0,
+				CAMERA_PERIOD_MILIS);
+
 		Log.d(TAG, "AuditTask - start timer task");
 	}
 
@@ -81,7 +88,7 @@ public abstract class AbstractAuditTask extends Thread {
 		if (timer != null) {
 			timer.cancel();
 			timer = null;
-			
+
 			Log.d(TAG, "AuditTask - stop timer task");
 		}
 		timerTask = null;

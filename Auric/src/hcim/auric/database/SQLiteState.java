@@ -21,13 +21,17 @@ public class SQLiteState extends SQLiteOpenHelper {
 	/** IDs **/
 	private static final String AURIC_MODE_ID = "auric_mode";
 	private static final String SHARING_ID = "share";
-	private static final String CAMERA_CAPTURE_ID = "camera";
-	private static final String SCREENSHOT_ID = "screenshot";
 	private static final String PASSCODE_ID = "passcode";
+	private static final String LOG_TYPE = "log_type";
+	private static final String ON_OFF = "on_off";
 
 	/** Device Sharing Modes **/
 	public static final String SHARE_MODE = "yes";
 	public static final String NONSHARE_MODE = "no";
+
+	/** ON / OFF **/
+	public static final String ON = "on";
+	public static final String OFF = "off";
 
 	public SQLiteState(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -100,16 +104,13 @@ public class SQLiteState extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 
 		if (cursor.getCount() <= 0) {
-			updateDeviceSharingMode(false);
+			db.close();
+			insertDeviceSharingMode(false);
 			return false;
 		}
 
 		String mode = cursor.getString(1);
-
-		if (mode == null) {
-			updateDeviceSharingMode(false);
-			return false;
-		}
+		
 		db.close();
 
 		return mode.equals(SHARE_MODE);
@@ -151,9 +152,11 @@ public class SQLiteState extends SQLiteOpenHelper {
 		if (cursor != null)
 			cursor.moveToFirst();
 
-		if (cursor.getCount() <= 0)
+		if (cursor.getCount() <= 0) {
+			db.close();
 			return null;
 
+		}
 		String mode = cursor.getString(1);
 		db.close();
 
@@ -184,94 +187,99 @@ public class SQLiteState extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public int getCameraCaptureOption() {
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query(TABLE_STATE, COLUMNS, KEY_ID + "='"
-				+ CAMERA_CAPTURE_ID + "'", null, null, null, null, null);
-
-		if (cursor != null)
-			cursor.moveToFirst();
-
-		if (cursor.getCount() <= 0)
-			return -1;
-
-		String mode = cursor.getString(1);
-		db.close();
-
-		return Integer.parseInt(mode);
-	}
-
-	public void insertCameraCaptureOption(int period) {
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-		values.put(KEY_ID, CAMERA_CAPTURE_ID);
-		values.put(KEY_MODE, period + "");
-
-		db.insert(TABLE_STATE, null, values);
-
-		db.close();
-	}
-
-	public void updateCameraCaptureOption(int period) {
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-		values.put(KEY_MODE, period + "");
-
-		db.update(TABLE_STATE, values, KEY_ID + " = '" + CAMERA_CAPTURE_ID
-				+ "'", null);
-
-		db.close();
-	}
-
-	public int getScreenshotOption() {
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query(TABLE_STATE, COLUMNS, KEY_ID + "='"
-				+ SCREENSHOT_ID + "'", null, null, null, null, null);
-
-		if (cursor != null)
-			cursor.moveToFirst();
-
-		if (cursor.getCount() <= 0)
-			return -1;
-
-		String mode = cursor.getString(1);
-		
-		db.close();
-
-		return Integer.parseInt(mode);
-	}
-
-	public void insertScreenshotOption(int period) {
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-		values.put(KEY_ID, SCREENSHOT_ID);
-		values.put(KEY_MODE, period + "");
-
-		db.insert(TABLE_STATE, null, values);
-
-		db.close();
-	}
-
-	public void updateScreenshotOption(int s) {
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-		values.put(KEY_MODE, s + "");
-
-		db.update(TABLE_STATE, values, KEY_ID + " = '" + SCREENSHOT_ID + "'",
-				null);
-
-		db.close();
-	}
-
 	public void deletePasscode() {
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(TABLE_STATE, KEY_ID + "= '" + PASSCODE_ID+ "'", null);
+		db.delete(TABLE_STATE, KEY_ID + "= '" + PASSCODE_ID + "'", null);
 		db.close();
 	}
+
+	public String getLogType() {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		Cursor cursor = db.query(TABLE_STATE, COLUMNS, KEY_ID + "='" + LOG_TYPE
+				+ "'", null, null, null, null, null);
+
+		if (cursor != null)
+			cursor.moveToFirst();
+
+		if (cursor.getCount() <= 0) {
+			db.close();
+			return null;
+		}
+
+		String log = cursor.getString(1);
+
+		db.close();
+
+		return log;
+	}
+
+	public void insertLogType(String log) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_ID, LOG_TYPE);
+		values.put(KEY_MODE, log);
+
+		db.insert(TABLE_STATE, null, values);
+
+		db.close();
+	}
+
+	public void updateLogType(String log) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_MODE, log);
+
+		db.update(TABLE_STATE, values, KEY_ID + " = '" + LOG_TYPE + "'", null);
+
+		db.close();
+	}
+
+	public boolean isIntrusionDetectorActive() {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		Cursor cursor = db.query(TABLE_STATE, COLUMNS, KEY_ID + "='" + ON_OFF
+				+ "'", null, null, null, null, null);
+
+		if (cursor != null)
+			cursor.moveToFirst();
+
+		if (cursor.getCount() <= 0) {
+			db.close();
+			turnIntrusionDetectorOff();
+			return false;
+		}
+
+		String mode = cursor.getString(1);
+
+		return mode.equals(ON);
+	}
+
+	private void turnIntrusionDetectorOff() {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_ID, ON_OFF);
+		values.put(KEY_MODE, OFF);
+
+		db.insert(TABLE_STATE, null, values);
+
+		db.close();
+	}
+
+	public void setIntrusionDetectorState(boolean b) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		String mode = b ? ON : OFF;
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_MODE, mode);
+
+		db.update(TABLE_STATE, values, KEY_ID + " = '" + ON_OFF + "'", null);
+
+		db.close();
+	}
+
 }

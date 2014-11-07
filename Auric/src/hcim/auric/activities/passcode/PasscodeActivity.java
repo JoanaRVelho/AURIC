@@ -2,10 +2,11 @@ package hcim.auric.activities.passcode;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hcim.intrusiondetection.R;
@@ -13,81 +14,61 @@ import com.hcim.intrusiondetection.R;
 public abstract class PasscodeActivity extends Activity {
 	protected static final String TAG = "AURIC";
 
-	private StringBuilder insertedPasscode;
-	private ImageView[] passcodeImages;
+	private EditText edit;
 	private TextView msg;
+	private String insertedPasscode;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.passcode_view);
+		setContentView(R.layout.insert_password);
 
-		insertedPasscode = new StringBuilder();
-		passcodeImages = new ImageView[4];
-		passcodeImages[0] = (ImageView) findViewById(R.id.passcode1);
-		passcodeImages[1] = (ImageView) findViewById(R.id.passcode2);
-		passcodeImages[2] = (ImageView) findViewById(R.id.passcode3);
-		passcodeImages[3] = (ImageView) findViewById(R.id.passcode4);
-		
 		msg = (TextView) findViewById(R.id.passcode_message);
 
-		initActivity();
+		edit = (EditText) findViewById(R.id.password_edit);
+
+		Button done = (Button) findViewById(R.id.done);
+		done.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Editable editable = edit.getText();
+
+				if (editable != null) {
+					insertedPasscode = editable.toString();
+					resetView();
+					
+					if (insertedPasscode != null
+							&& insertedPasscode.length() != 0)
+						afterEnteringPasscode(insertedPasscode);
+				}
+			}
+		});
 	}
 
 	@Override
 	protected void onPause() {
-		if (insertedPasscode != null){
-			insertedPasscode.delete(0, insertedPasscode.length());
-		}
+		edit.setText("");
+		insertedPasscode = "";
 		super.onPause();
 	}
 
 	@Override
 	protected void onStop() {
-		if (insertedPasscode != null)
-			insertedPasscode.delete(0, insertedPasscode.length());
+		edit.setText("");
+		insertedPasscode = "";
 		super.onStop();
 	}
 
-	public void onClickButtons(View v) {
-		Button b = (Button) findViewById(v.getId());
-
-		if (insertedPasscode == null)
-			insertedPasscode = new StringBuilder();
-
-		if (b.getText().toString().equals("del")) {
-			if (insertedPasscode.length() > 0) {
-				insertedPasscode.deleteCharAt(insertedPasscode.length() - 1);
-				Log.d(TAG, "pass = " + insertedPasscode.toString());
-				
-				int idx = insertedPasscode.length();
-				passcodeImages[idx].setImageResource(R.drawable.passcode_off);
-			}
-		} else {
-			insertedPasscode.append(b.getText());
-			int idx = insertedPasscode.length();
-			passcodeImages[idx-1].setImageResource(R.drawable.passcode_on);
-		}
-		
-		if(insertedPasscode.length() == 4){
-			String pass = insertedPasscode.toString();
-			Log.d(TAG, "passcode=" + pass);
-			insertedPasscode.delete(0, insertedPasscode.length());
-			afterEnteringPasscode(pass);
-		}
-	}
-
 	protected void resetView() {
-		for(ImageView i : passcodeImages){
-			i.setImageResource(R.drawable.passcode_off);
-		}
+		edit.setText("");
 	}
+
+	protected abstract void initActivity();
 
 	protected void setMessage(String s) {
 		msg.setText(s);
 	}
-
-	protected abstract void initActivity();
 
 	protected abstract void afterEnteringPasscode(String enteredPasscode);
 }

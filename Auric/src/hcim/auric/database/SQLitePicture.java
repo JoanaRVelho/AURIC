@@ -31,7 +31,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String CREATE_PICTURES_TABLE = "CREATE TABLE pictures ( " + KEY_ID
+		String CREATE_PICTURES_TABLE = "CREATE TABLE "+ TABLE_PICTURES +" ( " + KEY_ID
 				+ " TEXT, " + KEY_TYPE + " TEXT, " + KEY_PICTURE + " BLOB )";
 
 		db.execSQL(CREATE_PICTURES_TABLE);
@@ -177,8 +177,10 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		Picture pic = null;
 
 		if (cursor.moveToFirst()) {
-			if (cursor.getCount() <= 0)
+			if (cursor.getCount() <= 0) {
+				db.close();
 				return null;
+			}
 			do {
 				pic = new Picture(cursor.getString(0), cursor.getString(1),
 						(Bitmap) Converter.byteArrayToBitmap(cursor.getBlob(2)));
