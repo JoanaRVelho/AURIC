@@ -4,6 +4,7 @@ import hcim.auric.activities.images.IntruderPictureGrid;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.Picture;
+import hcim.auric.record.screen.SeverityAdapter;
 import hcim.auric.utils.FileManager;
 
 import java.io.File;
@@ -36,6 +37,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -47,26 +49,28 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.hcim.intrusiondetection.R;
 
-public class RunInteraction extends Activity{
+@SuppressLint("InflateParams") public class RunInteraction extends Activity {
 	private static final String TAG = "AURIC";
 	public static final String EXTRA_ID = "extra";
-	
+
 	private static final int PREV = 0;
 	private static final int NEXT = 1;
 	private static final int PLAY = 2;
 	private static final int STOP = 3;
 	private static final int PLAY_ALL = 4;
-	
+
 	private static final int UPDATE_IMAGE = 0;
 	private static final int RESET = 1;
-	
+
+	private Spinner spinnerSeverity;
 	private Intrusion intrusion;
 	private SparseArray<Queue<Touch>> interaction;
-	
+
 	private ImageView img;
 	private ImageView background;
 	private ImageView playImg;
@@ -80,6 +84,7 @@ public class RunInteraction extends Activity{
 
 	private int currentImage;
 	private FileManager fileManager;
+	private IntrusionsDatabase intDB;
 
 	private int navCommand;
 	private boolean play;
@@ -130,7 +135,6 @@ public class RunInteraction extends Activity{
 
 	// timestamp of last interaction
 	private double lastTouchTime;
-	private Context context;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -148,11 +152,10 @@ public class RunInteraction extends Activity{
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		Intent intent = getIntent();
 
-		context = getApplicationContext();
+		intDB = IntrusionsDatabase.getInstance(this);
 
 		String intrusionID = intent.getStringExtra(EXTRA_ID);
-		intrusion = IntrusionsDatabase.getInstance(context).getIntrusion(
-				intrusionID);
+		intrusion = intDB.getIntrusion(intrusionID);
 
 		intruderList = Picture.getBitmapList(intrusion.getImages());
 
@@ -165,7 +168,7 @@ public class RunInteraction extends Activity{
 				new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
 						ViewGroup.LayoutParams.FILL_PARENT));
 
-		fileManager = new FileManager(context);
+		fileManager = new FileManager(this);
 
 		img = (ImageView) findViewById(R.id.screenshot);
 
@@ -333,7 +336,7 @@ public class RunInteraction extends Activity{
 	}
 
 	private void addSwipeClue() {
-		ImageView dot = new ImageView(context);
+		ImageView dot = new ImageView(this);
 		if (swipeClues.size() != 0)
 			dot.setImageResource(R.drawable.circle);
 		else
@@ -520,8 +523,7 @@ public class RunInteraction extends Activity{
 	};
 
 	private boolean existsImage(int index) {
-		String screenshot = fileManager
-				.getScreenshot(intrusion.getID(), index);
+		String screenshot = fileManager.getScreenshot(intrusion.getID(), index);
 		File f = new File(screenshot);
 		return f.exists();
 	}
@@ -539,29 +541,27 @@ public class RunInteraction extends Activity{
 		photoHandler.postDelayed(photoRunnable, delay);
 	}
 
+	private View spinnerView() {
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LinearLayout view = new LinearLayout(this);
+		view = (LinearLayout) inflater.inflate(R.layout.severity, null);
+
+		spinnerSeverity = (Spinner) view.findViewById(R.id.severity_spinner);
+		spinnerSeverity.setAdapter(new SeverityAdapter(this));
+
+		return view;
+	}
+
 	private void markIntrusionAlertDialog() {
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(this);
-		alertDialog.setTitle("Intrusion");
-		alertDialog.setMessage("Is this a real intrusion?");
-		alertDialog.setPositiveButton("YES",
+		alertDialog.setTitle("Severity of the intrusion");
+		alertDialog.setView(spinnerView());
+		alertDialog.setPositiveButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						IntrusionsDatabase intDB = IntrusionsDatabase
-								.getInstance(context);
-						intrusion.markAsRealIntrusion();
-						intDB.updateIntrusion(intrusion);
-
-						RunInteraction.super.finish();
-					}
-				});
-
-		alertDialog.setNegativeButton("NO",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						IntrusionsDatabase intDB = IntrusionsDatabase
-								.getInstance(context);
-						intrusion.markAsFalseIntrusion();
+						intrusion.setTag((int) spinnerSeverity
+								.getSelectedItemPosition());
 						intDB.updateIntrusion(intrusion);
 
 						RunInteraction.super.finish();
@@ -587,15 +587,15 @@ public class RunInteraction extends Activity{
 	}
 
 	private void delete() {
-		IntrusionsDatabase intDB = IntrusionsDatabase.getInstance(context);
 		intDB.deleteIntrusion(intrusion.getID(), false);
 
-		File dir = new File(fileManager.getIntrusionDirectory(intrusion.getID()));
+		File dir = new File(
+				fileManager.getIntrusionDirectory(intrusion.getID()));
 		for (File f : dir.listFiles()) {
 			f.delete();
 		}
 		dir.delete();
-		
+
 		super.finish();
 	}
 

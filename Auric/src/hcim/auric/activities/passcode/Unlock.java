@@ -2,6 +2,7 @@ package hcim.auric.activities.passcode;
 
 import hcim.auric.database.ConfigurationDatabase;
 import android.content.Intent;
+import android.widget.Toast;
 
 public class Unlock extends PasscodeActivity {
 	private static final String UNLOCK_MESSAGE = "Type in passcode:";
@@ -22,6 +23,9 @@ public class Unlock extends PasscodeActivity {
 		check = passcode.equals(enteredPasscode);
 		if (check) {
 			finish();
+		}else{
+			Toast.makeText(this, "Wrong Passcode", Toast.LENGTH_SHORT).show();
+			resetView();
 		}
 	}
 

@@ -4,12 +4,14 @@ import hcim.auric.activities.images.IntruderPictureGrid;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.Picture;
+import hcim.auric.record.screen.SeverityAdapter;
 import hcim.auric.record.screen.mswat_lib.OnSwipeTouchListener;
 import hcim.auric.utils.FileManager;
 
 import java.io.File;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,17 +22,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.hcim.intrusiondetection.R;
 
-public class RunScreencast extends Activity {
+@SuppressLint("InflateParams") public class RunScreencast extends Activity {
 	protected static final String TAG = "AURIC";
 	public static final String EXTRA_ID = "extra";
 	private static final int INTERVAL = 1000;
@@ -52,7 +57,7 @@ public class RunScreencast extends Activity {
 	private int idxLog;
 
 	private boolean play;
-	private Context context;
+	private IntrusionsDatabase intDB;
 
 	private Handler logHandler = new Handler();
 	private Runnable logRunnable = new Runnable() {
@@ -92,6 +97,7 @@ public class RunScreencast extends Activity {
 	private int totalPhotos;
 	private int logPeriod;
 	private int photosPeriod;
+	private Spinner spinnerSeverity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +105,7 @@ public class RunScreencast extends Activity {
 		fullscreen();
 		setContentView(R.layout.run_screencast);
 
-		context = getApplicationContext();
+		intDB = IntrusionsDatabase.getInstance(this);
 
 		String intrusionID = getIntent().getStringExtra(EXTRA_ID);
 		intrusion = IntrusionsDatabase.getInstance(this).getIntrusion(
@@ -260,29 +266,27 @@ public class RunScreencast extends Activity {
 		timerTextView.setVisibility(View.INVISIBLE);
 	}
 
+	private View spinnerView() {
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LinearLayout view = new LinearLayout(this);
+		view = (LinearLayout) inflater.inflate(R.layout.severity, null);
+
+		spinnerSeverity = (Spinner) view.findViewById(R.id.severity_spinner);
+		spinnerSeverity.setAdapter(new SeverityAdapter(this));
+
+		return view;
+	}
+
 	private void markIntrusionAlertDialog() {
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(this);
-		alertDialog.setTitle("Intrusion");
-		alertDialog.setMessage("Is this a real intrusion?");
-		alertDialog.setPositiveButton("YES",
+		alertDialog.setTitle("Severity of the intrusion");
+		alertDialog.setView(spinnerView());
+		alertDialog.setPositiveButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						IntrusionsDatabase intDB = IntrusionsDatabase
-								.getInstance(context);
-						intrusion.markAsRealIntrusion();
-						intDB.updateIntrusion(intrusion);
-
-						RunScreencast.super.finish();
-					}
-				});
-
-		alertDialog.setNegativeButton("NO",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						IntrusionsDatabase intDB = IntrusionsDatabase
-								.getInstance(context);
-						intrusion.markAsFalseIntrusion();
+						intrusion.setTag((int) spinnerSeverity
+								.getSelectedItemPosition());
 						intDB.updateIntrusion(intrusion);
 
 						RunScreencast.super.finish();
@@ -290,7 +294,7 @@ public class RunScreencast extends Activity {
 				});
 		alertDialog.show();
 	}
-
+	
 	private void trashButtonAlertDialog() {
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(this);
@@ -308,7 +312,6 @@ public class RunScreencast extends Activity {
 	}
 
 	private void delete() {
-		IntrusionsDatabase intDB = IntrusionsDatabase.getInstance(context);
 		intDB.deleteIntrusion(intrusion.getID(), false);
 
 		File dir = new File(

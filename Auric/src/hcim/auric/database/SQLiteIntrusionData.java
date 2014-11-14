@@ -72,8 +72,10 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		if (cursor != null)
 			cursor.moveToFirst();
 
-		if (cursor.getCount() <= 0)
+		if (cursor.getCount() <= 0) {
+			db.close();
 			return null;
+		}
 
 		Intrusion intrusion = IntrusionFactory.createIntrusion(
 				cursor.getString(0), cursor.getString(1), cursor.getString(2),
@@ -101,12 +103,16 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 
 		Intrusion i = null;
 
-		if (cursor == null)
+		if (cursor == null) {
+			db.close();
 			return null;
+		}
 
 		if (cursor.moveToFirst()) {
-			if (cursor.getCount() <= 0)
+			if (cursor.getCount() <= 0) {
+				db.close();
 				return null;
+			}
 			do {
 				i = IntrusionFactory.createIntrusion(cursor.getString(0),
 						cursor.getString(1), cursor.getString(2),
@@ -127,19 +133,21 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public List<Intrusion> getFalseIntrusions() {
+	public List<Intrusion> getIntrusions(int severity) {
 		List<Intrusion> result = new ArrayList<Intrusion>();
 
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_TAG + "="
-				+ Intrusion.FALSE_INTRUSION, null, null, null, null, null);
+				+ severity, null, null, null, null, null);
 
 		Intrusion i = null;
 
 		if (cursor.moveToFirst()) {
-			if (cursor.getCount() <= 0)
+			if (cursor.getCount() <= 0) {
+				db.close();
 				return null;
+			}
 			do {
 				i = IntrusionFactory.createIntrusion(cursor.getString(0),
 						cursor.getString(1), cursor.getString(2),
@@ -153,74 +161,10 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		return result;
 	}
 
-	public int numberOfFalseIntrusions() {
-		List<Intrusion> list = getFalseIntrusions();
+	public int numberOfIntrusions(int severity) {
+		List<Intrusion> list = getIntrusions(severity);
 
 		return list == null ? 0 : list.size();
-	}
-
-	public List<Intrusion> getRealIntrusions() {
-		List<Intrusion> result = new ArrayList<Intrusion>();
-
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_TAG + "="
-				+ Intrusion.REAL_INTRUSION, null, null, null, null, null);
-
-		Intrusion i = null;
-
-		if (cursor.moveToFirst()) {
-			if (cursor.getCount() <= 0)
-				return null;
-			do {
-				i = IntrusionFactory.createIntrusion(cursor.getString(0),
-						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3), cursor.getString(4));
-				result.add(i);
-
-			} while (cursor.moveToNext());
-		}
-		db.close();
-
-		return result;
-	}
-
-	public int numberOfRealIntrusions() {
-		List<Intrusion> list = getRealIntrusions();
-
-		return list.size();
-	}
-
-	public List<Intrusion> getUncheckedIntrusions() {
-		List<Intrusion> result = new ArrayList<Intrusion>();
-
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_TAG + "="
-				+ Intrusion.UNCHECKED, null, null, null, null, null);
-
-		Intrusion i = null;
-
-		if (cursor.moveToFirst()) {
-			if (cursor.getCount() <= 0)
-				return null;
-			do {
-				i = IntrusionFactory.createIntrusion(cursor.getString(0),
-						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3), cursor.getString(4));
-				result.add(i);
-
-			} while (cursor.moveToNext());
-		}
-		db.close();
-
-		return result;
-	}
-
-	public int numberOfUncheckedIntrusions() {
-		List<Intrusion> list = getUncheckedIntrusions();
-
-		return list.size();
 	}
 
 	public void updateIntrusionTag(Intrusion i) {

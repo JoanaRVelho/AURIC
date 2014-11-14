@@ -6,9 +6,7 @@ import hcim.auric.recognition.Picture;
 import java.util.List;
 
 public class Intrusion {
-	public static final int UNCHECKED = 0;
-	public static final int FALSE_INTRUSION = 1;
-	public static final int REAL_INTRUSION = 2;
+	public static final int UNCHECKED = -1;
 
 	private String id;
 	private String date;
@@ -22,31 +20,17 @@ public class Intrusion {
 	}
 
 	public Intrusion(String log) {
-		id = CalendarManager.currentTimeMillis();
-		date = CalendarManager.getDate(id);
-		time = CalendarManager.getTime(id);
+		long timestamp = System.currentTimeMillis();
+		
+		id = Long.toString(timestamp);
+		date = CalendarManager.getDate(timestamp);
+		time = CalendarManager.getTime(timestamp);
 		tag = UNCHECKED;
 		logType = log;
 	}
 
-	public boolean isRealIntrusion() {
-		return tag == REAL_INTRUSION;
-	}
-
-	public boolean isFalseIntrusion() {
-		return tag == FALSE_INTRUSION;
-	}
-
 	public boolean isChecked() {
 		return tag != UNCHECKED;
-	}
-
-	public void markAsRealIntrusion() {
-		this.tag = REAL_INTRUSION;
-	}
-
-	public void markAsFalseIntrusion() {
-		this.tag = FALSE_INTRUSION;
 	}
 
 	public String getDate() {
@@ -69,8 +53,8 @@ public class Intrusion {
 		return tag;
 	}
 
-	public void setTag(int tag) {
-		this.tag = tag;
+	public void setTag(int i) {
+		this.tag = i;
 	}
 
 	public String getID() {

@@ -40,13 +40,8 @@ import android.annotation.SuppressLint;
 				+ c.get(Calendar.YEAR);
 	}
 	
-	public static String currentTimeMillis(){
-		return System.currentTimeMillis() + "";
-	}
-
-	public static String getDate(String timestamp) {
-		long timestampLong = Long.valueOf(timestamp);
-		Date d = new Date(timestampLong);
+	public static String getDate(long timestamp) {
+		Date d = new Date(timestamp);
 		Format f = new SimpleDateFormat("dd-MMMM-yyyy");
 	
 		String calendar = f.format(d).toString();
@@ -71,9 +66,8 @@ import android.annotation.SuppressLint;
 		return s.toString();
 	}
 	
-	public static String getTime(String timestamp) {
-		long timestampLong = Long.valueOf(timestamp);
-		Date d = new Date(timestampLong);
+	public static String getTime(long timestamp){
+		Date d = new Date(timestamp);
 		Format f = new SimpleDateFormat("HH-mm-ss");
 	
 		String calendar = f.format(d).toString();

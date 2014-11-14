@@ -1,7 +1,7 @@
 package hcim.auric.record.screen.mswat_lib;
 
 import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.record.screen.Log;
+import hcim.auric.record.screen.AbstractLog;
 import hcim.auric.record.screen.LogManager;
 import mswat.core.CoreController;
 import mswat.interfaces.IOReceiver;
@@ -29,7 +29,7 @@ public class WifiStart extends BroadcastReceiver implements IOReceiver {
 		ConfigurationDatabase db = ConfigurationDatabase.getInstance(c);
 		String logType = db.getLogType();
 		
-		Log log = LogManager.getSelectedLog(logType, c);
+		AbstractLog log = LogManager.getSelectedLog(logType, c);
 		
 		if (type == 0) {
 			String intrusionID = System.currentTimeMillis() + "";

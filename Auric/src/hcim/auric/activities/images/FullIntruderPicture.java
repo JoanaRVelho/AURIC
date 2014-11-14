@@ -12,12 +12,18 @@ import android.view.MotionEvent;
 import android.widget.Toast;
 
 public class FullIntruderPicture extends FullPicture {
+	private boolean faceDetected = false;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Toast.makeText(this, "Double tap to identify this picture.",
-				Toast.LENGTH_LONG).show();
+		FaceRecognition f = FaceRecognition.getInstance(this);
+		if (f.detectFace(this.picture.getImage())) {
+			faceDetected = true;
+			Toast.makeText(this, "Double tap to identify this picture.",
+					Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -25,6 +31,9 @@ public class FullIntruderPicture extends FullPicture {
 			new GestureDetector.SimpleOnGestureListener() {
 				@Override
 				public boolean onDoubleTap(MotionEvent e) {
+					if (!faceDetected)
+						return false;
+
 					AlertDialog.Builder alertDialog;
 					alertDialog = new AlertDialog.Builder(
 							FullIntruderPicture.this);
@@ -37,7 +46,7 @@ public class FullIntruderPicture extends FullPicture {
 					alertDialog.setNegativeButton("Cancel", null);
 					alertDialog.show();
 
-					return false;
+					return true;
 				}
 			});
 

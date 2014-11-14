@@ -36,7 +36,6 @@ public abstract class PasscodeActivity extends Activity {
 
 				if (editable != null) {
 					insertedPasscode = editable.toString();
-					resetView();
 					
 					if (insertedPasscode != null
 							&& insertedPasscode.length() != 0)
@@ -44,18 +43,18 @@ public abstract class PasscodeActivity extends Activity {
 				}
 			}
 		});
+		
+		initActivity();
 	}
 
 	@Override
 	protected void onPause() {
-		edit.setText("");
 		insertedPasscode = "";
 		super.onPause();
 	}
 
 	@Override
 	protected void onStop() {
-		edit.setText("");
 		insertedPasscode = "";
 		super.onStop();
 	}
@@ -64,11 +63,11 @@ public abstract class PasscodeActivity extends Activity {
 		edit.setText("");
 	}
 
-	protected abstract void initActivity();
-
 	protected void setMessage(String s) {
 		msg.setText(s);
 	}
+
+	protected abstract void initActivity();
 
 	protected abstract void afterEnteringPasscode(String enteredPasscode);
 }

@@ -20,19 +20,30 @@
 
     <ScrollView
         android:id="@+id/container"
-        android:layout_width="290dp"
-        android:layout_height="300dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/description"
-        android:layout_centerHorizontal="true" >
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp" >
 
-        <LinearLayout
-            android:id="@+id/listlogs"
-            android:layout_width="fill_parent"
+        <RelativeLayout
+            android:id="@+id/rel_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
+            android:background="@color/lightgray"
             android:orientation="vertical" >
-        </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/listlogs"
+                android:layout_centerHorizontal="true"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
 
     <ImageView
@@ -42,14 +53,20 @@
         android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/description"
-        android:src="@drawable/description" 
+        android:src="@drawable/description"
         android:visibility="invisible" />
-     
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
-
     </ImageView>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

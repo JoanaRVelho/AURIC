@@ -9,12 +9,10 @@ import com.hcim.intrusiondetection.R;
 public class IntrusionNotifier {
 	private static final int NOTIFICATION_ID = 981532;
 
-	Context context;
-	NotificationManager notificationManager;
-	Notification intrusionDetected;
+	private NotificationManager notificationManager;
+	private Notification intrusionDetected;
 
 	public IntrusionNotifier(Context context) {
-		this.context = context;
 		this.notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		intrusionDetected = new Notification.Builder(context)

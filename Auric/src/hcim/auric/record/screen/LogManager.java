@@ -1,9 +1,9 @@
 package hcim.auric.record.screen;
 
 import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.record.screen.event_based.AccessibilityEventBasedLog;
 import hcim.auric.record.screen.mswat_lib.MswatLibLog;
 import hcim.auric.record.screen.screencast_root.ScreencastRootLog;
-import hcim.auric.record.screen.textlog.SimpleTextLog;
 import android.content.Context;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
@@ -13,7 +13,7 @@ public class LogManager {
 
 	private static final String TAG = "AURIC";
 
-	public static Log getSelectedLog(String log, Context context) {
+	public static AbstractLog getSelectedLog(String log, Context context) {
 
 		if (log != null) {
 			if (log.equals(ConfigurationDatabase.MSWAT_LIB_LOG))
@@ -23,7 +23,7 @@ public class LogManager {
 				return new ScreencastRootLog(context);
 
 			if (log.equals(ConfigurationDatabase.TEXT_LOG))
-				return new SimpleTextLog(context);
+				return new AccessibilityEventBasedLog(context);
 		}
 		return null;
 	}
@@ -47,7 +47,7 @@ public class LogManager {
 		}
 		if (logType.equals(ConfigurationDatabase.TEXT_LOG)) {
 			boolean b = checkAccessibilitySettings(c,
-					"com.hcim.intrusiondetection/hcim.auric.record.screen.textlog.RecordSimpleText");
+					"com.hcim.intrusiondetection/hcim.auric.record.screen.event_based.RecordEventBasedLog");
 			android.util.Log.d(TAG, "TEXT LOG = "+ b);
 			return b;
 		}

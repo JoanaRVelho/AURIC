@@ -29,7 +29,7 @@ public abstract class AbstractAuditTask extends Thread {
 	protected IntrusionNotifier notifier;
 	protected LinkedBlockingQueue<TaskMessage> queue;
 	protected IntrusionsDatabase intrusionsDB;
-	protected hcim.auric.record.screen.Log log;
+	protected hcim.auric.record.screen.AbstractLog log;
 	protected Context context;
 
 	protected boolean screenOff;

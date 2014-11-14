@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AURIC</string>
+    <string name="app_name">AURIC FULL VERSION</string>
     <string name="timeline">timeline</string>
     <string name="log">Log</string>
+    <string name="intrusion_detection">Intrusion Detection</string>
     <string name="description">log description</string>
     <string name="configurations">Settings</string>
     <string name="logs">Logs</string>
@@ -35,9 +36,22 @@
         <item>Laboratory Test Mode</item>
     </string-array>
     <string-array name="log_array">
-        <item>Simple Text</item>
+        <item>Event based Log</item>
         <item>Screencast (requires root)</item>
         <item>Mswat Library (requires root)</item>
     </string-array>
+    <string-array name="severity_array">
+        <item>None</item>
+        <item>Low</item>
+        <item>Moderate</item>
+        <item>High</item>
+    </string-array>
+        <string-array name="severity_desc_array">
+        <item>I am not an intruder</item>
+        <item>The intruder had authorization to do that</item>
+        <item>The intruder did not have authorization to that but i am not concerned about it</item>
+        <item>The intruder did not have authorization to do that and i am concerned about it</item>
+    </string-array>
+    
 
 </resources>

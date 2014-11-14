@@ -4,7 +4,7 @@ import hcim.auric.activities.passcode.Unlock;
 import hcim.auric.calendar.CalendarManager;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
-import hcim.auric.recognition.FaceRecognition;
+import hcim.auric.recognition.OpenCVBaseLoaderCallback;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,6 +12,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import org.opencv.android.OpenCVLoader;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,6 +24,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -52,21 +55,17 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private static final int UNLOCK_CODE = 20;
 
-	private Context context;
 	private IntrusionsDatabase intrusionsDB;
 
 	private void initDatabase() {
-		ConfigurationDatabase.getInstance(context);
-		intrusionsDB = IntrusionsDatabase.getInstance(context);
-		FaceRecognition.getInstance(context);
+		ConfigurationDatabase.getInstance(this);
+		intrusionsDB = IntrusionsDatabase.getInstance(this);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.calendar);
-
-		context = getApplicationContext();
 
 		initDatabase();
 
@@ -96,10 +95,12 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		calendarView = (GridView) this.findViewById(R.id.calendar);
 
-		adapter = new GridCellAdapter(context, R.id.calendar_day_gridcell,
+		adapter = new GridCellAdapter(this, R.id.calendar_day_gridcell,
 				month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
+		
+		unlock();
 	}
 
 	@Override
@@ -114,19 +115,24 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onResume() {
-		adapter = new GridCellAdapter(context, R.id.calendar_day_gridcell,
+		adapter = new GridCellAdapter(this, R.id.calendar_day_gridcell,
 				month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 
-		unlock();
-		firstLaunch();
-		
 		super.onResume();
+		
+		OpenCVBaseLoaderCallback b = new OpenCVBaseLoaderCallback(this);
+		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this,
+				b)) {
+			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
+		}else{
+			firstLaunch();
+		}
 	}
 
 	private void unlock() {
-		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
+		ConfigurationDatabase db = ConfigurationDatabase.getInstance(this);
 		
 		if (db.hasPasscode()) {
 			Intent i = new Intent(MainActivity.this, Unlock.class);
@@ -178,7 +184,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	private void setGridCellAdapterToDate(int month, int year) {
-		adapter = new GridCellAdapter(context, R.id.calendar_day_gridcell,
+		adapter = new GridCellAdapter(this, R.id.calendar_day_gridcell,
 				month, year);
 		myCalendar.set(year, month - 1, myCalendar.get(Calendar.DAY_OF_MONTH));
 		currentMonth.setText(DateFormat.format(dateTemplate,

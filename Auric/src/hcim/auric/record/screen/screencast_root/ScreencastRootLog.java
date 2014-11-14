@@ -2,10 +2,10 @@ package hcim.auric.record.screen.screencast_root;
 
 import android.content.Context;
 import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.record.screen.Log;
+import hcim.auric.record.screen.AbstractLog;
 import hcim.auric.utils.FileManager;
 
-public class ScreencastRootLog extends Log {
+public class ScreencastRootLog extends AbstractLog {
 
 	private RecordScreencast recorder;
 

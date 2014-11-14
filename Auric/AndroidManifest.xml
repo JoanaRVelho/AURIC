@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="15"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -54,9 +54,11 @@
         </activity>
         <activity android:name="hcim.auric.record.screen.screencast_root.RunScreencast" >
         </activity>
-        <activity android:name="hcim.auric.record.screen.textlog.details.RunSimpleText" >
+        <activity android:name="hcim.auric.record.screen.event_based.details.RunDetails" >
         </activity>
-        <activity android:name="hcim.auric.record.screen.textlog.timeline.TimelineActivity" >
+        <activity android:name="hcim.auric.record.screen.event_based.timeline.TimelineActivity" >
+        </activity>
+        <activity android:name="hcim.auric.record.screen.event_based.timeline.Details" >
         </activity>
 
         <service
@@ -141,11 +143,11 @@
         </receiver>
 
         <service
-            android:name="hcim.auric.record.screen.textlog.RecordSimpleText"
+            android:name="hcim.auric.record.screen.event_based.RecordEventBasedLog"
             class=".SimpleTextLogService"
             android:enabled="true"
             android:exported="false"
-            android:label="AURIC - Simple Text"
+            android:label="AURIC - Event based Log"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action

@@ -11,7 +11,6 @@ import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
 import hcim.auric.record.screen.LogManager;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -32,6 +31,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hcim.intrusiondetection.R;
@@ -40,17 +40,18 @@ public class SettingsActivity extends Activity {
 	private static final int REQUEST_IMAGE_CAPTURE = 1;
 	private static final String TAG = "AURIC";
 
-	private Context context;
 	private ConfigurationDatabase configDB;
 	private PicturesDatabase picturesDB;
 
 	private Switch onOff;
 
+	private TextView modeTitle;
 	private Spinner modeSpinner;
 	private String currentMode;
 	private CheckBox deviceSharing;
 	private String selectedMode;
 
+	private TextView pictureTitle;
 	private Button changePicture;
 	private Button allPictures;
 	private ImageView img;
@@ -59,6 +60,7 @@ public class SettingsActivity extends Activity {
 	private Button changePasscode;
 	private Switch passcodeSwitch;
 
+	private TextView logTitle;
 	private Spinner logSpinner;
 	private String currentLogType;
 
@@ -67,9 +69,8 @@ public class SettingsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings_view);
 
-		context = getApplicationContext();
-		configDB = ConfigurationDatabase.getInstance(context);
-		picturesDB = PicturesDatabase.getInstance(context);
+		configDB = ConfigurationDatabase.getInstance(this);
+		picturesDB = PicturesDatabase.getInstance(this);
 
 		initView();
 		setElementsVisibility();
@@ -91,7 +92,7 @@ public class SettingsActivity extends Activity {
 			Bitmap imageBitmap = (Bitmap) extras.get("data");
 			String name = PicturesDatabase.MAIN_PICTURE;
 
-			FaceRecognition recognition = FaceRecognition.getInstance(context);
+			FaceRecognition recognition = FaceRecognition.getInstance(this);
 			boolean result = recognition.trainPicture(imageBitmap, name);
 
 			if (result) {
@@ -114,10 +115,10 @@ public class SettingsActivity extends Activity {
 	}
 
 	private boolean pictureChecked() {
-//		if (configDB.getMode() == ConfigurationDatabase.ORIGINAL_MODE)
-//			return picturesDB.getMyPicture() != null;
-//		
-//		return true;
+		// if (configDB.getMode() == ConfigurationDatabase.ORIGINAL_MODE)
+		// return picturesDB.getMyPicture() != null;
+		//
+		// return true;
 		return picturesDB.getMyPicture() != null;
 	}
 
@@ -134,7 +135,7 @@ public class SettingsActivity extends Activity {
 		String type = configDB.getLogType();
 
 		if (LogManager.hasAccessibilityService(type)) {
-			return LogManager.accessibilityServiceEnabled(context, type);
+			return LogManager.accessibilityServiceEnabled(this, type);
 		}
 
 		return true;
@@ -198,6 +199,7 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void initModeSection() {
+		modeTitle = (TextView) findViewById(R.id.mode_title);
 		// init spinner
 		modeSpinner = (Spinner) findViewById(R.id.mode_spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -224,6 +226,7 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void initPictureSection() {
+		pictureTitle = (TextView) findViewById(R.id.mypicture_title);
 		// get data from database
 		Picture p = picturesDB.getMyPicture();
 		currentMode = configDB.getMode();
@@ -297,6 +300,8 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void initLogOptions() {
+		logTitle = (TextView) findViewById(R.id.log_type_title);
+
 		logSpinner = (Spinner) findViewById(R.id.log_options);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this, R.array.log_array, android.R.layout.simple_spinner_item);
@@ -319,12 +324,25 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void setElementsVisibility() {
-		View scroll = (View) findViewById(R.id.config_scroll);
+		int c = onOff.isChecked() ? View.VISIBLE : View.GONE;
 
-		if (onOff.isChecked())
-			scroll.setVisibility(View.VISIBLE);
-		else
-			scroll.setVisibility(View.INVISIBLE);
+		modeTitle.setVisibility(c);
+		modeSpinner.setVisibility(c);
+		deviceSharing.setVisibility(c);
+
+		pictureTitle.setVisibility(c);
+		changePicture.setVisibility(c);
+		img.setVisibility(c);
+
+		if (onOff.isChecked() && picturesDB.numberOfIntrusions() > 1) {
+			allPictures.setEnabled(true);
+			allPictures.setVisibility(View.VISIBLE);
+		} else {
+			allPictures.setVisibility(View.GONE);
+		}
+
+		logTitle.setVisibility(c);
+		logSpinner.setVisibility(c);
 	}
 
 	private void selectCurrentMode() {
@@ -409,24 +427,20 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void addPictures() {
-		FaceRecognition recognition = FaceRecognition.getInstance(context);
-		Context context = getApplicationContext();
+		FaceRecognition recognition = FaceRecognition.getInstance(this);
 		String name;
 		Bitmap grayBitmap;
 
 		name = "pic_a";
-		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.g);
+		grayBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.g);
 		recognition.trainPicture(grayBitmap, name);
 
 		name = "pic_b";
-		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.p);
+		grayBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.p);
 		recognition.trainPicture(grayBitmap, name);
 
 		name = "pic_c";
-		grayBitmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.m);
+		grayBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.m);
 		recognition.trainPicture(grayBitmap, name);
 	}
 }

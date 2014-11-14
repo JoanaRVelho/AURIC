@@ -1,11 +1,11 @@
 package hcim.auric.record.screen.mswat_lib;
 
 import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.record.screen.Log;
+import hcim.auric.record.screen.AbstractLog;
 import android.content.Context;
 import android.content.Intent;
 
-public class MswatLibLog extends Log{
+public class MswatLibLog extends AbstractLog{
 
 	public MswatLibLog(Context c) {
 		super(c);
