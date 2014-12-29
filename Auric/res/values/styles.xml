@@ -17,10 +17,4 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    
-    <style name="filmlayout">
-      <item name="android:layout_marginTop">2dp</item>
-      
-	</style>
-
 </resources>

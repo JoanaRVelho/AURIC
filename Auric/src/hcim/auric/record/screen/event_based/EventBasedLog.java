@@ -3,6 +3,11 @@ package hcim.auric.record.screen.event_based;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Joana Velho
+ *
+ */
 public class EventBasedLog {
 	static final String TAG = "AURIC";
 

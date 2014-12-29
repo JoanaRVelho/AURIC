@@ -7,15 +7,16 @@ import java.util.Date;
 
 import android.annotation.SuppressLint;
 
-@SuppressLint("SimpleDateFormat") public class CalendarManager {
-	
+@SuppressLint("SimpleDateFormat")
+public class CalendarManager {
+
 	public static final String MONTH_DAY_SEPARATOR = " ";
 	public static final String DAY_YEAR_SEPARATOR = ", ";
 	public static final String TIME_SEPARATOR = ":";
-	
-	private static final String[] weekdays = new String[] { "Sun", "Mon",
+
+	private static final String[] WEEKDAYS = new String[] { "Sun", "Mon",
 			"Tue", "Wed", "Thu", "Fri", "Sat" };
-	private static final String[] months = { "January", "February", "March",
+	private static final String[] MONTHS = { "January", "February", "March",
 			"April", "May", "June", "July", "August", "September", "October",
 			"November", "December" };
 
@@ -23,11 +24,15 @@ import android.annotation.SuppressLint;
 			30, 31, 30, 31 };
 
 	public static String getMonthAsString(int i) {
-		return months[i];
+		return MONTHS[i];
+	}
+
+	public static String monthYearString(int month, int year) {
+		return getMonthAsString(month - 1) + " " + year;
 	}
 
 	public static String getWeekDayAsString(int i) {
-		return weekdays[i];
+		return WEEKDAYS[i];
 	}
 
 	public static int getNumberOfDaysOfMonth(int i) {
@@ -39,21 +44,21 @@ import android.annotation.SuppressLint;
 		return CalendarManager.getMonthAsString(c.get(Calendar.MONTH)) + " "
 				+ c.get(Calendar.YEAR);
 	}
-	
+
 	public static String getDate(long timestamp) {
 		Date d = new Date(timestamp);
-		Format f = new SimpleDateFormat("dd-MMMM-yyyy");
-	
+		Format f = new SimpleDateFormat("dd-MM-yyyy");
+
 		String calendar = f.format(d).toString();
 		if (calendar.charAt(0) == '0')
 			calendar = calendar.substring(1);
-	
+
 		String[] array = calendar.split("-");
-	
-		String date = CalendarManager.getDateFormat(array[0], array[1],
-				array[2]);
-		
-		return date; 
+
+		String date = CalendarManager.getDateFormat(array[0],
+				MONTHS[Integer.parseInt(array[1])-1], array[2]);
+
+		return date;
 	}
 
 	public static String getDateFormat(String d, String m, String y) {
@@ -65,21 +70,21 @@ import android.annotation.SuppressLint;
 		s.append(y);
 		return s.toString();
 	}
-	
-	public static String getTime(long timestamp){
+
+	public static String getTime(long timestamp) {
 		Date d = new Date(timestamp);
 		Format f = new SimpleDateFormat("HH-mm-ss");
-	
+
 		String calendar = f.format(d).toString();
 		if (calendar.charAt(0) == '0')
 			calendar = calendar.substring(1);
-	
+
 		String[] array = calendar.split("-");
-	
+
 		String time = CalendarManager.getTimeFormat(array[0], array[1],
 				array[2]);
-		
-		return time; 
+
+		return time;
 	}
 
 	public static String getTimeFormat(String h, String m, String s) {

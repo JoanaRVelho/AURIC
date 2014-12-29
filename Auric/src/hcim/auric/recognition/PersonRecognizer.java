@@ -103,7 +103,7 @@ public class PersonRecognizer {
 			if (count < icount)
 				count++;
 
-			String description = p.substring(i1, i2);
+			String description = p.substring(i1+1, i2);
 
 			if (labelsFile.get(description) < 0)
 				labelsFile.add(description, labelsFile.max() + 1);

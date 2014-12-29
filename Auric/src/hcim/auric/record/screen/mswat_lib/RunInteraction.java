@@ -1,6 +1,6 @@
 package hcim.auric.record.screen.mswat_lib;
 
-import hcim.auric.activities.images.IntruderPictureGrid;
+import hcim.auric.activities.images.IntrusionPicturesSlideShow;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.Picture;
@@ -46,7 +46,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -79,7 +79,7 @@ import com.hcim.intrusiondetection.R;
 	private int swipeIndex;
 	private ArrayList<ImageView> swipeClues;
 	private List<Bitmap> intruderList;
-	private Button trash;
+	private ImageView trash;
 	private TextView timerTextView;
 
 	private int currentImage;
@@ -179,8 +179,8 @@ import com.hcim.intrusiondetection.R;
 			public void onClick(View v) {
 				if (playImg.getVisibility() == View.VISIBLE) {
 					Intent i = new Intent(RunInteraction.this,
-							IntruderPictureGrid.class);
-					i.putExtra(IntruderPictureGrid.EXTRA_ID, intrusion.getID());
+							IntrusionPicturesSlideShow.class);
+					i.putExtra(IntrusionPicturesSlideShow.EXTRA_ID, intrusion.getID());
 					startActivity(i);
 				}
 			}
@@ -193,7 +193,7 @@ import com.hcim.intrusiondetection.R;
 
 		}
 
-		trash = (Button) findViewById(R.id.trash);
+		trash = (ImageView) findViewById(R.id.trash);
 		trash.setOnClickListener(new OnClickListener() {
 
 			@Override

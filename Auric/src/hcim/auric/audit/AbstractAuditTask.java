@@ -7,7 +7,7 @@ import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.record.IntruderCaptureTask;
-import hcim.auric.record.screen.LogManager;
+import hcim.auric.record.log_type.LogManager;
 
 import java.util.Timer;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -29,7 +29,7 @@ public abstract class AbstractAuditTask extends Thread {
 	protected IntrusionNotifier notifier;
 	protected LinkedBlockingQueue<TaskMessage> queue;
 	protected IntrusionsDatabase intrusionsDB;
-	protected hcim.auric.record.screen.AbstractLog log;
+	protected hcim.auric.record.log_type.AbstractLog log;
 	protected Context context;
 
 	protected boolean screenOff;

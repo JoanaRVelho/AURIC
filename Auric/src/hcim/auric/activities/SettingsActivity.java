@@ -1,6 +1,6 @@
 package hcim.auric.activities;
 
-import hcim.auric.activities.images.RecognizedPicturesGrid;
+import hcim.auric.activities.images.RecognizedPicturesSlideShow;
 import hcim.auric.activities.passcode.ConfirmAndChangePasscode;
 import hcim.auric.activities.passcode.ConfirmAndTurnOffPasscode;
 import hcim.auric.activities.passcode.InsertPasscode;
@@ -9,7 +9,7 @@ import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
-import hcim.auric.record.screen.LogManager;
+import hcim.auric.record.log_type.LogManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -63,6 +64,8 @@ public class SettingsActivity extends Activity {
 	private TextView logTitle;
 	private Spinner logSpinner;
 	private String currentLogType;
+	
+	private EditText params;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,8 @@ public class SettingsActivity extends Activity {
 
 		initView();
 		setElementsVisibility();
+		
+		initFaceRecognition();
 
 		stopBackgroundService();
 	}
@@ -144,6 +149,8 @@ public class SettingsActivity extends Activity {
 	@Override
 	public void finish() {
 		printStatus();
+		faceRecogData();
+		Log.i("AURIC", "face recog max=" + FaceRecognition.MAX);
 
 		if (readyToStart()) {
 			startBackgroundService();
@@ -163,6 +170,19 @@ public class SettingsActivity extends Activity {
 		}
 	}
 
+	private void faceRecogData() {
+		try {
+			int i = Integer.parseInt(params.getText().toString());
+			FaceRecognition.MAX = i;
+		} catch (NumberFormatException e) {
+		}
+	}
+	
+	private void initFaceRecognition() {
+		params = (EditText) findViewById(R.id.faceRecog);
+		params.setText(""+FaceRecognition.MAX);
+	}
+
 	private void printStatus() {
 		Log.i(TAG,
 				"SettingsActivity - STATUS: "
@@ -175,11 +195,11 @@ public class SettingsActivity extends Activity {
 	}
 
 	private void initView() {
-		initOnOffSwitch();
 		initModeSection();
 		initPictureSection();
 		initPasscodeSection();
 		initLogOptions();
+		initOnOffSwitch();
 	}
 
 	private void initOnOffSwitch() {
@@ -254,7 +274,7 @@ public class SettingsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(SettingsActivity.this,
-						RecognizedPicturesGrid.class);
+						RecognizedPicturesSlideShow.class);
 				startActivity(i);
 			}
 		});

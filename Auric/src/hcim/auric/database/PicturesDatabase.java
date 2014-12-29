@@ -49,9 +49,9 @@ public class PicturesDatabase {
 
 		myPicture = pic;
 
-//		Log.d(TAG,
-//				"setMyPicture: Picture ID=" + pic.getID() + ", type="
-//						+ pic.getType());
+		Log.d(TAG,
+				"setMyPicture: Picture ID=" + pic.getID() + ", type="
+						+ pic.getType());
 		printList();
 	}
 

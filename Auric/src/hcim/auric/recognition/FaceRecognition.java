@@ -4,7 +4,12 @@ import hcim.auric.database.PicturesDatabase;
 import hcim.auric.utils.FileManager;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -21,6 +26,8 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.util.Log;
 
+import com.hcim.intrusiondetection.R;
+
 /**
  * https://github.com/ayuso2013/face-recognition
  */
@@ -30,18 +37,22 @@ public class FaceRecognition {
 
 	private static final String TAG = "AURIC";
 
-	public static final long MAX_IMG = 10;
+	// public static final long MAX_IMG = 10;
 	public static final String MY_PICTURE_TYPE = "myface";
 	public static final String INTRUDER_PICTURE_TYPE = "intruder";
 	public static final String UNKNOWN_PICTURE_TYPE = "unknown";
+	
+	public static int MIN = 0;
+	public static int MAX = 80;
 
+	private File cascadeFile;
 	private CascadeClassifier faceDetector;
 	private int absoluteFaceSize = 0;
 
-	private OpenCVBaseLoaderCallback loaderCallback;
+	private BaseLoaderCallback loaderCallback;
 	private String path;
 	private PersonRecognizer recognizer;
-	private int countImages = 0;
+	// private int countImages = 0;
 	private Context context;
 
 	public static FaceRecognition getInstance(Context c) {
@@ -98,7 +109,7 @@ public class FaceRecognition {
 			int result = recognize(facesArray, grayMat);
 			Log.d(TAG, "Face Recognition - result = " + result);
 
-			return result > 0 && result < 80;
+			return result > MIN && result < MAX;
 		}
 	}
 
@@ -127,13 +138,12 @@ public class FaceRecognition {
 
 	public void untrainPicture(String picID) {
 		// TODO Auto-generated method stub
+
 	}
 
 	private FaceRecognition(Context c) {
 		this.context = c;
-		this.loaderCallback = new OpenCVBaseLoaderCallback(c);
-		this.faceDetector = loaderCallback.getCascadeClassifier();
-		this.recognizer = loaderCallback.getPersonRecognizer();
+		loaderCallback = new MyBaseLoaderCallback(c);
 
 		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
 				loaderCallback)) {
@@ -158,6 +168,10 @@ public class FaceRecognition {
 		}
 	}
 
+	public BaseLoaderCallback getLoaderCallback() {
+		return loaderCallback;
+	}
+
 	private MatOfRect detect(Mat gray) {
 		MatOfRect faces = new MatOfRect();
 
@@ -174,10 +188,10 @@ public class FaceRecognition {
 
 		m = rgbMat.submat(r);
 
-		if (countImages < MAX_IMG) {
-			recognizer.add(m, name);
-			countImages++;
-		}
+		// if (countImages < MAX_IMG) {
+		recognizer.add(m, name);
+		// countImages++;
+		// }
 
 	}
 
@@ -212,5 +226,66 @@ public class FaceRecognition {
 		c.drawBitmap(img, 0, 0, paint);
 
 		return bmpGrayscale;
+	}
+
+	private class MyBaseLoaderCallback extends BaseLoaderCallback {
+		private Context c;
+
+		MyBaseLoaderCallback(Context c) {
+			super(c);
+			this.c = c;
+		}
+
+		@Override
+		public void onManagerConnected(int status) {
+			switch (status) {
+			case LoaderCallbackInterface.SUCCESS: {
+				Log.d(TAG, "Face Recognition - OpenCV loaded successfully");
+
+				recognizer = new PersonRecognizer(path);
+				recognizer.load();
+
+				try {
+					InputStream is = c.getResources().openRawResource(
+							R.raw.lbpcascade_frontalface);
+					File cascadeDir = c.getDir("cascade", Context.MODE_PRIVATE);
+					cascadeFile = new File(cascadeDir, "lbpcascade.xml");
+					FileOutputStream os = new FileOutputStream(cascadeFile);
+
+					byte[] buffer = new byte[4096];
+					int bytesRead;
+					while ((bytesRead = is.read(buffer)) != -1) {
+						os.write(buffer, 0, bytesRead);
+					}
+					is.close();
+					os.close();
+
+					faceDetector = new CascadeClassifier(
+							cascadeFile.getAbsolutePath());
+					if (faceDetector.empty()) {
+						Log.e(TAG,
+								"Face Recognition - Failed to load cascade classifier");
+						faceDetector = null;
+					} else
+						Log.d(TAG,
+								"Face Recognition - Loaded cascade classifier from "
+										+ cascadeFile.getAbsolutePath());
+
+					cascadeDir.delete();
+
+				} catch (IOException e) {
+					Log.e(TAG,
+							"Face Recognition - Failed to load cascade. " +
+							"Exception thrown: "
+									+ e);
+				}
+			}
+				break;
+			default: {
+				super.onManagerConnected(status);
+			}
+				break;
+			}
+		}
 	}
 }

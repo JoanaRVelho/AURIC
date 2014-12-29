@@ -68,16 +68,15 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:adjustViewBounds="true" >
+            android:adjustViewBounds="true"
+            android:orientation="horizontal" >
 
-            <ImageView
-                android:id="@+id/calendarheader"
+            <GridView
+                android:id="@+id/days_week"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/week" >
-            </ImageView>
+                android:numColumns="7" >
+            </GridView>
         </LinearLayout>
 
         <GridView

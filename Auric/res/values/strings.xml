@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">AURIC FULL VERSION</string>
+	
+    <string name="app_name">Auric</string>
     <string name="timeline">timeline</string>
     <string name="log">Log</string>
     <string name="intrusion_detection">Intrusion Detection</string>
@@ -9,16 +9,14 @@
     <string name="configurations">Settings</string>
     <string name="logs">Logs</string>
     <string name="intrusions">Intrusions</string>
+    <string name="intrusion">Intrusion</string>
     <string name="picture">Captured Pictures</string>
     <string name="mypicture">My Picture</string>
     <string name="otherpicture">Other Picture</string>
     <string name="change">Change</string>
-    <string name="replay">Replay</string>
     <string name="menu">Menu</string>
-    <string name="modoswitch">Original Mode</string>
+     <string name="replay">Replay</string>
     <string name="none">None</string>
-    <string name="original_mode">Original Mode</string>
-    <string name="lab_test">Laboratory Test Mode</string>
     <string name="mode">AURIC Mode</string>
     <string name="device_sharing">Device Sharing</string>
     <string name="screenshots">Screenshots</string>
@@ -29,6 +27,8 @@
     <string name="all_imgs">All Pictures</string>
     <string name="log_type">Log Type</string>
     <string name="done">Done</string>
+    <string name="doubletap">Double tap to recognize.</string>
+    <string name="taprecog">Tap here to recognize</string>
     <string name="pref_previously_started">started</string>
 
     <string-array name="mode_array">
@@ -38,7 +38,6 @@
     <string-array name="log_array">
         <item>Event based Log</item>
         <item>Screencast (requires root)</item>
-        <item>Mswat Library (requires root)</item>
     </string-array>
     <string-array name="severity_array">
         <item>None</item>

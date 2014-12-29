@@ -32,6 +32,7 @@ public abstract class AbstractMode {
 	}
 
 	public void destroy() {
-		task.interrupt();
+		if(task != null)
+			task.interrupt();
 	}
 }

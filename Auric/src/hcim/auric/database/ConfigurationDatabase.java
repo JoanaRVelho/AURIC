@@ -9,9 +9,8 @@ public class ConfigurationDatabase {
 	public static final String TAG = "AURIC";
 
 	/** Log type **/
-	public static String MSWAT_LIB_LOG;
 	public static String SCREENCAST_ROOT_LOG;
-	public static String TEXT_LOG;
+	public static String EVENT_LOG;
 
 	/** Mode **/
 	public static String ORIGINAL_MODE;
@@ -75,10 +74,10 @@ public class ConfigurationDatabase {
 		defaultMode = ORIGINAL_MODE;
 
 		elements = r.getStringArray(R.array.log_array);
-		MSWAT_LIB_LOG = elements[2];
+	//	MSWAT_LIB_LOG = elements[2];
 		SCREENCAST_ROOT_LOG = elements[1];
-		TEXT_LOG = elements[0];
-		defaultLog = TEXT_LOG;
+		EVENT_LOG = elements[0];
+		defaultLog = EVENT_LOG;
 	}
 
 	public String getMode() {

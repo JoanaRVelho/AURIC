@@ -3,8 +3,7 @@ package hcim.auric.activities;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
-import hcim.auric.record.screen.event_based.timeline.TimelineActivity;
-import hcim.auric.record.screen.mswat_lib.RunInteraction;
+import hcim.auric.record.screen.event_based.TimelineActivity;
 import hcim.auric.record.screen.screencast_root.RunScreencast;
 
 import java.util.List;
@@ -24,10 +23,12 @@ import android.widget.TextView;
 import com.hcim.intrusiondetection.R;
 
 public class IntrusionsListActivity extends Activity {
+	public static final String EXTRA_ID = "extra";
+	
 	private IntrusionsDatabase intrusionsDB;
 	private String date;
 	private LinearLayout layout;
-	private ProgressBar bar; 
+	private ProgressBar bar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class IntrusionsListActivity extends Activity {
 		bar = (ProgressBar) findViewById(R.id.progress_bar);
 
 		Bundle extras = getIntent().getExtras();
-		date = extras.getString("value1");
+		date = extras.getString(EXTRA_ID);
 
 		TextView t = (TextView) findViewById(R.id.textView1);
 		t.setText(date + " Intrusion");
@@ -78,7 +79,7 @@ public class IntrusionsListActivity extends Activity {
 		runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
 			@Override
-			public void run() {				
+			public void run() {
 				Drawable checked = getResources().getDrawable(
 						R.drawable.mark_false);
 				Drawable unchecked = getResources().getDrawable(
@@ -88,12 +89,12 @@ public class IntrusionsListActivity extends Activity {
 					Button b = new Button(IntrusionsListActivity.this);
 					b.setText("Intrusion " + i.getTime());
 					b.setTextColor(Color.WHITE);
-					
+
 					switch (i.getTag()) {
 					case Intrusion.UNCHECKED:
 						b.setBackgroundDrawable(unchecked);
 						break;
-					default :
+					default:
 						b.setBackgroundDrawable(checked);
 						break;
 					}
@@ -104,8 +105,8 @@ public class IntrusionsListActivity extends Activity {
 			}
 		});
 	}
-	
-	private void startTimeline(String intrusion){
+
+	private void startTimeline(String intrusion) {
 		Intent intent = new Intent(IntrusionsListActivity.this,
 				TimelineActivity.class);
 		intent.putExtra(TimelineActivity.EXTRA_ID, intrusion);
@@ -129,23 +130,16 @@ public class IntrusionsListActivity extends Activity {
 
 		private void runActivity(Intrusion i) {
 			String log = i.getLogType();
-			
+
 			if (log != null) {
 				Intent intent;
-				if (log.equals(ConfigurationDatabase.MSWAT_LIB_LOG)) {
-					intent = new Intent(IntrusionsListActivity.this,
-							RunInteraction.class);
-					intent.putExtra(RunInteraction.EXTRA_ID, intrusion);
-					startActivity(intent);
-				}
 				if (log.equals(ConfigurationDatabase.SCREENCAST_ROOT_LOG)) {
 					intent = new Intent(IntrusionsListActivity.this,
 							RunScreencast.class);
 					intent.putExtra(RunScreencast.EXTRA_ID, intrusion);
 					startActivity(intent);
 				}
-				if (log.equals(ConfigurationDatabase.TEXT_LOG)) {
-					//chooseActivityAlertDiolog(intrusion);
+				if (log.equals(ConfigurationDatabase.EVENT_LOG)) {
 					startTimeline(intrusion);
 				}
 			}

@@ -10,6 +10,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 public class IntrusionsDatabase {
 	private static IntrusionsDatabase INSTANCE;
@@ -34,10 +35,11 @@ public class IntrusionsDatabase {
 
 	public void insertIntrusionData(Intrusion i) {
 		if (intrusionsDB != null) {
+			Log.i("AURIC", "addddddddddd");
 			intrusionsDB.addIntrusion(i);
 		}
 	}
-
+	
 	public Intrusion getIntrusion(String id) {
 		Intrusion i = intrusionsDB.getIntrusion(id);
 		List<Picture> pics = intrusionsPicturesDB.getAllPictures(id);
@@ -47,6 +49,10 @@ public class IntrusionsDatabase {
 		return i;
 	}
 
+	public void printAll(){
+		intrusionsDB.printAll();
+	}
+	
 	public void deleteIntrusion(String id, boolean onlyPictures) {
 		if (!onlyPictures)
 			intrusionsDB.deleteIntrusion(id);
@@ -68,7 +74,7 @@ public class IntrusionsDatabase {
 
 	public void insertPictureOfTheIntruder(String intrusionID, Bitmap img) {
 		if (intrusionsPicturesDB != null) {
-			Picture p = new Picture(StringGenerator.generateString(),
+			Picture p = new Picture(StringGenerator.generate(),
 					FaceRecognition.UNKNOWN_PICTURE_TYPE, img);
 
 			intrusionsPicturesDB.insertPicture(intrusionID, p);

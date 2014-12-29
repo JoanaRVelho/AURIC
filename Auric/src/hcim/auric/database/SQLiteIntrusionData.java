@@ -12,6 +12,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class SQLiteIntrusionData extends SQLiteOpenHelper {
 
@@ -62,6 +63,8 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 
 		db.close();
 	}
+	
+	
 
 	public Intrusion getIntrusion(String id) {
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -133,6 +136,27 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	public void printAll(){
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor  cursor = db.rawQuery("select * from " + TABLE_INTRUSIONS,null);
+		Intrusion i;
+		Log.d("AURIC", "print all intrusions");
+		
+		if (cursor.moveToFirst()) {
+			if (cursor.getCount() <= 0) {
+				db.close();
+			}
+			do {
+				i = IntrusionFactory.createIntrusion(cursor.getString(0),
+						cursor.getString(1), cursor.getString(2),
+						cursor.getInt(3), cursor.getString(4));
+				Log.d("AURIC", i.toString());
+
+			} while (cursor.moveToNext());
+		}
+		db.close();
+	}
+	
 	public List<Intrusion> getIntrusions(int severity) {
 		List<Intrusion> result = new ArrayList<Intrusion>();
 

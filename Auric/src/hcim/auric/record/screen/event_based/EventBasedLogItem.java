@@ -87,7 +87,7 @@ public class EventBasedLogItem {
 		StringBuilder builder = new StringBuilder();
 
 		for (String s : details) {
-			builder.append("Intruder tapped on ");
+			builder.append("User tapped on ");
 			builder.append(s);
 			builder.append("\n\n");
 		}

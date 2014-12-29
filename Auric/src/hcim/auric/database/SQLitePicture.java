@@ -224,7 +224,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 		ContentValues values = new ContentValues();
 		values.put(KEY_TYPE, p.getType());
-		db.update(TABLE_PICTURES, values, "KEY_ID ='" + p.getID() + "'", null);
+		db.update(TABLE_PICTURES, values, KEY_ID + "='" + p.getID() + "'", null);
 
 		db.close();
 	}

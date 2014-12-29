@@ -28,13 +28,12 @@
             android:id="@+id/on_off"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" 
+            android:layout_alignParentRight="true"
             android:layout_below="@+id/textView1"
-            android:text="@string/intrusion_detection"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"/>
-
+            android:layout_marginTop="10dp"
+            android:text="@string/intrusion_detection" />
     </RelativeLayout>
 
     <ScrollView
@@ -185,6 +184,39 @@
                 android:textColor="#FFF"
                 android:visibility="invisible" />
 
+            <TextView
+                android:id="@+id/faceRecogTitle"
+                android:layout_width="fill_parent"
+                android:layout_height="25sp"
+                android:layout_below="@+id/change_passcode"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:background="@drawable/sub_bar"
+                android:text="Face Recognition Params"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/face_recog_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/faceRecogTitle"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Max difference between two pictures. \nDefault value = 80" />
+
+            <EditText
+                android:id="@+id/faceRecog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/face_recog_desc"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:ems="3"
+                android:inputType="number"
+                android:text="MAX DIFF - Default 80" />
         </RelativeLayout>
     </ScrollView>
 

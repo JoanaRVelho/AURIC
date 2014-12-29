@@ -76,12 +76,12 @@
         android:contentDescription="@string/replay"
         android:src="@drawable/play" />
 
-    <Button
+    <ImageView
         android:id="@+id/trash"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/trash_icon2" />
+        android:background="@drawable/trash_flat" />
 
 </RelativeLayout>

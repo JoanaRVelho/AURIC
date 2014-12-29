@@ -1,8 +1,8 @@
 package hcim.auric.record.screen.mswat_lib;
 
 import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.record.screen.AbstractLog;
-import hcim.auric.record.screen.LogManager;
+import hcim.auric.record.log_type.AbstractLog;
+import hcim.auric.record.log_type.LogManager;
 import mswat.core.CoreController;
 import mswat.interfaces.IOReceiver;
 import android.content.BroadcastReceiver;
