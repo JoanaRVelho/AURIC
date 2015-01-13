@@ -8,7 +8,9 @@
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" >
 
         <Button
             android:id="@+id/button1"
@@ -17,6 +19,17 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:background="@drawable/gear" />
+
+        <ImageView
+            android:id="@+id/auric_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/auric_icon" 
+            android:contentDescription="@string/description"
+            android:visibility="gone"/>
+
     </RelativeLayout>
 
     <LinearLayout
@@ -41,12 +54,13 @@
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
                 android:layout_marginLeft="10sp"
+                android:contentDescription="@string/description"
                 android:src="@drawable/calendar_left_arrow_selector" >
             </ImageView>
 
             <TextView
                 android:id="@+id/currentMonth"
-                android:layout_width="fill_parent"
+                android:layout_width="0dp"
                 android:layout_height="60sp"
                 android:layout_weight="0.6"
                 android:gravity="center"
@@ -59,6 +73,7 @@
                 android:layout_width="20sp"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
+                android:contentDescription="@string/description"
                 android:layout_marginRight="10sp"
                 android:src="@drawable/calendar_right_arrow_selector" >
             </ImageView>

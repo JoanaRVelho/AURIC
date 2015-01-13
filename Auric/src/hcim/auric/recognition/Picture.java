@@ -71,9 +71,9 @@ public class Picture {
 
 	public static List<Picture> getPictureList(List<Bitmap> images) {
 		List<Picture> result = new ArrayList<Picture>();
-		
-		for(Bitmap b : images){
-			result.add(new Picture(null, null,b));
+
+		for (Bitmap b : images) {
+			result.add(new Picture(null, null, b));
 		}
 		return result;
 	}
@@ -85,6 +85,10 @@ public class Picture {
 	@Override
 	public String toString() {
 		return "Picture [id=" + id + ", type=" + type + "]";
+	}
+
+	public void setBitmap(Bitmap bitmap) {
+		this.img = bitmap;
 	}
 
 }

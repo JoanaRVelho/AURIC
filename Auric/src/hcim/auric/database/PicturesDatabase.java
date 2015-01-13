@@ -6,16 +6,13 @@ import hcim.auric.recognition.Picture;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.Log;
 
 public class PicturesDatabase {
 	public static final String TAG = "AURIC";
-	public static final String MAIN_PICTURE = "main_picture";
 
 	private static PicturesDatabase INSTANCE;
 	private SQLitePicture pictureDB;
-	private Picture myPicture;
 
 	public static PicturesDatabase getInstance(Context c) {
 		if (INSTANCE == null) {
@@ -27,32 +24,6 @@ public class PicturesDatabase {
 
 	private PicturesDatabase(Context c) {
 		pictureDB = new SQLitePicture(c);
-		myPicture = getMyPicture();
-	}
-
-	public Picture getMyPicture() {
-		if (myPicture == null)
-			if (pictureDB != null)
-				myPicture = pictureDB.getPicture(MAIN_PICTURE);
-
-		return myPicture;
-	}
-
-	public void setMyPicture(Bitmap bitmap) {
-		Picture pic = new Picture(MAIN_PICTURE,
-				FaceRecognition.MY_PICTURE_TYPE, bitmap);
-
-		if (myPicture == null)
-			pictureDB.insertPicture(pic);
-		else
-			pictureDB.updatePicture(pic);
-
-		myPicture = pic;
-
-		Log.d(TAG,
-				"setMyPicture: Picture ID=" + pic.getID() + ", type="
-						+ pic.getType());
-		printList();
 	}
 
 	public void addPicture(Picture p) {

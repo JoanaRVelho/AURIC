@@ -1,0 +1,130 @@
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgray" >
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentLeft="true" >
+
+        <Switch
+            android:id="@+id/on_off"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/intrusion_detection" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/config_scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/header"
+        android:layout_marginTop="10dp" >
+
+        <RelativeLayout
+            android:id="@+id/auric_options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <CheckBox
+                android:id="@+id/checkBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/mode_spinner"
+                android:text="@string/device_sharing" />
+
+            <TextView
+                android:id="@+id/mode_title"
+                android:layout_width="fill_parent"
+                android:layout_height="25sp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/sub_bar"
+                android:gravity="center"
+                android:text="@string/mode"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFF" />
+
+            <Spinner
+                android:id="@+id/mode_spinner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/mode_title"
+                android:layout_marginTop="14dp" />
+
+            <Spinner
+                android:id="@+id/log_options"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/log_type_title"
+                android:layout_marginTop="15dp" />
+
+            <TextView
+                android:id="@+id/passcode_title"
+                android:layout_width="fill_parent"
+                android:layout_height="25sp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/log_options"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/sub_bar"
+                android:gravity="center"
+                android:text="@string/passcode_title"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFF" />
+
+            <Button
+                android:id="@+id/change_passcode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:layout_below="@+id/passcode_switch"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/button_background"
+                android:text="@string/passcode_change"
+                android:textColor="#FFF" />
+
+            <Switch
+                android:id="@+id/passcode_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/passcode_title"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/passcode" />
+
+            <TextView
+                android:id="@+id/log_type_title"
+                android:layout_width="fill_parent"
+                android:layout_height="25sp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/checkBox1"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/sub_bar"
+                android:gravity="center"
+                android:text="@string/log_type"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFF" />
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

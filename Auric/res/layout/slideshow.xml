@@ -10,7 +10,8 @@
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/description"
         android:layout_above="@+id/scroll" />
 
     <ScrollView
@@ -24,6 +25,7 @@
             android:id="@+id/dots"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal" >
         </LinearLayout>
     </ScrollView>
@@ -32,9 +34,9 @@
         android:id="@+id/type_pic"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="25dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignBottom="@+id/intruder_pict"
+        android:contentDescription="@string/description"
         android:src="@drawable/black" />
 
     <TextView

@@ -20,6 +20,7 @@
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
         android:layout_column="3"
+        android:contentDescription="@string/description"
         android:layout_gravity="center_horizontal" />
 
     <TextView

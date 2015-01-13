@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgray" >
+
+    <TextView
+        android:id="@+id/face_recog_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/faceRecogTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/faceparamsdesc" />
+
+    <Button
+        android:id="@+id/viewall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TextView01"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_background"
+        android:textColor="@color/white"
+        android:text="@string/viewall" />
+
+    <NumberPicker
+        android:id="@+id/numberPicker1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/face_recog_desc"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/testfr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/viewall"
+        android:layout_below="@+id/viewall"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_background"
+        android:text="@string/test_face"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="fill_parent"
+        android:layout_height="25sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/sub_bar"
+        android:gravity="center"
+        android:text="@string/mypictures"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/faceRecogTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="25sp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/testfr"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/sub_bar"
+        android:gravity="center"
+        android:text="@string/face_params"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/white" />
+
+</RelativeLayout>

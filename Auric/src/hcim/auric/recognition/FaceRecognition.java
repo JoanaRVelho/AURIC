@@ -41,18 +41,24 @@ public class FaceRecognition {
 	public static final String MY_PICTURE_TYPE = "myface";
 	public static final String INTRUDER_PICTURE_TYPE = "intruder";
 	public static final String UNKNOWN_PICTURE_TYPE = "unknown";
-	
+	public static final String NAME = "OWNER";
+
 	public static int MIN = 0;
 	public static int MAX = 80;
 
 	private File cascadeFile;
-	private CascadeClassifier faceDetector;
+	private CascadeClassifier cascadeClassifier;
 	private int absoluteFaceSize = 0;
 
 	private BaseLoaderCallback loaderCallback;
 	private String path;
 	private PersonRecognizer recognizer;
 	// private int countImages = 0;
+	
+	public PersonRecognizer getRecognizer() {
+		return recognizer;
+	}
+
 	private Context context;
 
 	public static FaceRecognition getInstance(Context c) {
@@ -60,6 +66,10 @@ public class FaceRecognition {
 			INSTANCE = new FaceRecognition(c);
 		}
 		return INSTANCE;
+	}
+
+	public CascadeClassifier getCascadeClassifier() {
+		return cascadeClassifier;
 	}
 
 	/**
@@ -81,12 +91,19 @@ public class FaceRecognition {
 		MatOfRect faces = detect(grayMat);
 		Rect[] facesArray = faces.toArray();
 
+		boolean result;
 		if (facesArray == null || facesArray.length == 0) {
-			return false;
+			result = false;
 		} else {
 			train(facesArray, name, rgbMat);
-			return true;
+			result = true;
 		}
+
+		rgbMat.release();
+		grayMat.release();
+		faces.release();
+
+		return result;
 	}
 
 	public boolean recognizePicture(Bitmap rgbBitmap) {
@@ -101,16 +118,23 @@ public class FaceRecognition {
 		MatOfRect faces = detect(grayMat);
 		Rect[] facesArray = faces.toArray();
 
+		boolean result;
 		if (facesArray == null || facesArray.length == 0) {
 			Log.d(TAG, "Face Recognition - face detection failed");
-			return false;
+			result = false;
 		} else {
 			Log.d(TAG, "Face Recognition - face detected");
-			int result = recognize(facesArray, grayMat);
-			Log.d(TAG, "Face Recognition - result = " + result);
+			int recognitionResult = recognize(facesArray, grayMat);
+			Log.d(TAG, "Face Recognition - result = " + recognitionResult);
 
-			return result > MIN && result < MAX;
+			result = recognitionResult > MIN && recognitionResult < MAX;
 		}
+
+		rgbMat.release();
+		grayMat.release();
+		faces.release();
+
+		return result;
 	}
 
 	public boolean detectFace(Bitmap rgbBitmap) {
@@ -125,11 +149,40 @@ public class FaceRecognition {
 		MatOfRect faces = detect(grayMat);
 		Rect[] facesArray = faces.toArray();
 
+		boolean result = true;
 		if (facesArray == null || facesArray.length == 0) {
 			Log.d(TAG, "Face Recognition - face detection failed");
-			return false;
+			result = false;
 		}
-		return true;
+
+		rgbMat.release();
+		grayMat.release();
+		faces.release();
+
+		return result;
+	}
+
+	private Mat gray(Mat rgb) {
+		Mat gray = rgb.clone();
+
+		for (int i = 0; i < gray.height(); i++) {
+			for (int j = 0; j < gray.width(); j++) {
+				double y = 0.3 * gray.get(i, j)[0] + 0.59 * gray.get(i, j)[1]
+						+ 0.11 * gray.get(i, j)[2];
+				gray.put(i, j, new double[] { y, y, y, 255 });
+			}
+		}
+
+		return gray;
+	}
+
+	public Rect[] detectFaces(Mat rgbMat) {
+		Mat grayMat = gray(rgbMat);
+
+		MatOfRect faces = detect(grayMat);
+		Rect[] facesArray = faces.toArray();
+
+		return facesArray;
 	}
 
 	public void stopTrain() {
@@ -139,6 +192,10 @@ public class FaceRecognition {
 	public void untrainPicture(String picID) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public BaseLoaderCallback getLoaderCallback() {
+		return loaderCallback;
 	}
 
 	private FaceRecognition(Context c) {
@@ -168,16 +225,12 @@ public class FaceRecognition {
 		}
 	}
 
-	public BaseLoaderCallback getLoaderCallback() {
-		return loaderCallback;
-	}
-
 	private MatOfRect detect(Mat gray) {
 		MatOfRect faces = new MatOfRect();
 
-		if (faceDetector != null)
-			faceDetector.detectMultiScale(gray, faces, 1.1, 2, 2, new Size(
-					absoluteFaceSize, absoluteFaceSize), new Size());
+		if (cascadeClassifier != null)
+			cascadeClassifier.detectMultiScale(gray, faces, 1.1, 2, 2,
+					new Size(absoluteFaceSize, absoluteFaceSize), new Size());
 
 		return faces;
 	}
@@ -193,6 +246,7 @@ public class FaceRecognition {
 		// countImages++;
 		// }
 
+		m.release();
 	}
 
 	private int recognize(Rect[] facesArray, Mat grayMat) {
@@ -207,6 +261,9 @@ public class FaceRecognition {
 		if (db.isMyPicture(resultString)) {
 			result = recognizer.getProb();
 		}
+
+		m.release();
+
 		return result;
 	}
 
@@ -260,24 +317,22 @@ public class FaceRecognition {
 					is.close();
 					os.close();
 
-					faceDetector = new CascadeClassifier(
+					cascadeClassifier = new CascadeClassifier(
 							cascadeFile.getAbsolutePath());
-					if (faceDetector.empty()) {
+					if (cascadeClassifier.empty()) {
 						Log.e(TAG,
 								"Face Recognition - Failed to load cascade classifier");
-						faceDetector = null;
-					} else
+						cascadeClassifier = null;
+					} else {
 						Log.d(TAG,
 								"Face Recognition - Loaded cascade classifier from "
 										+ cascadeFile.getAbsolutePath());
-
+					}
 					cascadeDir.delete();
 
 				} catch (IOException e) {
-					Log.e(TAG,
-							"Face Recognition - Failed to load cascade. " +
-							"Exception thrown: "
-									+ e);
+					Log.e(TAG, "Face Recognition - Failed to load cascade. "
+							+ "Exception thrown: " + e);
 				}
 			}
 				break;

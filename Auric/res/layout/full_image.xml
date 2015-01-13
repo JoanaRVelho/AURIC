@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightgray"
     android:orientation="vertical" >
 
-    <!--
-        <TextView
-        android:id="@+id/msg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/double_tap" />
-    -->
-
     <ImageView
         android:id="@+id/full_image_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:contentDescription="@string/picture" />
+        android:contentDescription="@string/description" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/confirm"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="40dp"
+        android:text="@string/ok"
+        android:textColor="@color/white"
+        android:background="@drawable/button_background" />
+
+    <Button
+        android:id="@+id/reject"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="40dp"
+        android:textColor="@color/white"
+        android:text="@string/description"
+        android:background="@drawable/button_background" />
+
+</RelativeLayout>

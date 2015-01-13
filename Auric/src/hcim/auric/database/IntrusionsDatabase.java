@@ -10,7 +10,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class IntrusionsDatabase {
 	private static IntrusionsDatabase INSTANCE;
@@ -35,7 +34,6 @@ public class IntrusionsDatabase {
 
 	public void insertIntrusionData(Intrusion i) {
 		if (intrusionsDB != null) {
-			Log.i("AURIC", "addddddddddd");
 			intrusionsDB.addIntrusion(i);
 		}
 	}

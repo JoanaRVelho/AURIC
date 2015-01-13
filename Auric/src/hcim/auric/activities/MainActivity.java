@@ -1,6 +1,8 @@
 package hcim.auric.activities;
 
 import hcim.auric.activities.passcode.Unlock;
+import hcim.auric.activities.settings.SettingsActivity;
+import hcim.auric.activities.setup.Welcome;
 import hcim.auric.calendar.CalendarManager;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
@@ -60,7 +62,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		ConfigurationDatabase.getInstance(this);
 		intrusionsDB = IntrusionsDatabase.getInstance(this);
 		fr = FaceRecognition.getInstance(this);
-		intrusionsDB.printAll();
+
+		Log.i(TAG,
+				"fr.getCascadeClassifier() == null -> "
+						+ (fr.getCascadeClassifier() == null));
 	}
 
 	@Override
@@ -108,7 +113,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	private void initDaysOfTheWeekLayout() {
 		GridView week = (GridView) findViewById(R.id.days_week);
 		week.setAdapter(new BaseAdapter() {
-			String[] week = { "\t\tSun", "\t\tMon", "\t\tTue", "\t\tWed", "\t\tThu", "\t\tFri", "\t\tSat" };
+			String[] week = { "\t\tSun", "\t\tMon", "\t\tTue", "\t\tWed",
+					"\t\tThu", "\t\tFri", "\t\tSat" };
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
@@ -154,14 +160,14 @@ public class MainActivity extends Activity implements OnClickListener {
 				year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
-		
-		Log.i("AURIC", "face recog max = "+ FaceRecognition.MAX);
+
+		Log.i("AURIC", "face recog max = " + FaceRecognition.MAX);
 
 		super.onResume();
 
 		if (OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this,
 				fr.getLoaderCallback())) {
-			// firstLaunch();
+			firstLaunch();
 		} else {
 			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
 		}
@@ -182,12 +188,18 @@ public class MainActivity extends Activity implements OnClickListener {
 		boolean previouslyStarted = prefs.getBoolean(
 				getString(R.string.pref_previously_started), false);
 		if (!previouslyStarted) {
-			SharedPreferences.Editor edit = prefs.edit();
-			edit.putBoolean(getString(R.string.pref_previously_started),
-					Boolean.TRUE);
-			edit.commit();
-			startSettingsActivity();
+			// SharedPreferences.Editor edit = prefs.edit();
+			// edit.putBoolean(getString(R.string.pref_previously_started),
+			// Boolean.TRUE);
+			// edit.commit();
+
+			startWelcome();
 		}
+	}
+
+	private void startWelcome() {
+		Intent i = new Intent(MainActivity.this, Welcome.class);
+		startActivity(i);
 	}
 
 	private void startSettingsActivity() {
@@ -424,7 +436,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				gridcell.setTypeface(null, Typeface.BOLD);
 			}
 			if (intrusionsDB.dayOfIntrusion(theday, themonth, theyear)) {
-				gridcell.setTextColor(getResources().getColor(R.color.orrange));
+				gridcell.setTextColor(getResources().getColor(R.color.orange));
 			}
 			return row;
 		}

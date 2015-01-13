@@ -39,7 +39,7 @@ public class PersonRecognizer {
 
 	private int prob = 999;
 
-	PersonRecognizer(String path) {
+	public PersonRecognizer(String path) {
 		faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
 				.createLBPHFaceRecognizer(2, 8, 8, 8, 200);
 		this.path = path;
@@ -136,7 +136,7 @@ public class PersonRecognizer {
 
 	}
 
-	String predict(Mat m) {
+	public String predict(Mat m) {
 		if (!canPredict())
 			return "";
 		int n[] = new int[1];
@@ -199,11 +199,11 @@ public class PersonRecognizer {
 
 	}
 
-	void load() {
+	public void load() {
 		train();
 	}
 
-	int getProb() {
+	public int getProb() {
 		return prob;
 	}
 }

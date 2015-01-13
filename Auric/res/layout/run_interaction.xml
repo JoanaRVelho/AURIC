@@ -12,7 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/screenshots"
+        android:contentDescription="@string/description"
         android:scaleType="fitXY" />
 
     <ImageView
@@ -21,7 +21,7 @@
         android:layout_height="fill_parent"
         android:alpha="0.3"
         android:background="#FFFFFF"
-        android:contentDescription="@string/screenshots"
+        android:contentDescription="@string/description"
         android:scaleType="fitXY" />
 
     <ImageView
@@ -31,7 +31,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/replay"
+        android:contentDescription="@string/description"
         android:src="@drawable/play" />
 
     <LinearLayout
@@ -71,7 +71,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:alpha="0.9"
-        android:contentDescription="@string/intruser"
+        android:contentDescription="@string/description"
         android:scaleType="fitXY" />
 
     <ImageView
@@ -82,6 +82,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
         android:layout_marginRight="10dp"
-        android:src="@drawable/trash_flat" />
+        android:contentDescription="@string/description"
+        android:src="@drawable/trash_button" />
 
 </RelativeLayout>
