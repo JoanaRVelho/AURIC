@@ -19,7 +19,7 @@ public abstract class AbstractAuditTask extends Thread {
 	protected static final String TAG = "AURIC";
 
 	public static final String ACTION_NEW_PICTURE = "new picture";
-	public static final int CAMERA_PERIOD_MILIS = 5000; // 5 seconds
+	//public static int CAMERA_PERIOD_MILIS = 5000; // 5 seconds
 
 	private IntruderCaptureTask timerTask;
 	private Timer timer;
@@ -33,6 +33,7 @@ public abstract class AbstractAuditTask extends Thread {
 	protected Context context;
 
 	protected boolean screenOff;
+	protected int cameraPeriod;
 
 	public AbstractAuditTask(Context context) {
 		this.context = context;
@@ -46,6 +47,7 @@ public abstract class AbstractAuditTask extends Thread {
 		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
 		String type = db.getLogType();
 		this.log = LogManager.getSelectedLog(type, context);
+		cameraPeriod = db.getCameraPeriod();
 	}
 
 	public void addTaskMessage(TaskMessage msg) {
@@ -78,10 +80,10 @@ public abstract class AbstractAuditTask extends Thread {
 	protected void startTimerTask(boolean delay) {
 		timerTask = new IntruderCaptureTask(this.camera);
 		timer = new Timer();
-		timer.scheduleAtFixedRate(timerTask, delay ? CAMERA_PERIOD_MILIS : 0,
-				CAMERA_PERIOD_MILIS);
+		timer.scheduleAtFixedRate(timerTask, delay ? cameraPeriod : 0,
+				cameraPeriod);
 
-		Log.d(TAG, "AuditTask - start timer task");
+		Log.d(TAG, "Audit Task - start timer task");
 	}
 
 	protected void stopTimerTask() {
@@ -89,7 +91,7 @@ public abstract class AbstractAuditTask extends Thread {
 			timer.cancel();
 			timer = null;
 
-			Log.d(TAG, "AuditTask - stop timer task");
+			Log.d(TAG, "Audit Task - stop timer task");
 		}
 		timerTask = null;
 	}

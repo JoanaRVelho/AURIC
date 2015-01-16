@@ -1,6 +1,6 @@
 package hcim.auric.activities.settings;
 
-import hcim.auric.activities.images.RecognizedPicturesSlideShow;
+import hcim.auric.activities.images.SlideShowRecognizedPictures;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
@@ -8,7 +8,9 @@ import hcim.auric.record.log_type.LogManager;
 import hcim.auric.service.BackgroundService;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -92,8 +94,7 @@ public class SettingsActivity extends FragmentActivity implements
 	@Override
 	public void finish() {
 		printStatus();
-		Log.i("AURIC", "face recog max=" + FaceRecognition.MAX);
-
+		
 		if (readyToStart()) {
 			startBackgroundService();
 			super.finish();
@@ -102,11 +103,26 @@ public class SettingsActivity extends FragmentActivity implements
 				super.finish();
 			} else {
 				if (!settingsChecked()) {
-					startActivity(new Intent(
-							Settings.ACTION_ACCESSIBILITY_SETTINGS));
+					settingsDialog();
 				}
 			}
 		}
+	}
+
+	private void settingsDialog() {
+		AlertDialog.Builder alertDialog;
+		alertDialog = new AlertDialog.Builder(SettingsActivity.this);
+		alertDialog.setTitle("Auric Service");
+		alertDialog.setMessage("It is necessary to activate Auric's Accessibility Service. ");
+		alertDialog.setNeutralButton("OK",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						startActivity(new Intent(
+								Settings.ACTION_ACCESSIBILITY_SETTINGS));
+					}
+				});
+
+		alertDialog.show();
 	}
 
 	/**
@@ -133,9 +149,12 @@ public class SettingsActivity extends FragmentActivity implements
 				"SettingsActivity - STATUS: "
 						+ (configDB.isIntrusionDetectorActive() ? "ON" : "OFF"));
 		Log.i(TAG, "SettingsActivity - MODE: " + configDB.getMode());
+		Log.i(TAG, "SettingsActivity - DV:" + configDB.isDeviceSharingEnabled());
 		Log.i(TAG, "SettingsActivity - LOG TYPE: " + configDB.getLogType());
 		Log.i(TAG, "SettingsActivity - FACE RECOGNITION MAX PARAM: "
-				+ FaceRecognition.MAX);
+				+ configDB.getFaceRecognitionMax());
+		Log.i(TAG, "SettingsActivity - CAMERA PERIOD PARAM: "
+				+ configDB.getCameraPeriod());
 	}
 
 	private void stopBackgroundService() {
@@ -150,7 +169,7 @@ public class SettingsActivity extends FragmentActivity implements
 
 	public void goToRecognizedPictures() {
 		Intent i = new Intent(SettingsActivity.this,
-				RecognizedPicturesSlideShow.class);
+				SlideShowRecognizedPictures.class);
 		startActivity(i);
 	}
 

@@ -19,7 +19,7 @@ import android.util.Log;
 public class Labels {
 	private static final String TAG = "AURIC";
 
-	private ArrayList<Label> list = new ArrayList<Label>();
+	private ArrayList<Label> list;
 	private String path;
 
 	class Label {
@@ -30,17 +30,24 @@ public class Labels {
 			label = s;
 			num = n;
 		}
+
+		@Override
+		public String toString() {
+			return label + "," + num;
+		}
 	}
 
 	public Labels(String path) {
 		this.path = path;
+		read();
 	}
 
 	public boolean isEmpty() {
-		return !(list.size() > 0);
+		return list != null && list.isEmpty();
 	}
 
 	public void add(String s, int n) {
+		Log.d("AURIC", "add label");
 		list.add(new Label(s, n));
 	}
 
@@ -68,11 +75,13 @@ public class Labels {
 	public void save() {
 		try {
 			File f = new File(path, "faces.txt");
-			f.createNewFile();
+			if (!f.exists()) {
+				f.createNewFile();
+			}
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 
 			for (Label l : list) {
-				bw.write(l.label + "," + l.num);
+				bw.write(l.toString());
 				bw.newLine();
 			}
 
@@ -81,30 +90,32 @@ public class Labels {
 		} catch (IOException e) {
 			Log.e(TAG, "Labels - " + e.getMessage() + " " + e.getCause());
 		}
-
 	}
 
 	public void read() {
-		try {
-			FileInputStream fstream = new FileInputStream(new File(path,
-					"faces.txt"));
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					fstream));
+		File f = new File(path, "faces.txt");
+		list = new ArrayList<Label>();
 
-			String strLine;
-			list = new ArrayList<Label>();
+		if (f.exists()) {
+			try {
+				FileInputStream fstream = new FileInputStream(f);
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						fstream));
 
-			while ((strLine = br.readLine()) != null) {
-				StringTokenizer tokens = new StringTokenizer(strLine, ",");
-				String s = tokens.nextToken();
-				String sn = tokens.nextToken();
+				String strLine;
 
-				list.add(new Label(s, Integer.parseInt(sn)));
+				while ((strLine = br.readLine()) != null) {
+					StringTokenizer tokens = new StringTokenizer(strLine, ",");
+					String s = tokens.nextToken();
+					String sn = tokens.nextToken();
+
+					list.add(new Label(s, Integer.parseInt(sn)));
+				}
+				br.close();
+				fstream.close();
+			} catch (IOException e) {
+				Log.e(TAG, "Labels - " + e.getMessage() + " " + e.getCause());
 			}
-			br.close();
-			fstream.close();
-		} catch (IOException e) {
-			Log.e(TAG, "Labels - " + e.getMessage() + " " + e.getCause());
 		}
 	}
 
@@ -119,4 +130,23 @@ public class Labels {
 		return m;
 	}
 
+	public void remove(String picID) {
+		//read();
+		int idx = -1;
+		Label l;
+		for (int i = 0; i < list.size(); i++) {
+			l = list.get(i);
+			
+			if (idx != -1) {
+				l.num--;
+			} else {
+				if (l.label.equals(picID)) {
+					idx = i;
+				}
+			}
+		}
+		list.remove(idx);
+
+		save();
+	}
 }

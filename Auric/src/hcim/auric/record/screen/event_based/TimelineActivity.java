@@ -3,6 +3,7 @@ package hcim.auric.record.screen.event_based;
 import hcim.auric.database.EventBasedLogDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
+import hcim.auric.recognition.Picture;
 import hcim.auric.record.screen.SeverityAdapter;
 
 import java.util.ArrayList;
@@ -20,21 +21,23 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.hcim.intrusiondetection.R;
 
-@SuppressLint("InflateParams") public class TimelineActivity extends Activity {
+@SuppressLint("InflateParams")
+public class TimelineActivity extends Activity {
 	public static final String EXTRA_ID = "extra";
 	static final String TAG = "AURIC";
 
 	private Intrusion intrusion;
 	private IntrusionsDatabase intDB;
 	private EventBasedLogDatabase logDB;
-	private TimelineAdapter adapter;
+	private BaseAdapter adapter;
 	private Spinner spinnerSeverity;
 
 	@Override
@@ -50,8 +53,12 @@ import com.hcim.intrusiondetection.R;
 
 		EventBasedLog log = logDB.get(intrusionID, this);
 		List<EventBasedLogItem> list = log.getList();
+		List<Picture> pictures = intrusion.getImages();
 
-		adapter = new TimelineAdapter(list, intrusion.getImages(), this);
+		if (list.isEmpty())
+			adapter = new EmptyActionTimelineAdapter(pictures, this);
+		else
+			adapter = new TimelineAdapter(list, pictures, this);
 
 		GridView layout = (GridView) findViewById(R.id.timeline_layout);
 		layout.setAdapter(adapter);
@@ -72,7 +79,7 @@ import com.hcim.intrusiondetection.R;
 			}
 		});
 
-		ImageView trash = (ImageView) findViewById(R.id.trash);
+		Button trash = (Button) findViewById(R.id.trash);
 		trash.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -95,10 +102,10 @@ import com.hcim.intrusiondetection.R;
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		LinearLayout view = new LinearLayout(this);
 		view = (LinearLayout) inflater.inflate(R.layout.severity, null);
-		
+
 		spinnerSeverity = (Spinner) view.findViewById(R.id.severity_spinner);
 		spinnerSeverity.setAdapter(new SeverityAdapter(this));
-		
+
 		return view;
 	}
 
@@ -110,7 +117,8 @@ import com.hcim.intrusiondetection.R;
 		alertDialog.setPositiveButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						intrusion.setTag((int)spinnerSeverity.getSelectedItemPosition());
+						intrusion.setTag((int) spinnerSeverity
+								.getSelectedItemPosition());
 						intDB.updateIntrusion(intrusion);
 
 						TimelineActivity.super.finish();

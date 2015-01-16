@@ -50,4 +50,14 @@
         android:textColor="@color/white"
         android:background="@drawable/sub_bar" />
 
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/intruder_pict"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/trash_button"
+        android:visibility="invisible" />
+
 </RelativeLayout>

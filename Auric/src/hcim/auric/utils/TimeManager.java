@@ -1,6 +1,5 @@
 package hcim.auric.utils;
 
-import hcim.auric.calendar.CalendarManager;
 import android.os.SystemClock;
 
 public class TimeManager {

@@ -9,14 +9,13 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_alignParentLeft="true" >
 
         <Switch
             android:id="@+id/on_off"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
@@ -79,7 +78,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="25sp"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@+id/log_options"
+                android:layout_below="@+id/rate_number_picker"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/sub_bar"
                 android:gravity="center"
@@ -92,15 +91,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:layout_below="@+id/switch_passcode"
+                android:layout_marginBottom="15dp"
                 android:layout_marginRight="10dp"
-                android:layout_below="@+id/passcode_switch"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/button_background"
                 android:text="@string/passcode_change"
                 android:textColor="#FFF" />
 
             <Switch
-                android:id="@+id/passcode_switch"
+                android:id="@+id/switch_passcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -123,7 +123,26 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#FFF" />
 
+            <TextView
+                android:id="@+id/rate_title"
+                android:layout_width="fill_parent"
+                android:layout_height="25sp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/log_options"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/sub_bar"
+                android:gravity="center"
+                android:text="@string/rate"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFF" />
 
+            <NumberPicker
+                android:id="@+id/rate_number_picker"
+                android:layout_width="50dp"
+                android:layout_height="110dp"
+                android:layout_below="@+id/rate_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp" />
         </RelativeLayout>
     </ScrollView>
 

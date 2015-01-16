@@ -24,6 +24,10 @@ public class ConfigurationDatabase {
 
 	private String defaultLog;
 	private String defaultMode;
+	
+	private static final int DEFAULT_FR_MAX = 80;
+	private static final int DEFAULT_CAMERA_PERIOD = 5;
+	
 
 	public static ConfigurationDatabase getInstance(Context c) {
 		if (INSTANCE == null) {
@@ -41,6 +45,9 @@ public class ConfigurationDatabase {
 
 		mode = getMode();
 		log = getLogType();
+		
+		int cameraPeriod = getCameraPeriod();
+		int faceRecognitionMax = getFaceRecognitionMax();
 
 		if (mode == null) {
 			stateDB.insertMode(defaultMode);
@@ -49,6 +56,40 @@ public class ConfigurationDatabase {
 		if (log == null) {
 			stateDB.insertLogType(defaultLog);
 			log = defaultLog;
+		}
+		if(cameraPeriod == -1){
+			stateDB.insertCameraPeriod(DEFAULT_CAMERA_PERIOD);
+			cameraPeriod = DEFAULT_CAMERA_PERIOD;
+		}
+		if(faceRecognitionMax == -1){
+			stateDB.insertFaceRecognitionMax(DEFAULT_FR_MAX);
+			cameraPeriod = DEFAULT_FR_MAX;
+		}
+	}
+
+	public int getCameraPeriod() {
+		return stateDB.getCameraPeriod();
+	}
+
+	public int getFaceRecognitionMax() {
+		return stateDB.getFaceRecognitionMax();
+	}
+	
+	public void setCameraPeriod(int camera) {
+		if(stateDB != null){
+			if(stateDB.getCameraPeriod() == -1)
+				stateDB.insertCameraPeriod(camera);
+			else
+				stateDB.updateCameraPeriod(camera);
+		}
+	}
+
+	public void setFaceRecognitionMax(int max) {
+		if(stateDB != null){
+			if(stateDB.getFaceRecognitionMax() == -1)
+				stateDB.insertFaceRecognitionMax(max);
+			else
+				stateDB.updateFaceRecognitionMax(max);
 		}
 	}
 

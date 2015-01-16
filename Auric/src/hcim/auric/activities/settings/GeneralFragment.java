@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +19,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.NumberPicker;
+import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -27,8 +28,6 @@ import android.widget.Switch;
 import com.hcim.intrusiondetection.R;
 
 public class GeneralFragment extends Fragment {
-	private static final String TAG = "AURIC";
-
 	private SettingsActivity activity;
 
 	private Switch onOff;
@@ -40,6 +39,7 @@ public class GeneralFragment extends Fragment {
 	private Switch passcodeSwitch;
 	private Spinner logSpinner;
 	private String currentLogType;
+	private NumberPicker picker;
 
 	private boolean isChecked;
 
@@ -60,6 +60,26 @@ public class GeneralFragment extends Fragment {
 		initPasscodeSection(result);
 		initLogOptions(result);
 		initOnOffSwitch(result);
+		initNumberPicker(result);
+	}
+
+	private void initNumberPicker(RelativeLayout result) {
+		picker = (NumberPicker) result.findViewById(R.id.rate_number_picker);
+		picker.setMinValue(0);
+		picker.setMaxValue(60);
+		picker.setValue(activity.configDB.getCameraPeriod()/1000);
+		picker.setWrapSelectorWheel(false);
+		picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+		picker.setOnValueChangedListener(new OnValueChangeListener() {
+
+			@Override
+			public void onValueChange(NumberPicker picker, int oldVal,
+					int newVal) {
+				//AbstractAuditTask.CAMERA_PERIOD_MILIS = newVal * 1000;
+				activity.configDB.setCameraPeriod(newVal*1000);
+			}
+		});
+
 	}
 
 	private void initOnOffSwitch(RelativeLayout result) {
@@ -107,7 +127,7 @@ public class GeneralFragment extends Fragment {
 
 	private void initPasscodeSection(RelativeLayout result) {
 		// passcode
-		passcodeSwitch = (Switch) result.findViewById(R.id.passcode_switch);
+		passcodeSwitch = (Switch) result.findViewById(R.id.switch_passcode);
 		passcodeSwitch.setChecked(activity.configDB.hasPasscode());
 		passcodeSwitch.setOnClickListener(new OnClickListener() {
 
@@ -164,8 +184,6 @@ public class GeneralFragment extends Fragment {
 	private void selectCurrentMode() {
 		currentMode = activity.configDB.getMode();
 
-		Log.d(TAG, "SettingsActivity - MODE: " + currentMode);
-
 		if (currentMode.equals(ConfigurationDatabase.WIFI_MODE)) {
 			modeSpinner.setSelection(1);
 		}
@@ -176,13 +194,14 @@ public class GeneralFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-		if (passcodeSwitch != null){
+		if (passcodeSwitch != null) {
 			boolean b = activity.configDB.hasPasscode();
 			passcodeSwitch.setChecked(b);
-			if(b)
-				changePasscode.setVisibility(View.INVISIBLE);
-			else{
+			
+			if (b)
 				changePasscode.setVisibility(View.VISIBLE);
+			else {
+				changePasscode.setVisibility(View.INVISIBLE);
 			}
 		}
 		super.onResume();
@@ -190,7 +209,6 @@ public class GeneralFragment extends Fragment {
 
 	private void selectCurrentLogType() {
 		currentLogType = activity.configDB.getLogType();
-		Log.d(TAG, "SettingsActivity - LOG: " + currentLogType);
 
 		Resources res = getResources();
 		String[] options = res.getStringArray(R.array.log_array);
@@ -231,9 +249,20 @@ public class GeneralFragment extends Fragment {
 		if (selectedMode != null
 				&& selectedMode.equals(ConfigurationDatabase.ORIGINAL_MODE)) {
 			deviceSharing.setEnabled(true);
+			deviceSharing
+					.setChecked(activity.configDB.isDeviceSharingEnabled());
+			deviceSharing.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					activity.configDB.enableDeviceSharing(isChecked);					
+				}
+			});
+
 		} else {
 			deviceSharing.setChecked(false);
 			deviceSharing.setEnabled(false);
 		}
+
 	}
 }

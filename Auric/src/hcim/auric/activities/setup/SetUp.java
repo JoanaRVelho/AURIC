@@ -3,8 +3,10 @@ package hcim.auric.activities.setup;
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
+import hcim.auric.utils.StringGenerator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
@@ -26,24 +28,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hcim.intrusiondetection.R;
 
 public class SetUp extends Activity implements CvCameraViewListener2 {
 
-	private static final String TAG = "AURIC";
-
 	private static final Scalar FACE_RECT_BLUE = new Scalar(0, 0, 255, 255);
 	private static final int FRONT_CAMERA = 1;
 	private static final int BACK_CAMERA = 2;
 	private static final int NUMBER_PICTURES = 3;
-	public static final String NAME = "OWNER";
 	public static final String MISSING = " missing pictures";
 	private static final int CODE = 0;
 
@@ -71,8 +70,8 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 		public void run() {
 			lastMat.release();
 			trainAllPictures();
-			cameraView.disableView();
-			cameraView.release();
+			// cameraView.disableView();
+			// cameraView.release();
 			runOnUiThread(new Runnable() {
 
 				@Override
@@ -100,7 +99,7 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 
 		takePicture = (Button) findViewById(R.id.takepicture);
 		takePicture.setVisibility(View.INVISIBLE);
-		Log.d("AURIC", "INVISIBLE");
+
 		switchCam = (Button) findViewById(R.id.switch_cam);
 		bar = (ProgressBar) findViewById(R.id.progressBar1);
 		bar.setVisibility(View.INVISIBLE);
@@ -132,16 +131,19 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 		cameraView.enableView();
 	}
 
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		cameraView.disableView();
 	}
 
+	@Override
 	public void onCameraViewStarted(int width, int height) {
 		matGray = new Mat();
 		matRgba = new Mat();
 	}
 
+	@Override
 	public void onCameraViewStopped() {
 		matGray.release();
 		matRgba.release();
@@ -163,34 +165,40 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 					Bitmap.Config.ARGB_8888);
 			Utils.matToBitmap(lastMat, img);
 
-			String name = NAME + list.size();
+			String name = StringGenerator.generateOwnerName();
 			String type = FaceRecognition.MY_PICTURE_TYPE;
 
 			if (faceRecognition.detectFace(img)) {
 				list.add(new Picture(name, type, img));
-			}
 
-			if (list.size() == NUMBER_PICTURES) {
-				run.start();
+				if (list.size() == NUMBER_PICTURES) {
+					run.start();
 
-				msg.setVisibility(View.INVISIBLE);
-				bar.setVisibility(View.VISIBLE);
-				takePicture.setVisibility(View.INVISIBLE);
-				Log.d("AURIC", "INVISIBLE");
-				switchCam.setVisibility(View.INVISIBLE);
+					bar.setVisibility(View.VISIBLE);
+					cameraView.disableView();
+					cameraView.release();
+					cameraView.setVisibility(View.INVISIBLE);
+					msg.setVisibility(View.INVISIBLE);
+					takePicture.setVisibility(View.INVISIBLE);
+					switchCam.setVisibility(View.INVISIBLE);
+
+				} else {
+					int n = NUMBER_PICTURES - list.size();
+					msg.setText(n + MISSING);
+				}
 			} else {
-				int n = NUMBER_PICTURES - list.size();
-				msg.setText(n + MISSING);
+				Toast.makeText(this, "Failed. Please try again.",
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
 
+	@Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-		if (list.size() == NUMBER_PICTURES) {
+		if (bar.getVisibility() == View.VISIBLE) {
 			matRgba = inputFrame.rgba();
 			return matRgba;
 		} else {
-			Log.d("AURIC", "lenght=" + list.size());
 			matRgba = inputFrame.rgba();
 			matGray = inputFrame.gray();
 
@@ -227,12 +235,12 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 				public void run() {
 					if (length > 0) {
 						takePicture.setVisibility(View.VISIBLE);
-						Log.d("AURIC", "VISIBLE");
 					} else {
 						takePicture.setVisibility(View.INVISIBLE);
-						Log.d("AURIC", "INVISIBLE");
 					}
-
+					if (bar.getVisibility() == View.VISIBLE) {
+						takePicture.setVisibility(View.INVISIBLE);
+					}
 				}
 			});
 
@@ -262,17 +270,28 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 	}
 
 	private void trainAllPictures() {
+		cropAllPictures(list);
+
 		PicturesDatabase db = PicturesDatabase.getInstance(this);
 
 		for (Picture p : list) {
 			if (faceRecognition.trainPicture(p.getImage(), p.getID())) {
 				db.addPicture(p);
-				Log.d(TAG, "Picture " + p.getID() + " added");
 			}
 		}
 		addOtherPictures();
 		faceRecognition.stopTrain();
 		configDone();
+	}
+
+	private void cropAllPictures(List<Picture> list) {
+		Bitmap bmp, newBmp;
+		for (Picture p : list) {
+			bmp = p.getImage();
+			newBmp = Bitmap.createBitmap(bmp, 3, 3, bmp.getWidth() - 6,
+					bmp.getHeight() - 6);
+			p.setBitmap(newBmp);
+		}
 	}
 
 	private void addOtherPictures() {

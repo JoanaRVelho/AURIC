@@ -1,9 +1,9 @@
 package hcim.auric.audit;
 
-import hcim.auric.calendar.CalendarManager;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.IntrusionFactory;
+import hcim.auric.utils.CalendarManager;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;

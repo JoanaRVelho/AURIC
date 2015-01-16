@@ -1,7 +1,7 @@
 package hcim.auric.intrusion;
 
-import hcim.auric.calendar.CalendarManager;
 import hcim.auric.recognition.Picture;
+import hcim.auric.utils.CalendarManager;
 
 import java.util.List;
 

@@ -47,6 +47,13 @@ public class EventBasedLogItem {
 		this.icon = getAppIcon(packageName, c);
 	}
 
+	@Override
+	public String toString() {
+		return "EventBasedLogItem [id=" + id + ", appName=" + appName
+				+ ", time=" + time + ", details=" + details + ", packageName="
+				+ packageName + "]";
+	}
+
 	public int getId() {
 		return id;
 	}

@@ -12,8 +12,6 @@ import android.widget.TextView;
 import com.hcim.intrusiondetection.R;
 
 public abstract class PasscodeActivity extends Activity {
-	protected static final String TAG = "AURIC";
-
 	private EditText edit;
 	private TextView msg;
 	private String insertedPasscode;

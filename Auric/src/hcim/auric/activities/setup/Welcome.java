@@ -27,4 +27,5 @@ public class Welcome extends Activity {
 		if (requestCode == CODE)
 			finish();
 	}
+	
 }

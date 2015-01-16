@@ -1,9 +1,9 @@
 package hcim.auric.database;
 
-import hcim.auric.calendar.CalendarManager;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
+import hcim.auric.utils.CalendarManager;
 import hcim.auric.utils.StringGenerator;
 
 import java.util.List;
@@ -72,7 +72,7 @@ public class IntrusionsDatabase {
 
 	public void insertPictureOfTheIntruder(String intrusionID, Bitmap img) {
 		if (intrusionsPicturesDB != null) {
-			Picture p = new Picture(StringGenerator.generate(),
+			Picture p = new Picture(StringGenerator.generateName(),
 					FaceRecognition.UNKNOWN_PICTURE_TYPE, img);
 
 			intrusionsPicturesDB.insertPicture(intrusionID, p);

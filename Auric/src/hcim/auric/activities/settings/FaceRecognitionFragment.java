@@ -1,8 +1,9 @@
 package hcim.auric.activities.settings;
 
-import hcim.auric.activities.images.RecognizedPicturesSlideShow;
+import hcim.auric.activities.images.GridOfRecognizedPictures;
+import hcim.auric.activities.images.SlideShowRecognizedPictures;
 import hcim.auric.activities.setup.TestFaceRecognition;
-import hcim.auric.recognition.FaceRecognition;
+import hcim.auric.activities.setup.TestPhoto;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,25 +14,28 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.NumberPicker.OnValueChangeListener;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.hcim.intrusiondetection.R;
 
 public class FaceRecognitionFragment extends Fragment {
 
 	private NumberPicker picker;
-	private Button viewAll, test;
+	private SettingsActivity activity;
+	private Button viewAll, testCamera, testPhoto, edit;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		RelativeLayout result = (RelativeLayout) inflater.inflate(
+		ScrollView result = (ScrollView) inflater.inflate(
 				R.layout.fragment_face_recog, container, false);
+
+		activity = (SettingsActivity)getActivity();
 		
 		picker = (NumberPicker) result.findViewById(R.id.numberPicker1);
 		picker.setMinValue(0);
 		picker.setMaxValue(500);
-		picker.setValue(FaceRecognition.MAX);
+		picker.setValue(activity.configDB.getFaceRecognitionMax());
 		picker.setWrapSelectorWheel(false);
 
 		picker.setOnValueChangedListener(new OnValueChangeListener() {
@@ -39,7 +43,7 @@ public class FaceRecognitionFragment extends Fragment {
 			@Override
 			public void onValueChange(NumberPicker picker, int oldVal,
 					int newVal) {
-				FaceRecognition.MAX = newVal;
+				activity.configDB.setFaceRecognitionMax(newVal);
 			}
 		});
 
@@ -49,16 +53,37 @@ public class FaceRecognitionFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				startActivity(new Intent(getActivity(),
-						RecognizedPicturesSlideShow.class));
+						SlideShowRecognizedPictures.class));
 			}
 		});
 
-		test = (Button) result.findViewById(R.id.testfr);
-		test.setOnClickListener(new OnClickListener() {
+		testCamera = (Button) result.findViewById(R.id.testfr);
+		testCamera.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(getActivity(), TestFaceRecognition.class);
+				startActivity(i);
+			}
+		});
+
+		edit = (Button) result.findViewById(R.id.edit);
+		edit.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getActivity(),
+						GridOfRecognizedPictures.class);
+				startActivity(i);
+			}
+		});
+
+		testPhoto = (Button) result.findViewById(R.id.testphoto);
+		testPhoto.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getActivity(), TestPhoto.class);
 				startActivity(i);
 			}
 		});

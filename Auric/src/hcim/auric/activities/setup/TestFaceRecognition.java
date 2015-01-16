@@ -1,5 +1,6 @@
 package hcim.auric.activities.setup;
 
+import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.PersonRecognizer;
 
@@ -50,6 +51,8 @@ public class TestFaceRecognition extends Activity implements
 	private int currentCamera;
 	private TextView result;
 
+	private int max;
+
 	@SuppressLint("HandlerLeak")
 	private Handler handler = new Handler() {
 		@Override
@@ -81,6 +84,8 @@ public class TestFaceRecognition extends Activity implements
 		currentCamera = BACK_CAMERA;
 
 		result = (TextView) findViewById(R.id.result_msg);
+		
+		max = ConfigurationDatabase.getInstance(this).getFaceRecognitionMax();
 	}
 
 	@Override
@@ -173,7 +178,7 @@ public class TestFaceRecognition extends Activity implements
 				if (recognitionResult < 0)
 					Core.rectangle(mRgba, facesArray[i].tl(),
 							facesArray[i].br(), FACE_RECT_RED, 3);
-				else if (recognitionResult < FaceRecognition.MAX)
+				else if (recognitionResult <= max)
 					Core.rectangle(mRgba, facesArray[i].tl(),
 							facesArray[i].br(), FACE_RECT_GREEN, 3);
 				else

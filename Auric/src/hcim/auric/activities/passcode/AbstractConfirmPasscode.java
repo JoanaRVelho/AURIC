@@ -3,7 +3,6 @@ package hcim.auric.activities.passcode;
 import hcim.auric.database.ConfigurationDatabase;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 
 public abstract class AbstractConfirmPasscode extends PasscodeActivity {
 	private static final String CONFIRM = "Type in password:";
@@ -18,7 +17,6 @@ public abstract class AbstractConfirmPasscode extends PasscodeActivity {
 	protected void afterEnteringPasscode(String enteredPasscode) {
 		ConfigurationDatabase db = ConfigurationDatabase.getInstance(this);
 		String p = db.getPasscode();
-		Log.d("AURIC", "pass = "+p);
 
 		if (p != null && p.equals(enteredPasscode)) {
 			afterConfirmPasscode();

@@ -14,7 +14,7 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 	@Override
 	public void actionOn() {
 		if (!startLog) {
-			startTimerTask(false); //startTimeTask no delay
+			startTimerTask(false); //startTimeTask without delay
 		}
 	}
 
@@ -24,7 +24,6 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 
 		if (startLog) {
 			log.stopLogging();
-			//currentIntrusion.stopLogging();
 			intrusionsDB.insertIntrusionData(currentIntrusion);
 			Log.d(TAG, "AuditTask - stop logging");
 
@@ -39,27 +38,26 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 	public void actionNewPicture(Bitmap capturedFace) {
 		boolean intrusion = !recognizer.recognizePicture(capturedFace);
 
-		Log.d(TAG, "AuditTask - intrusion=" + intrusion);
+		Log.d(TAG, "Audit Task DS - intrusion=" + intrusion);
 
 		if (intrusion) {
 			if (!startLog) { // iniciar auditoria
 				startLog = true;
 
-				Log.d(TAG, "AuditTask - new intrusion, start audit");
+				Log.d(TAG, "Audit Task DS - new intrusion, start audit");
 				currentIntrusion = new Intrusion(log.type());
 				
 				intrusionsDB.insertPictureOfTheIntruder(
 						currentIntrusion.getID(), capturedFace);
 				
-			//	currentIntrusion.startLogging();
 				log.startLogging(currentIntrusion.getID());
-				Log.d(TAG, "AuditTask - start logging");
+				Log.d(TAG, "Audit Task DS - start logging");
 
 				notifier.notifyUser();
 
 				
 			} else { // continuar auditoria
-				Log.d(TAG, "AuditTask - continue");
+				Log.d(TAG, "Audit Task DS - continue");
 				if (currentIntrusion == null) {
 					return;
 				}
@@ -69,12 +67,11 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 			}
 		} else {
 			if (startLog) { // parar auditoria
-				Log.d(TAG, "AuditTask - stop audit");
+				Log.d(TAG, "Audit Task DS - stop audit");
 
 				if (currentIntrusion != null) {
 					log.stopLogging();
-					//currentIntrusion.stopLogging();
-					Log.d(TAG, "AuditTask - stop logging");
+					Log.d(TAG, "Audit Task DS - stop logging");
 					
 					intrusionsDB.insertIntrusionData(currentIntrusion);
 					currentIntrusion = null;

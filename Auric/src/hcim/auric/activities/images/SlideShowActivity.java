@@ -3,13 +3,12 @@ package hcim.auric.activities.images;
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
-import hcim.auric.record.screen.mswat_lib.OnSwipeTouchListener;
+import hcim.auric.utils.OnSwipeTouchListener;
 
 import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,14 +20,14 @@ import com.hcim.intrusiondetection.R;
 
 public abstract class SlideShowActivity extends Activity {
 
-	private int size;
-	private int current;
-	private List<Picture> pictures;
+	protected int current;
+	protected List<Picture> pictures;
 
 	private ImageView[] dots;
 	private ImageView img;
 	protected ImageView typeIcon;
 	protected TextView msg;
+	protected LinearLayout lin;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,17 +35,7 @@ public abstract class SlideShowActivity extends Activity {
 		setContentView(R.layout.slideshow);
 
 		pictures = getPictures();
-		size = pictures.size();
 		current = startAt();
-
-		// init dots
-		LinearLayout lin = (LinearLayout) findViewById(R.id.dots);
-		dots = new ImageView[size];
-		for (int i = 0; i < dots.length; i++) {
-			dots[i] = new ImageView(this);
-			dots[i].setImageResource(R.drawable.cinzento);
-			lin.addView(dots[i]);
-		}
 
 		// init txt
 		msg = (TextView) findViewById(R.id.double_tap_msg);
@@ -71,19 +60,17 @@ public abstract class SlideShowActivity extends Activity {
 			public void onSwipeRight() {
 				dots[current].setImageResource(R.drawable.cinzento);
 				if (current == 0)
-					current = size - 1;
+					current = pictures.size() - 1;
 				else
-					current = (current - 1) % size;
+					current = (current - 1) % pictures.size();
 
-				Log.i("AURIC", "swipe r current=" + current);
 				refresh();
 			}
 
 			@Override
 			public void onSwipeLeft() {
 				dots[current].setImageResource(R.drawable.cinzento);
-				current = (current + 1) % size;
-				Log.i("AURIC", "swipe l current=" + current);
+				current = (current + 1) % pictures.size();
 				refresh();
 			}
 
@@ -93,10 +80,25 @@ public abstract class SlideShowActivity extends Activity {
 			}
 		});
 
+		initDots();
 		refresh();
 	}
 
-	protected abstract int startAt();
+	protected void initDots() {
+		// init dots
+		lin = (LinearLayout) findViewById(R.id.dots);
+		dots = new ImageView[pictures.size()];
+		for (int i = 0; i < dots.length; i++) {
+			dots[i] = new ImageView(this);
+			dots[i].setImageResource(R.drawable.cinzento);
+			lin.addView(dots[i]);
+		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
 
 	protected void refresh() {
 		String id = pictures.get(current).getID();
@@ -124,16 +126,6 @@ public abstract class SlideShowActivity extends Activity {
 		dots[current].setImageResource(R.drawable.azul);
 	}
 
-	protected abstract List<Picture> getPictures();
-
-	protected int getCurrent() {
-		return current;
-	}
-
-	protected void setCurrent(int current) {
-		this.current = current;
-	}
-
 	protected Picture getCurrentPicture() {
 		return pictures.get(current);
 	}
@@ -145,6 +137,10 @@ public abstract class SlideShowActivity extends Activity {
 	protected boolean isMessageVisible() {
 		return msg.getVisibility() == View.VISIBLE;
 	}
+
+	protected abstract int startAt();
+
+	protected abstract List<Picture> getPictures();
 
 	protected abstract void onClickMessage();
 }

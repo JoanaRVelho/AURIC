@@ -8,7 +8,6 @@ import android.text.TextUtils;
 
 public class LogManager {
 
-	private static final String TAG = "AURIC";
 
 	public static AbstractLog getSelectedLog(String log, Context context) {
 		if (log != null) {
@@ -32,7 +31,6 @@ public class LogManager {
 		if (logType.equals(ConfigurationDatabase.EVENT_LOG)) {
 			boolean b = checkAccessibilitySettings(c,
 					"com.hcim.intrusiondetection/hcim.auric.record.screen.event_based.RecordEventBasedLog");
-			android.util.Log.d(TAG, "TEXT LOG = "+ b);
 			return b;
 		}
 		return false;
@@ -47,7 +45,6 @@ public class LogManager {
 					.getApplicationContext().getContentResolver(),
 					android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
 		} catch (SettingNotFoundException e) {
-			android.util.Log.e(TAG, e.getMessage());
 		}
 		TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(
 				':');
@@ -63,14 +60,11 @@ public class LogManager {
 					String accessabilityService = splitter.next();
 
 					if (accessabilityService.equalsIgnoreCase(service)) {
-						android.util.Log.i(TAG, "ACCESSIBILIY IS ENABLED");
 						return true;
 					}
 				}
 			}
-		} else {
-			android.util.Log.i(TAG, "ACCESSIBILIY IS DISABLED");
-		}
+		} 
 		return accessibilityFound;
 	}
 }

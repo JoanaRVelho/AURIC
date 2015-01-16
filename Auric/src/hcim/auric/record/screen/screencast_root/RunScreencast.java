@@ -1,12 +1,12 @@
 package hcim.auric.record.screen.screencast_root;
 
-import hcim.auric.activities.images.IntrusionPicturesSlideShow;
+import hcim.auric.activities.images.SlideShowIntrusionPictures;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.Picture;
 import hcim.auric.record.screen.SeverityAdapter;
-import hcim.auric.record.screen.mswat_lib.OnSwipeTouchListener;
 import hcim.auric.utils.FileManager;
+import hcim.auric.utils.OnSwipeTouchListener;
 
 import java.io.File;
 import java.util.List;
@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -48,7 +49,7 @@ public class RunScreencast extends Activity {
 	private ImageView playImg;
 	private ImageView intruderImg;
 
-	private ImageView trash;
+	private Button trash;
 	private TextView timerTextView;
 
 	private List<Bitmap> intruderList;
@@ -245,8 +246,8 @@ public class RunScreencast extends Activity {
 			public void onClick(View v) {
 				if (playImg.getVisibility() == View.VISIBLE) {
 					Intent i = new Intent(RunScreencast.this,
-							IntrusionPicturesSlideShow.class);
-					i.putExtra(IntrusionPicturesSlideShow.EXTRA_ID, intrusion.getID());
+							SlideShowIntrusionPictures.class);
+					i.putExtra(SlideShowIntrusionPictures.EXTRA_ID, intrusion.getID());
 					startActivity(i);
 				}
 			}
@@ -254,7 +255,7 @@ public class RunScreencast extends Activity {
 
 		initPhotos();
 
-		trash = (ImageView) findViewById(R.id.trash);
+		trash = (Button) findViewById(R.id.trash);
 		trash.setOnClickListener(new OnClickListener() {
 
 			@Override

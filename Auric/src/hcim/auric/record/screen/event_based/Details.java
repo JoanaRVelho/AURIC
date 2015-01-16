@@ -1,6 +1,6 @@
 package hcim.auric.record.screen.event_based;
 
-import hcim.auric.activities.images.SetOfPicturesSlideShow;
+import hcim.auric.activities.images.SlideShowSetOfPictures;
 import hcim.auric.database.EventBasedLogDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.recognition.Picture;
@@ -90,9 +90,9 @@ public class Details extends Activity {
 
 		@Override
 		public void onClick(View v) {
-			Intent i = new Intent(Details.this, SetOfPicturesSlideShow.class);
-			i.putExtra(SetOfPicturesSlideShow.EXTRA_ID_IDX, idx);
-			i.putExtra(SetOfPicturesSlideShow.EXTRA_ID_LIST, pics);
+			Intent i = new Intent(Details.this, SlideShowSetOfPictures.class);
+			i.putExtra(SlideShowSetOfPictures.EXTRA_ID_IDX, idx);
+			i.putExtra(SlideShowSetOfPictures.EXTRA_ID_LIST, pics);
 			startActivity(i);
 		}
 

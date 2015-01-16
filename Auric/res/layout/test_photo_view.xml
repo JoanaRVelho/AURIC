@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightgray"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="60sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/topbar"
+        android:gravity="center"
+        android:text="@string/test_fr_photo"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/takepicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="37dp"
+        android:background="@drawable/button_background"
+        android:onClick="takePicture"
+        android:text="@string/takepicture"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/mypicture"
+        android:layout_marginLeft="20dp"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:layout_marginRight="20dp" />
+
+    <ImageView
+        android:id="@+id/mypicture"
+        android:layout_width="122dp"
+        android:layout_height="216dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="30dp"
+        android:contentDescription="@string/mypicture"
+        android:src="@drawable/image_not_found" />
+
+</RelativeLayout>

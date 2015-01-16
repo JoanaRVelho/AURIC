@@ -1,5 +1,6 @@
 package hcim.auric.recognition;
 
+import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.utils.FileManager;
 
@@ -36,15 +37,17 @@ public class FaceRecognition {
 	private static FaceRecognition INSTANCE;
 
 	private static final String TAG = "AURIC";
-
-	// public static final long MAX_IMG = 10;
 	public static final String MY_PICTURE_TYPE = "myface";
 	public static final String INTRUDER_PICTURE_TYPE = "intruder";
 	public static final String UNKNOWN_PICTURE_TYPE = "unknown";
 	public static final String NAME = "OWNER";
 
-	public static int MIN = 0;
-	public static int MAX = 80;
+	private static final int MIN = 0;
+
+	public int getMax() {
+		return ConfigurationDatabase.getInstance(context)
+				.getFaceRecognitionMax();
+	}
 
 	private File cascadeFile;
 	private CascadeClassifier cascadeClassifier;
@@ -53,11 +56,8 @@ public class FaceRecognition {
 	private BaseLoaderCallback loaderCallback;
 	private String path;
 	private PersonRecognizer recognizer;
-	// private int countImages = 0;
-	
-	public PersonRecognizer getRecognizer() {
-		return recognizer;
-	}
+	private int lastResult;
+	private boolean matchOwner;
 
 	private Context context;
 
@@ -65,9 +65,41 @@ public class FaceRecognition {
 		if (INSTANCE == null) {
 			INSTANCE = new FaceRecognition(c);
 		}
+
 		return INSTANCE;
 	}
 
+	/**
+	 * Should only be called after recognizePicture
+	 * 
+	 * @return the difference between the picture used previously and its match
+	 */
+	public int getLastResult() {
+		return lastResult;
+	}
+
+	/**
+	 * Should only be called after recognizePicture
+	 * 
+	 * @return true if the picture matches to a picture of the owner, false
+	 *         otherwise
+	 */
+	public boolean lastResultMatchOwner() {
+		return matchOwner;
+	}
+
+	/**
+	 * 
+	 * @return the object PersonRecognizer used
+	 */
+	public PersonRecognizer getRecognizer() {
+		return recognizer;
+	}
+
+	/**
+	 * 
+	 * @return the object CascadeClassifier used
+	 */
 	public CascadeClassifier getCascadeClassifier() {
 		return cascadeClassifier;
 	}
@@ -106,7 +138,16 @@ public class FaceRecognition {
 		return result;
 	}
 
+	/**
+	 * Check if the bitmap is a picture of the owner pictures
+	 * 
+	 * @param rgbBitmap
+	 * @return true if the bitmap matches a picture of the owner and the
+	 *         difference between the two images is between FaceRecognition.MIN
+	 *         and FaceRecognition.MAX.
+	 */
 	public boolean recognizePicture(Bitmap rgbBitmap) {
+		int max = getMax();
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
 
 		Mat rgbMat = new Mat();
@@ -127,7 +168,8 @@ public class FaceRecognition {
 			int recognitionResult = recognize(facesArray, grayMat);
 			Log.d(TAG, "Face Recognition - result = " + recognitionResult);
 
-			result = recognitionResult > MIN && recognitionResult < MAX;
+			result = recognitionResult >= MIN && recognitionResult <= max;
+			lastResult = recognitionResult;
 		}
 
 		rgbMat.release();
@@ -190,8 +232,17 @@ public class FaceRecognition {
 	}
 
 	public void untrainPicture(String picID) {
-		// TODO Auto-generated method stub
+		File root = new File(path);
+		String[] files = root.list();
 
+		for (String filename : files) {
+			if (filename.startsWith(picID)) {
+				File f = new File(path, filename);
+				f.delete();
+			}
+		}
+		// labels.remove(picID);
+		recognizer.untrain(picID);
 	}
 
 	public BaseLoaderCallback getLoaderCallback() {
@@ -206,11 +257,13 @@ public class FaceRecognition {
 				loaderCallback)) {
 			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
 		}
+		
+		getMax();
 
 		FileManager fileManager = new FileManager(c);
 		path = fileManager.getOpenCVDirectory();
 
-		new Labels(path);
+		// labels = new Labels(path);
 
 		File f = new File(path);
 		if (!f.exists()) {
@@ -258,8 +311,10 @@ public class FaceRecognition {
 		Log.d(TAG, "Face Recognition - matches " + resultString);
 
 		int result = -1;
+		matchOwner = false;
 		if (db.isMyPicture(resultString)) {
 			result = recognizer.getProb();
+			matchOwner = true;
 		}
 
 		m.release();
@@ -343,4 +398,5 @@ public class FaceRecognition {
 			}
 		}
 	}
+
 }

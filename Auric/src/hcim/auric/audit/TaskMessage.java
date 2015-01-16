@@ -3,9 +3,9 @@ package hcim.auric.audit;
 import android.graphics.Bitmap;
 
 public class TaskMessage {
-	String ID;
-	Bitmap pic;
-	String timestamp;
+	private String ID;
+	private Bitmap pic;
+	private String timestamp;
 
 	public TaskMessage(String id) {
 		this.ID = id;

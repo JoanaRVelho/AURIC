@@ -13,8 +13,9 @@ public class OriginalMode extends AbstractMode {
 	public OriginalMode(Context c) {
 		super(c);
 
-		boolean sharing = ConfigurationDatabase.getInstance(c).isDeviceSharingEnabled();
-
+		boolean sharing = ConfigurationDatabase.getInstance(c)
+				.isDeviceSharingEnabled();
+		
 		task = sharing ? new AuditTaskWithDeviceSharing(context)
 				: new AuditTask(context);
 

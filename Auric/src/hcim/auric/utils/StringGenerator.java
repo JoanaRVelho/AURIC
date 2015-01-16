@@ -9,12 +9,21 @@ package hcim.auric.utils;
  */
 public class StringGenerator {
 	/**
-	 * Generate a random string
+	 * Generate a unique string based on the current time in milliseconds
 	 * 
-	 * @return
+	 * @return string with the current time in milliseconds
 	 */
-	public static String generate() {
+	public static String generateName() {
 		// return UUID.randomUUID().toString();
 		return System.currentTimeMillis() + "";
+	}
+	
+	/**
+	 * Generate a unique string based on the current time in milliseconds
+	 * 
+	 * @return "OWNER" + current time in milliseconds
+	 */
+	public static String generateOwnerName(){
+		return "OWNER" + System.currentTimeMillis();
 	}
 }

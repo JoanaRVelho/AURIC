@@ -1,8 +1,8 @@
 package hcim.auric.record.screen.event_based;
 
-import hcim.auric.audit.AbstractAuditTask;
-import hcim.auric.calendar.CalendarManager;
+import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.recognition.Picture;
+import hcim.auric.utils.CalendarManager;
 
 import java.util.List;
 
@@ -26,6 +26,8 @@ import com.hcim.intrusiondetection.R;
 public class TimelineAdapter extends BaseAdapter {
 	static final String TAG = "AURIC";
 
+	private static int cameraPeriod;
+
 	private List<EventBasedLogItem> logList;
 	private Context context;
 	private int idxIntruder;
@@ -34,19 +36,26 @@ public class TimelineAdapter extends BaseAdapter {
 			List<Picture> intruders, Context context) {
 		this.logList = list;
 		this.context = context;
+		cameraPeriod = ConfigurationDatabase.getInstance(context)
+				.getCameraPeriod();
 		organize(intruders);
+		printAll();
+	}
+
+	private void printAll() {
+		for (EventBasedLogItem i : logList) {
+			Log.i(TAG, i.toString());
+		}
 	}
 
 	private void organize(List<Picture> intruders) {
-		Log.i(TAG, "intruders pics = " + intruders.size());
-		
 		EventBasedLogItem item;
 		Picture pic;
 		idxIntruder = 0;
-		
+
 		for (int position = 0; position < logList.size(); position++) {
 			item = logList.get(position);
-			
+
 			if (position < logList.size() - 1) {
 				int imgNumber = distance(item, logList.get(position + 1));
 
@@ -95,18 +104,18 @@ public class TimelineAdapter extends BaseAdapter {
 		text.setText(item.getAppName());
 		time.setText(item.getTime());
 
-		//add icon
+		// add icon
 		Drawable d = item.getIcon();
 		if (d != null)
 			icon.setImageDrawable(d);
 		else
 			icon.setImageResource(R.drawable.android);
-		
-		//add Pictures
-		for(Picture p : item.getPictures()){
+
+		// add Pictures
+		for (Picture p : item.getPictures()) {
 			intruder.addView(getView(p.getImage()));
 		}
-		
+
 		return view;
 	}
 
@@ -155,7 +164,7 @@ public class TimelineAdapter extends BaseAdapter {
 		int sec = (thisSec - previousSec);
 
 		int result = hours + min + sec;
-		int cameraPeriodSec = (AbstractAuditTask.CAMERA_PERIOD_MILIS * 2) / 1000;
+		int cameraPeriodSec = (cameraPeriod * 2) / 1000;
 		result /= cameraPeriodSec;
 
 		return result;

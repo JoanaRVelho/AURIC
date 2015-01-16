@@ -17,7 +17,10 @@
     <string name="mypicture">My Picture</string>
     <string name="mypictures">Recognized Pictures</string>
     <string name="ok">OK</string>
-    <string name="test_face">Test Face Recognition</string>
+    <string name="edit">Edit Pictures</string>
+    <string name="test_photo">Test with Photo</string>
+    <string name="test_fr_photo">Test Face Recognition with Photo</string>
+    <string name="test_camera">Test with Camera</string>
     <string name="viewall">View All</string>
     <string name="face_params">Face Recognition Params</string>
     <string name="faceparamsdesc">Max difference between two pictures. \nDefault value = 80</string>
@@ -33,6 +36,8 @@
     <string name="config_pic">Pictures Configuration</string>
     <string name="pref_previously_started">started</string>
     <string name="takepicture">Take a Picture</string>
+    <string name="rate">Authentication Period</string>
+    <string name="recogpics">Recognized Pictures</string>
 
     <string-array name="mode_array">
         <item>Original Mode</item>

@@ -3,10 +3,10 @@ package hcim.auric.activities;
 import hcim.auric.activities.passcode.Unlock;
 import hcim.auric.activities.settings.SettingsActivity;
 import hcim.auric.activities.setup.Welcome;
-import hcim.auric.calendar.CalendarManager;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.recognition.FaceRecognition;
+import hcim.auric.utils.CalendarManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,19 +53,22 @@ public class MainActivity extends Activity implements OnClickListener {
 	private Calendar myCalendar;
 	private int month, year;
 
-	private static final int UNLOCK_CODE = 20;
+	private static final int UNLOCK_CODE_SETTINGS = 20;
+	private static final int UNLOCK_CODE_INT = 30;
+	public static final int WELCOME_CODE = 40;
+
+	private String dayClicked;
 
 	private IntrusionsDatabase intrusionsDB;
+	private ConfigurationDatabase configDB;
 	private FaceRecognition fr;
 
+	private int flag;
+
 	private void initDatabase() {
-		ConfigurationDatabase.getInstance(this);
+		configDB = ConfigurationDatabase.getInstance(this);
 		intrusionsDB = IntrusionsDatabase.getInstance(this);
 		fr = FaceRecognition.getInstance(this);
-
-		Log.i(TAG,
-				"fr.getCascadeClassifier() == null -> "
-						+ (fr.getCascadeClassifier() == null));
 	}
 
 	@Override
@@ -81,7 +84,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void onClick(View v) {
-				startSettingsActivity();
+				if (configDB.hasPasscode())
+					startUnlockActivity(UNLOCK_CODE_SETTINGS);
+				else
+					startSettingsActivity();
 			}
 		});
 
@@ -107,7 +113,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 
-		unlock();
 	}
 
 	private void initDaysOfTheWeekLayout() {
@@ -146,11 +151,34 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == UNLOCK_CODE && resultCode == RESULT_OK) {
+		// if (requestCode == UNLOCK_CODE && resultCode == RESULT_OK) {
+		// boolean b = data.getBooleanExtra(Unlock.EXTRA_ID, false);
+		//
+		// if (!b)
+		// finish();
+		// }
+
+		if (requestCode == UNLOCK_CODE_SETTINGS && resultCode == RESULT_OK) {
 			boolean b = data.getBooleanExtra(Unlock.EXTRA_ID, false);
 
-			if (!b)
-				finish();
+			if (b)
+				startSettingsActivity();
+		}
+		if (requestCode == UNLOCK_CODE_INT && resultCode == RESULT_OK) {
+			boolean b = data.getBooleanExtra(Unlock.EXTRA_ID, false);
+
+			if (b) {
+				startIntrusionsListActivity();
+			}
+		}
+		if (requestCode == WELCOME_CODE) {
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(getBaseContext());
+			boolean previouslyStarted = prefs.getBoolean(
+					getString(R.string.pref_previously_started), false);
+			if (!previouslyStarted) {
+				super.finish();
+			}
 		}
 	}
 
@@ -161,24 +189,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 
-		Log.i("AURIC", "face recog max = " + FaceRecognition.MAX);
-
 		super.onResume();
 
 		if (OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, this,
 				fr.getLoaderCallback())) {
-			firstLaunch();
+			if (flag == 0)
+				firstLaunch();
 		} else {
 			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
-		}
-	}
-
-	private void unlock() {
-		ConfigurationDatabase db = ConfigurationDatabase.getInstance(this);
-
-		if (db.hasPasscode()) {
-			Intent i = new Intent(MainActivity.this, Unlock.class);
-			startActivityForResult(i, UNLOCK_CODE);
 		}
 	}
 
@@ -192,19 +210,33 @@ public class MainActivity extends Activity implements OnClickListener {
 			// edit.putBoolean(getString(R.string.pref_previously_started),
 			// Boolean.TRUE);
 			// edit.commit();
-
+			flag = -1;
 			startWelcome();
 		}
 	}
 
 	private void startWelcome() {
 		Intent i = new Intent(MainActivity.this, Welcome.class);
-		startActivity(i);
+		startActivityForResult(i, WELCOME_CODE);
+	}
+
+	private void startUnlockActivity(int code) {
+		Intent i = new Intent(MainActivity.this, Unlock.class);
+		startActivityForResult(i, code);
 	}
 
 	private void startSettingsActivity() {
 		Intent i = new Intent(MainActivity.this, SettingsActivity.class);
 		startActivity(i);
+	}
+
+	private void startIntrusionsListActivity() {
+		if (dayClicked != null) {
+			Intent i = new Intent(MainActivity.this,
+					IntrusionsListActivity.class);
+			i.putExtra(IntrusionsListActivity.EXTRA_ID, dayClicked);
+			startActivity(i);
+		}
 	}
 
 	@Override
@@ -432,8 +464,15 @@ public class MainActivity extends Activity implements OnClickListener {
 						R.color.lightgray02));
 			}
 			if (day_color[1].equals("BLUE")) {
-				gridcell.setTextColor(Color.BLUE);
-				gridcell.setTypeface(null, Typeface.BOLD);
+				String month = CalendarManager.currentMonth();
+				String year = CalendarManager.currentYear();
+				if (month.equals(themonth) && year.equals(theyear)) {
+					gridcell.setTextColor(Color.BLUE);
+					gridcell.setTypeface(null, Typeface.BOLD);
+				} else {
+					gridcell.setTextColor(getResources().getColor(
+							R.color.lightgray));
+				}
 			}
 			if (intrusionsDB.dayOfIntrusion(theday, themonth, theyear)) {
 				gridcell.setTextColor(getResources().getColor(R.color.orange));
@@ -448,11 +487,13 @@ public class MainActivity extends Activity implements OnClickListener {
 			if (!intrusionsDB.dayOfIntrusion(date_month_year)) {
 				return;
 			}
+			dayClicked = date_month_year;
 
-			Intent i = new Intent(MainActivity.this,
-					IntrusionsListActivity.class);
-			i.putExtra(IntrusionsListActivity.EXTRA_ID, date_month_year);
-			startActivity(i);
+			if (configDB.hasPasscode()) {
+				startUnlockActivity(UNLOCK_CODE_INT);
+			} else {
+				startIntrusionsListActivity();
+			}
 		}
 
 		public int getCurrentDayOfMonth() {

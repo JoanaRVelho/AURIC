@@ -3,7 +3,6 @@ package hcim.auric.activities.passcode;
 import hcim.auric.database.ConfigurationDatabase;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.widget.Toast;
 
 public class InsertPasscode extends PasscodeActivity {
@@ -22,9 +21,6 @@ public class InsertPasscode extends PasscodeActivity {
 
 	@Override
 	protected void afterEnteringPasscode(String enteredPasscode) {
-		Log.d("AURIC", "entered pass=" + enteredPasscode);
-		Log.d("AURIC", "passcode=" + passcode);
-
 		if (passcode == null) {
 			resetView();
 			if (enteredPasscode == null || enteredPasscode.length() < MIN) {
