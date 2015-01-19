@@ -36,6 +36,10 @@ public class SettingsActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings_activity);
+		
+		configDB = ConfigurationDatabase.getInstance(this);
+		picsDB = PicturesDatabase.getInstance(this);
+		faceRecognition = FaceRecognition.getInstance(this);
 
 		viewpager = (ViewPager) findViewById(R.id.pager);
 		adapter = new FragmentPageAdapter(getSupportFragmentManager());
@@ -65,10 +69,6 @@ public class SettingsActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-
-		configDB = ConfigurationDatabase.getInstance(this);
-		picsDB = PicturesDatabase.getInstance(this);
-		faceRecognition = FaceRecognition.getInstance(this);
 
 		stopBackgroundService();
 	}

@@ -12,7 +12,9 @@ import android.view.accessibility.AccessibilityEvent;
  * 
  */
 public class RecordEventBasedLog extends AccessibilityService {
-	public static String TAG = "AURIC";
+	public static final String TAG = "AURIC";
+	public static final String[] PACKAGES = { "com.android.systemui",
+			"com.sec.android.app.popupuireceiver" };
 
 	private static EventBasedLog log;
 	private static volatile String intrusion;
@@ -21,7 +23,7 @@ public class RecordEventBasedLog extends AccessibilityService {
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (intrusion == null) {
 			if (log != null) {
-				Log.i(TAG, "RecordSimpleText - stop recording");
+				Log.i(TAG, "RecordEventBasedLog - stop recording");
 				EventBasedLogDatabase db = EventBasedLogDatabase
 						.getInstance(this);
 				log.filter();
@@ -31,15 +33,25 @@ public class RecordEventBasedLog extends AccessibilityService {
 			}
 		} else {
 			if (log == null) {
-				Log.i(TAG, "RecordSimpleText - start recording");
+				Log.i(TAG, "RecordEventBasedLog - start recording");
 				log = new EventBasedLog(intrusion);
 			}
 
 			if (event != null) {
 				EventBasedLogItem t = new EventBasedLogItem(event, this);
-				log.addItem(t);
+				if (!reject(t))
+					log.addItem(t);
 			}
 		}
+	}
+
+	private boolean reject(EventBasedLogItem t) {
+		String packageName = t.getPackageName();
+		for(String s : PACKAGES){
+			if(s.equals(packageName))
+				return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -55,10 +67,9 @@ public class RecordEventBasedLog extends AccessibilityService {
 
 		serviceInfo.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED
 				| AccessibilityEvent.TYPE_VIEW_LONG_CLICKED
-		// | AccessibilityEvent.TYPE_GESTURE_DETECTION_END
-		// | AccessibilityEvent.TYPE_GESTURE_DETECTION_START
-		// | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-		;
+				// | AccessibilityEvent.TYPE_GESTURE_DETECTION_END
+				// | AccessibilityEvent.TYPE_GESTURE_DETECTION_START
+				| AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
 
 		serviceInfo.flags = AccessibilityServiceInfo.DEFAULT;
 		serviceInfo.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;

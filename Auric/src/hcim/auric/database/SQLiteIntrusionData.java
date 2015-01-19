@@ -4,7 +4,6 @@ import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.IntrusionFactory;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -97,7 +96,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	 * @return list of intrusions
 	 */
 	public List<Intrusion> getAllIntrusionsFromDay(String date) {
-		List<Intrusion> result = new LinkedList<Intrusion>();
+		List<Intrusion> result = new ArrayList<Intrusion>();
 
 		SQLiteDatabase db = this.getReadableDatabase();
 

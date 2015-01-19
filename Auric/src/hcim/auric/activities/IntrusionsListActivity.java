@@ -3,7 +3,7 @@ package hcim.auric.activities;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.database.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
-import hcim.auric.record.screen.event_based.TimelineActivity;
+import hcim.auric.record.screen.event_based.RunTimelineActivity;
 import hcim.auric.record.screen.screencast_root.RunScreencast;
 
 import java.util.List;
@@ -108,8 +108,8 @@ public class IntrusionsListActivity extends Activity {
 
 	private void startTimeline(String intrusion) {
 		Intent intent = new Intent(IntrusionsListActivity.this,
-				TimelineActivity.class);
-		intent.putExtra(TimelineActivity.EXTRA_ID, intrusion);
+				RunTimelineActivity.class);
+		intent.putExtra(RunTimelineActivity.EXTRA_ID, intrusion);
 		startActivity(intent);
 	}
 

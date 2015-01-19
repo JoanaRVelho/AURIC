@@ -136,11 +136,21 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#FFF" />
 
+            <TextView
+                android:id="@+id/rate_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rate_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/ratedesc" />
+
             <NumberPicker
                 android:id="@+id/rate_number_picker"
                 android:layout_width="50dp"
                 android:layout_height="110dp"
-                android:layout_below="@+id/rate_title"
+                android:layout_below="@+id/rate_desc"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp" />
         </RelativeLayout>

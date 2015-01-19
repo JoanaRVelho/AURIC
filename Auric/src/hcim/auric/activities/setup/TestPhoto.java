@@ -4,6 +4,7 @@ import hcim.auric.recognition.FaceRecognition;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -36,31 +37,52 @@ public class TestPhoto extends Activity {
 		txt = (TextView) findViewById(R.id.result);
 
 		faceRecognition = FaceRecognition.getInstance(this);
-		
+
 		dispatchTakePictureIntent();
 	}
+
+	private Bitmap flip(Bitmap src) {
+		Matrix m = new Matrix();
+		m.preScale(-1, 1);
+		//Bitmap src = d.getBitmap();
+		Bitmap dst = Bitmap.createBitmap(src, 0, 0, src.getWidth(),
+				src.getHeight(), m, false);
+		//dst.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+		//return new BitmapDrawable(dst);
+		return dst;
+	}
+	
+	private String getData(Bitmap imageBitmap){
+		boolean faceDetected = faceRecognition.detectFace(imageBitmap);
+		boolean ownerRecognized = faceRecognition
+				.recognizePicture(imageBitmap);
+		int result = faceRecognition.getLastResult();
+		boolean matchOwner = faceRecognition.lastResultMatchOwner();
+
+		if (faceDetected) {
+			return (RESULT
+					+ (ownerRecognized ? OWNER : INTRUDER)
+					+ DETAILS
+					+ (matchOwner ? (MATCH + DISTANCE + result) : NOT_MATCH));
+		} else {
+			return ("Face Detection Failed! Take another picture!");
+		}
+	}
+	
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 			Bundle extras = data.getExtras();
 			Bitmap imageBitmap = (Bitmap) extras.get("data");
-			img.setImageBitmap(imageBitmap);
-
-			boolean faceDetected = faceRecognition.detectFace(imageBitmap);
-			boolean ownerRecognized = faceRecognition
-					.recognizePicture(imageBitmap);
-			int result = faceRecognition.getLastResult();
-			boolean matchOwner = faceRecognition.lastResultMatchOwner();
-
-			if (faceDetected) {
-				txt.setText(RESULT
-						+ (ownerRecognized ? OWNER : INTRUDER)
-						+ DETAILS
-						+ (matchOwner ? (MATCH + DISTANCE + result) : NOT_MATCH));
-			} else {
-				txt.setText("Face Detection Failed! Take another picture!");
-			}
+			Bitmap flip = flip(imageBitmap);
+			
+			img.setImageBitmap(flip);
+			
+			String msg1 = getData(imageBitmap);
+			String msg2 = getData(flip);
+			
+			txt.setText("Normal\n"+msg1+ "\n\n\n\nFlip\n"+msg2);
 		}
 	}
 

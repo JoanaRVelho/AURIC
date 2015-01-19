@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 
 import android.util.Log;
 
+
 /**
  * https://github.com/ayuso2013/face-recognition
  */
@@ -47,7 +48,6 @@ public class Labels {
 	}
 
 	public void add(String s, int n) {
-		Log.d("AURIC", "add label");
 		list.add(new Label(s, n));
 	}
 

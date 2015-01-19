@@ -24,6 +24,7 @@
     <string name="viewall">View All</string>
     <string name="face_params">Face Recognition Params</string>
     <string name="faceparamsdesc">Max difference between two pictures. \nDefault value = 80</string>
+    <string name="ratedesc">Time between authentications measured in seconds. \nDefault value = 5 seconds</string>
     <string name="mode">AURIC Mode</string>
     <string name="device_sharing">Device Sharing</string>
     <string name="passcode_title">Passcode</string>

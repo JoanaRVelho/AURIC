@@ -11,10 +11,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.hcim.intrusiondetection.R;
 
@@ -26,7 +24,7 @@ public abstract class SlideShowActivity extends Activity {
 	private ImageView[] dots;
 	private ImageView img;
 	protected ImageView typeIcon;
-	protected TextView msg;
+//	protected TextView msg;
 	protected LinearLayout lin;
 
 	@Override
@@ -38,15 +36,15 @@ public abstract class SlideShowActivity extends Activity {
 		current = startAt();
 
 		// init txt
-		msg = (TextView) findViewById(R.id.double_tap_msg);
-		msg.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				onClickMessage();
-			}
-		});
-		setMessageVisibility(false);
+//		msg = (TextView) findViewById(R.id.double_tap_msg);
+//		msg.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				onClickMessage();
+//			}
+//		});
+//		setMessageVisibility(false);
 
 		// init type icon
 		typeIcon = (ImageView) findViewById(R.id.type_pic);
@@ -95,11 +93,6 @@ public abstract class SlideShowActivity extends Activity {
 		}
 	}
 	
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-
 	protected void refresh() {
 		String id = pictures.get(current).getID();
 		PicturesDatabase db = PicturesDatabase.getInstance(this);
@@ -130,17 +123,17 @@ public abstract class SlideShowActivity extends Activity {
 		return pictures.get(current);
 	}
 
-	protected void setMessageVisibility(boolean visible) {
-		msg.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-	}
-
-	protected boolean isMessageVisible() {
-		return msg.getVisibility() == View.VISIBLE;
-	}
+//	protected void setMessageVisibility(boolean visible) {
+//		msg.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+//	}
+//
+//	protected boolean isMessageVisible() {
+//		return msg.getVisibility() == View.VISIBLE;
+//	}
 
 	protected abstract int startAt();
 
 	protected abstract List<Picture> getPictures();
 
-	protected abstract void onClickMessage();
+//	protected abstract void onClickMessage();
 }

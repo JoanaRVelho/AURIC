@@ -37,7 +37,7 @@ import android.widget.Toast;
 
 import com.hcim.intrusiondetection.R;
 
-public class AddPictureActivity extends Activity implements
+public class EditPicturesActivity extends Activity implements
 		CvCameraViewListener2 {
 	private static final Scalar FACE_RECT_BLUE = new Scalar(0, 0, 255, 255);
 	private static final int FRONT_CAMERA = 1;
@@ -65,14 +65,14 @@ public class AddPictureActivity extends Activity implements
 
 		@Override
 		public void run() {
-			lastMat.release();
+			if (lastMat != null)
+				lastMat.release();
 			trainAllPictures();
-			// cameraView.disableView();
-			// cameraView.release();
 			runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
+
 					showMessageDialog();
 				}
 			});
@@ -173,7 +173,7 @@ public class AddPictureActivity extends Activity implements
 	@Override
 	public void finish() {
 		run.start();
-		
+
 		bar.setVisibility(View.VISIBLE);
 		cameraView.disableView();
 		cameraView.release();
@@ -245,13 +245,14 @@ public class AddPictureActivity extends Activity implements
 
 	private void showMessageDialog() {
 		AlertDialog.Builder alertDialog;
-		alertDialog = new AlertDialog.Builder(AddPictureActivity.this);
+		alertDialog = new AlertDialog.Builder(EditPicturesActivity.this);
 		alertDialog.setTitle("Picture Configuration");
-		alertDialog.setMessage("Picture configuration is complete.");
+		String msg = list.size() == 1 ? " picture." : " pictures.";
+		alertDialog.setMessage("You took " + list.size() + msg );
 		alertDialog.setNeutralButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						AddPictureActivity.super.finish();
+						EditPicturesActivity.super.finish();
 					}
 				});
 		alertDialog.show();

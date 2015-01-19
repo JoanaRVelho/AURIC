@@ -45,7 +45,7 @@
         <activity android:name="hcim.auric.activities.passcode.InsertPasscode" >
         </activity>
         <activity
-            android:name="hcim.auric.activities.settings.AddPictureActivity"
+            android:name="hcim.auric.activities.settings.EditPicturesActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
@@ -63,7 +63,7 @@
         </activity>
         <activity android:name="hcim.auric.record.screen.event_based.details.RunDetails" >
         </activity>
-        <activity android:name="hcim.auric.record.screen.event_based.TimelineActivity" >
+        <activity android:name="hcim.auric.record.screen.event_based.RunTimelineActivity" >
         </activity>
         <activity android:name="hcim.auric.record.screen.event_based.Details" >
         </activity>

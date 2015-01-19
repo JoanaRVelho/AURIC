@@ -98,7 +98,7 @@ public class AuditTask extends AbstractAuditTask {
 
 				startTimerTask(true);
 			} else { // continuar auditoria
-				Log.d(TAG, "AuditTask - continue");
+			//	Log.d(TAG, "AuditTask - continue");
 				if (currentIntrusion == null) {
 					return;
 				}

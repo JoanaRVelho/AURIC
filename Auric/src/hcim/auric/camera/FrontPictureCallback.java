@@ -7,10 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.util.Log;
 
 public class FrontPictureCallback implements Camera.PictureCallback {
-	protected static final String TAG = "AURIC";
+	//protected static final String TAG = "AURIC";
 
 	protected AbstractAuditTask task;
 
@@ -27,11 +26,11 @@ public class FrontPictureCallback implements Camera.PictureCallback {
 
 		bm = rotateBitmap(bm, 270);
 
-		if (bm == null) {
-			Log.d(TAG, "FrontPictureCallback - null bitmap");
-		} else {
-			Log.d(TAG, "FrontPictureCallback - picture taken");
-		}
+//		if (bm == null) {
+//			Log.d(TAG, "FrontPictureCallback - null bitmap");
+//		} else {
+//			Log.d(TAG, "FrontPictureCallback - picture taken");
+//		}
 
 		TaskMessage t = new TaskMessage(AuditTask.ACTION_NEW_PICTURE);
 		t.setPic(bm);

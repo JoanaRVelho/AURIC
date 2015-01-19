@@ -26,4 +26,8 @@ public class StringGenerator {
 	public static String generateOwnerName(){
 		return "OWNER" + System.currentTimeMillis();
 	}
+
+	public static String getOwnerPrefix() {
+		return "OWNER";
+	}
 }

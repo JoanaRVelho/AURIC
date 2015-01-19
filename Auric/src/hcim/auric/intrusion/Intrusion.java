@@ -7,6 +7,10 @@ import java.util.List;
 
 public class Intrusion {
 	public static final int UNCHECKED = -1;
+	public static final int NONE = 0;
+	public static final int LOW = 1;
+	public static final int MODERATE = 2;
+	public static final int HIGH = 3;
 
 	private String id;
 	private String date;
@@ -21,7 +25,7 @@ public class Intrusion {
 
 	public Intrusion(String log) {
 		long timestamp = System.currentTimeMillis();
-		
+
 		id = Long.toString(timestamp);
 		date = CalendarManager.getDate(timestamp);
 		time = CalendarManager.getTime(timestamp);

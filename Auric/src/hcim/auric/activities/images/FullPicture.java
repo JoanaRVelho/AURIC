@@ -1,5 +1,7 @@
 package hcim.auric.activities.images;
 
+import java.util.List;
+
 import hcim.auric.database.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
@@ -25,14 +27,14 @@ public class FullPicture extends Activity {
 
 		Bundle extras = getIntent().getExtras();
 		String id = extras.getString(EXTRA_ID);
-		
+
 		db = PicturesDatabase.getInstance(FullPicture.this);
 		picture = db.getPicture(id);
 
 		ImageView img = (ImageView) findViewById(R.id.full_image_view);
 		img.setImageBitmap(picture.getImage());
-		
-		ImageView typeImg = (ImageView)findViewById(R.id.type_img);
+
+		ImageView typeImg = (ImageView) findViewById(R.id.type_img);
 
 		String type = picture.getType();
 
@@ -42,38 +44,55 @@ public class FullPicture extends Activity {
 
 			if (type.equals(FaceRecognition.MY_PICTURE_TYPE))
 				typeImg.setImageResource(R.drawable.green);
-			
-			if(type.equals(FaceRecognition.UNKNOWN_PICTURE_TYPE))
+
+			if (type.equals(FaceRecognition.UNKNOWN_PICTURE_TYPE))
 				typeImg.setImageResource(R.drawable.black);
 		}
 	}
 
-	
-
-	public void trashButton(View v) {
+	private void trashButtonWarning() {
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(FullPicture.this);
 		alertDialog.setTitle("Delete Picture");
-		alertDialog
-				.setMessage("Are you sure that you want to delete this picture?");
-		alertDialog.setPositiveButton("YES",
+		alertDialog.setMessage("You can't delete all of your pictures!");
+		alertDialog.setNeutralButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						delete();
 						finish();
 					}
 
 				});
-		alertDialog.setNegativeButton("NO", null);
 		alertDialog.show();
 	}
 
+	public void trashButton(View v) {
+		List<Picture> list = db.getMyPictures();
+		if (list == null || list.size() == 1) {
+			trashButtonWarning();
+		} else {
+			AlertDialog.Builder alertDialog;
+			alertDialog = new AlertDialog.Builder(FullPicture.this);
+			alertDialog.setTitle("Delete Picture");
+			alertDialog
+					.setMessage("Are you sure that you want to delete this picture?");
+			alertDialog.setPositiveButton("YES",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							delete();
+							finish();
+						}
+
+					});
+			alertDialog.setNegativeButton("NO", null);
+			alertDialog.show();
+		}
+	}
+
 	private void delete() {
-		FaceRecognition fr = FaceRecognition
-				.getInstance(FullPicture.this);
+		FaceRecognition fr = FaceRecognition.getInstance(FullPicture.this);
 		fr.untrainPicture(picture.getID());
 		PicturesDatabase db = PicturesDatabase.getInstance(FullPicture.this);
 		db.removePicture(picture);
-	}	
+	}
 
 }

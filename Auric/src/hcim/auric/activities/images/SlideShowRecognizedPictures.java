@@ -19,8 +19,8 @@ public class SlideShowRecognizedPictures extends SlideShowActivity {
 	protected int startAt() {
 		return 0;
 	}
-
-	@Override
-	protected void onClickMessage() {
-	}
+//
+//	@Override
+//	protected void onClickMessage() {
+//	}
 }

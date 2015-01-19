@@ -2,9 +2,8 @@ package hcim.auric.record.screen.screencast_root;
 
 import hcim.auric.activities.images.SlideShowIntrusionPictures;
 import hcim.auric.database.IntrusionsDatabase;
-import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.Picture;
-import hcim.auric.record.screen.SeverityAdapter;
+import hcim.auric.record.screen.RunInteraction;
 import hcim.auric.utils.FileManager;
 import hcim.auric.utils.OnSwipeTouchListener;
 
@@ -13,36 +12,27 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.hcim.intrusiondetection.R;
 
-@SuppressLint("InflateParams") 
-public class RunScreencast extends Activity {
+@SuppressLint("InflateParams")
+public class RunScreencast extends RunInteraction {
 	protected static final String TAG = "AURIC";
 	public static final String EXTRA_ID = "extra";
-	
-	private static final int INTERVAL = 1000;
 
-	protected Intrusion intrusion;
+	private static final int INTERVAL = 1000;
 
 	private ImageView logView;
 	private ImageView background;
@@ -59,7 +49,6 @@ public class RunScreencast extends Activity {
 	private int idxLog;
 
 	private boolean play;
-	private IntrusionsDatabase intDB;
 
 	private Handler logHandler = new Handler();
 	private Runnable logRunnable = new Runnable() {
@@ -99,7 +88,6 @@ public class RunScreencast extends Activity {
 	private int totalPhotos;
 	private int logPeriod;
 	private int photosPeriod;
-	private Spinner spinnerSeverity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -117,19 +105,8 @@ public class RunScreencast extends Activity {
 		fileManager = new FileManager(this);
 
 		computeTotalTime();
-
 		initView();
-
 		reset();
-	}
-
-	@Override
-	public void finish() {
-		if (intrusion.isChecked()) {
-			super.finish();
-		} else {
-			markIntrusionAlertDialog();
-		}
 	}
 
 	private void play() {
@@ -247,7 +224,9 @@ public class RunScreencast extends Activity {
 				if (playImg.getVisibility() == View.VISIBLE) {
 					Intent i = new Intent(RunScreencast.this,
 							SlideShowIntrusionPictures.class);
-					i.putExtra(SlideShowIntrusionPictures.EXTRA_ID, intrusion.getID());
+					i.putExtra(SlideShowIntrusionPictures.EXTRA_ID,
+							intrusion.getID());
+					i.putExtra(SlideShowIntrusionPictures.EXTRA_ID_IDX, 0);
 					startActivity(i);
 				}
 			}
@@ -268,52 +247,38 @@ public class RunScreencast extends Activity {
 		timerTextView.setVisibility(View.INVISIBLE);
 	}
 
-	private View spinnerView() {
-		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		LinearLayout view = new LinearLayout(this);
-		view = (LinearLayout) inflater.inflate(R.layout.severity, null);
+	// private View spinnerView() {
+	// LayoutInflater inflater = (LayoutInflater)
+	// getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	// LinearLayout view = new LinearLayout(this);
+	// view = (LinearLayout) inflater.inflate(R.layout.severity, null);
+	//
+	// spinnerSeverity = (Spinner) view.findViewById(R.id.severity_spinner);
+	// spinnerSeverity.setAdapter(new SeverityAdapter(this));
+	//
+	// return view;
+	// }
+	//
+	// private void markIntrusionAlertDialog() {
+	// AlertDialog.Builder alertDialog;
+	// alertDialog = new AlertDialog.Builder(this);
+	// alertDialog.setTitle("Severity of the intrusion");
+	// alertDialog.setView(spinnerView());
+	// alertDialog.setPositiveButton("OK",
+	// new DialogInterface.OnClickListener() {
+	// public void onClick(DialogInterface dialog, int which) {
+	// intrusion.setTag((int) spinnerSeverity
+	// .getSelectedItemPosition());
+	// intDB.updateIntrusion(intrusion);
+	//
+	// RunScreencast.super.finish();
+	// }
+	// });
+	// alertDialog.show();
+	// }
 
-		spinnerSeverity = (Spinner) view.findViewById(R.id.severity_spinner);
-		spinnerSeverity.setAdapter(new SeverityAdapter(this));
-
-		return view;
-	}
-
-	private void markIntrusionAlertDialog() {
-		AlertDialog.Builder alertDialog;
-		alertDialog = new AlertDialog.Builder(this);
-		alertDialog.setTitle("Severity of the intrusion");
-		alertDialog.setView(spinnerView());
-		alertDialog.setPositiveButton("OK",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						intrusion.setTag((int) spinnerSeverity
-								.getSelectedItemPosition());
-						intDB.updateIntrusion(intrusion);
-
-						RunScreencast.super.finish();
-					}
-				});
-		alertDialog.show();
-	}
-	
-	private void trashButtonAlertDialog() {
-		AlertDialog.Builder alertDialog;
-		alertDialog = new AlertDialog.Builder(this);
-		alertDialog.setTitle("Delete Intrusion Log");
-		alertDialog
-				.setMessage("Are you sure that you want to delete this intrusion log?");
-		alertDialog.setPositiveButton("YES",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						delete();
-					}
-				});
-		alertDialog.setNegativeButton("NO", null);
-		alertDialog.show();
-	}
-
-	private void delete() {
+	@Override
+	protected void delete() {
 		intDB.deleteIntrusion(intrusion.getID(), false);
 
 		File dir = new File(
@@ -325,4 +290,11 @@ public class RunScreencast extends Activity {
 
 		super.finish();
 	}
+
+	// @Override
+	// protected void initProgressBar() {
+	// bar = (ProgressBar) findViewById(R.id.progressBar1);
+	// bar.setVisibility(View.GONE);
+	// }
+
 }

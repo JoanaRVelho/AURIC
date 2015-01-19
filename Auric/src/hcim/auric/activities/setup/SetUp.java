@@ -70,8 +70,7 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 		public void run() {
 			lastMat.release();
 			trainAllPictures();
-			// cameraView.disableView();
-			// cameraView.release();
+			
 			runOnUiThread(new Runnable() {
 
 				@Override
@@ -165,10 +164,10 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 					Bitmap.Config.ARGB_8888);
 			Utils.matToBitmap(lastMat, img);
 
-			String name = StringGenerator.generateOwnerName();
+			String name = StringGenerator.getOwnerPrefix() + list.size();
 			String type = FaceRecognition.MY_PICTURE_TYPE;
 
-			if (faceRecognition.detectFace(img)) {
+			if (faceRecognition.trainPicture(img, name)) {
 				list.add(new Picture(name, type, img));
 
 				if (list.size() == NUMBER_PICTURES) {
@@ -275,9 +274,9 @@ public class SetUp extends Activity implements CvCameraViewListener2 {
 		PicturesDatabase db = PicturesDatabase.getInstance(this);
 
 		for (Picture p : list) {
-			if (faceRecognition.trainPicture(p.getImage(), p.getID())) {
+			//if (faceRecognition.trainPicture(p.getImage(), p.getID())) {
 				db.addPicture(p);
-			}
+			//}
 		}
 		addOtherPictures();
 		faceRecognition.stopTrain();

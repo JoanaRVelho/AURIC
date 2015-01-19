@@ -4,6 +4,10 @@ import hcim.auric.activities.images.GridOfRecognizedPictures;
 import hcim.auric.activities.images.SlideShowRecognizedPictures;
 import hcim.auric.activities.setup.TestFaceRecognition;
 import hcim.auric.activities.setup.TestPhoto;
+import hcim.auric.recognition.Picture;
+
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,7 +60,7 @@ public class FaceRecognitionFragment extends Fragment {
 						SlideShowRecognizedPictures.class));
 			}
 		});
-
+		
 		testCamera = (Button) result.findViewById(R.id.testfr);
 		testCamera.setOnClickListener(new OnClickListener() {
 
@@ -89,5 +93,17 @@ public class FaceRecognitionFragment extends Fragment {
 		});
 
 		return result;
+	}
+
+	@Override
+	public void onResume() {
+		List<Picture> list = activity.picsDB.getMyPictures();
+		
+		if(list == null || list.isEmpty())
+			viewAll.setVisibility(View.GONE);
+		else
+			viewAll.setVisibility(View.VISIBLE);
+		
+		super.onResume();
 	}
 }

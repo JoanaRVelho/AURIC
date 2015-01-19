@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -67,7 +68,9 @@ public class GeneralFragment extends Fragment {
 		picker = (NumberPicker) result.findViewById(R.id.rate_number_picker);
 		picker.setMinValue(0);
 		picker.setMaxValue(60);
-		picker.setValue(activity.configDB.getCameraPeriod()/1000);
+		int value = activity.configDB.getCameraPeriod()/1000;
+		picker.setValue(value);
+		Log.d("AURIC", "camera period = "+ value);
 		picker.setWrapSelectorWheel(false);
 		picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 		picker.setOnValueChangedListener(new OnValueChangeListener() {

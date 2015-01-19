@@ -26,7 +26,7 @@ public class ConfigurationDatabase {
 	private String defaultMode;
 	
 	private static final int DEFAULT_FR_MAX = 80;
-	private static final int DEFAULT_CAMERA_PERIOD = 5;
+	private static final int DEFAULT_CAMERA_PERIOD = 5000;
 	
 
 	public static ConfigurationDatabase getInstance(Context c) {
