@@ -34,7 +34,7 @@
         android:id="@+id/type_pic"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignBottom="@+id/intruder_pict"
         android:contentDescription="@string/description"
         android:src="@drawable/black" />
@@ -49,15 +49,15 @@
         android:text="@string/taprecog"
         android:textColor="@color/white"
         android:visibility="gone"
-        android:background="@drawable/sub_bar" />
+        android:background="@color/sky" />
 
     <Button
         android:id="@+id/delete_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignBottom="@+id/intruder_pict"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="5dp"
         android:background="@drawable/trash_button"
         android:visibility="invisible" />
 

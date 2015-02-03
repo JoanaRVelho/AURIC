@@ -17,7 +17,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:background="@drawable/sub_bar" />
+        android:background="@color/sky" />
 
     <Button
         android:id="@+id/switch_cam"

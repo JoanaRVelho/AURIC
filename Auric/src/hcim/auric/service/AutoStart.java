@@ -12,4 +12,10 @@ public class AutoStart extends BroadcastReceiver {
 		context.startService(startServiceIntent);
 	}
 
+
+/*    <receiver android:name="hcim.auric.service.AutoStart" >
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+    </receiver>*/
 }

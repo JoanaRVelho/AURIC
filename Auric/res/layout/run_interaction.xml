@@ -54,11 +54,11 @@
 
     <TextView
         android:id="@+id/timer"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/timer"
+        android:background="@color/sky"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:text=""
@@ -68,7 +68,7 @@
         android:id="@+id/img_intruder"
         android:layout_width="80dp"
         android:layout_height="100dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:alpha="0.9"
         android:contentDescription="@string/description"
@@ -79,9 +79,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         android:contentDescription="@string/description"
         android:src="@drawable/trash_button" />
 

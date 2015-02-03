@@ -55,7 +55,7 @@ public class AuditTask extends AbstractAuditTask {
 		}
 	}
 
-	public void actionOn() {
+	public void actionOn() {		
 		if (!startLog) {
 			camera.takePicture();
 		}

@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@drawable/sub_bar"
+        android:background="@color/sky"
         android:gravity="center"
         android:text="@string/missingPictures"
         android:textAppearance="?android:attr/textAppearanceMedium"

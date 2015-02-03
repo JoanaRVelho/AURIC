@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Auric</string>
+    <string name="list_apps">Applications</string>
     <string name="timeline">timeline</string>
     <string name="welcome">Welcome to Auric</string>
     <string name="startconfig">Let\'s start</string>
@@ -25,12 +26,12 @@
     <string name="face_params">Face Recognition Params</string>
     <string name="faceparamsdesc">Max difference between two pictures. \nDefault value = 80</string>
     <string name="ratedesc">Time between authentications measured in seconds. \nDefault value = 5 seconds</string>
-    <string name="mode">AURIC Mode</string>
+    <string name="mode">Intrusion Detection Mode</string>
     <string name="device_sharing">Device Sharing</string>
     <string name="passcode_title">Passcode</string>
     <string name="passcode">Passcode Lock</string>
     <string name="passcode_change">Change Passcode</string>
-    <string name="log_type">Log Type</string>
+    <string name="log_type">Log Mode</string>
     <string name="done">Done</string>
     <string name="doubletap">Double tap to recognize.</string>
     <string name="taprecog">Tap here to recognize</string>

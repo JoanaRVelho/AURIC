@@ -18,7 +18,7 @@ public class IntrusionNotifier {
 		intrusionDetected = new Notification.Builder(context)
 				.setContentTitle("AURIC - Intrusion Detected")
 				.setContentText("Background recording")
-				.setSmallIcon(R.drawable.auric_icon).build();
+				.setSmallIcon(R.drawable.official_icon).build();
 	}
 
 	public void notifyUser() {

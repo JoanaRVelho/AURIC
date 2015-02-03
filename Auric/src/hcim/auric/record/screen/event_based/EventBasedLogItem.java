@@ -105,9 +105,15 @@ public class EventBasedLogItem {
 	public void mergeDetails(EventBasedLogItem other) {
 		List<String> otherDetails = other.details;
 
+		String last = details.isEmpty() ? null : details
+				.get(details.size() - 1);
+
 		for (String s : otherDetails) {
 			if (!s.equals("")) {
-				this.details.add(s);
+				if (last == null || !last.equals(s)) {
+					this.details.add(s);
+					last = s;
+				}
 			}
 		}
 	}

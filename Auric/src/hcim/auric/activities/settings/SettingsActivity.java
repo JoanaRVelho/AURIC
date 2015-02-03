@@ -31,12 +31,15 @@ public class SettingsActivity extends FragmentActivity implements
 	protected ConfigurationDatabase configDB;
 	protected PicturesDatabase picsDB;
 	protected FaceRecognition faceRecognition;
+	protected boolean start;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings_activity);
-		
+
+		start = false;
+
 		configDB = ConfigurationDatabase.getInstance(this);
 		picsDB = PicturesDatabase.getInstance(this);
 		faceRecognition = FaceRecognition.getInstance(this);
@@ -94,29 +97,47 @@ public class SettingsActivity extends FragmentActivity implements
 	@Override
 	public void finish() {
 		printStatus();
-		
-		if (readyToStart()) {
+
+		// if (readyToStart()) {
+		// if (!start) {
+		// startBackgroundService();
+		// }
+		// super.finish();
+		// } else {
+		// if (!configDB.isIntrusionDetectorActive()) {
+		// super.finish();
+		// } else {
+		// if (!accessibilityServiceEnabled()) {
+		// if (!start) {
+		// startBackgroundService(); // linha nova
+		// settingsDialog();
+		// }
+		// }
+		// }
+		// }
+		if (configDB.isIntrusionDetectorActive()) {
 			startBackgroundService();
-			super.finish();
-		} else {
-			if (!configDB.isIntrusionDetectorActive()) {
+
+			if (!accessibilityServiceEnabled())
+				settingsDialog();
+			else
 				super.finish();
-			} else {
-				if (!settingsChecked()) {
-					settingsDialog();
-				}
-			}
+		} else {
+			super.finish();
 		}
+
 	}
 
 	private void settingsDialog() {
 		AlertDialog.Builder alertDialog;
 		alertDialog = new AlertDialog.Builder(SettingsActivity.this);
 		alertDialog.setTitle("Auric Service");
-		alertDialog.setMessage("It is necessary to activate Auric's Accessibility Service. ");
+		alertDialog
+				.setMessage("It is necessary to activate Auric's Accessibility Service. ");
 		alertDialog.setNeutralButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
+						SettingsActivity.super.finish();
 						startActivity(new Intent(
 								Settings.ACTION_ACCESSIBILITY_SETTINGS));
 					}
@@ -130,7 +151,7 @@ public class SettingsActivity extends FragmentActivity implements
 	 * @return false if accessibility service is needed and not enabled, true
 	 *         otherwise
 	 */
-	private boolean settingsChecked() {
+	private boolean accessibilityServiceEnabled() {
 		String type = configDB.getLogType();
 
 		if (LogManager.hasAccessibilityService(type)) {
@@ -140,9 +161,9 @@ public class SettingsActivity extends FragmentActivity implements
 		return true;
 	}
 
-	private boolean readyToStart() {
-		return (configDB.isIntrusionDetectorActive() && settingsChecked());
-	}
+//	private boolean readyToStart() {
+//		return (configDB.isIntrusionDetectorActive() && accessibilityServiceEnabled());
+//	}
 
 	private void printStatus() {
 		Log.i(TAG,
@@ -151,20 +172,24 @@ public class SettingsActivity extends FragmentActivity implements
 		Log.i(TAG, "SettingsActivity - MODE: " + configDB.getMode());
 		Log.i(TAG, "SettingsActivity - DV:" + configDB.isDeviceSharingEnabled());
 		Log.i(TAG, "SettingsActivity - LOG TYPE: " + configDB.getLogType());
-		Log.i(TAG, "SettingsActivity - FACE RECOGNITION MAX PARAM: "
-				+ configDB.getFaceRecognitionMax());
-		Log.i(TAG, "SettingsActivity - CAMERA PERIOD PARAM: "
-				+ configDB.getCameraPeriod());
+		Log.i(TAG,
+				"SettingsActivity - FACE RECOGNITION MAX PARAM: "
+						+ configDB.getFaceRecognitionMax());
+		Log.i(TAG,
+				"SettingsActivity - CAMERA PERIOD PARAM: "
+						+ configDB.getCameraPeriod());
 	}
 
-	private void stopBackgroundService() {
+	protected void stopBackgroundService() {
+		start = false;
 		if (configDB.isIntrusionDetectorActive())
 			stopService(new Intent(this, BackgroundService.class));
 	}
 
-	private void startBackgroundService() {
+	protected void startBackgroundService() {
 		if (configDB.isIntrusionDetectorActive())
-			startService(new Intent(this, BackgroundService.class));
+			start = true;
+		startService(new Intent(this, BackgroundService.class));
 	}
 
 	public void goToRecognizedPictures() {

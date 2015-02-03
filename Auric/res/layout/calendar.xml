@@ -9,27 +9,16 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" >
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp" >
 
         <Button
             android:id="@+id/button1"
             android:layout_width="50sp"
             android:layout_height="50sp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:background="@drawable/gear" />
-
-        <ImageView
-            android:id="@+id/auric_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/auric_icon" 
-            android:contentDescription="@string/description"
-            android:visibility="gone"/>
-
     </RelativeLayout>
 
     <LinearLayout
@@ -73,8 +62,8 @@
                 android:layout_width="20sp"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
-                android:contentDescription="@string/description"
                 android:layout_marginRight="10sp"
+                android:contentDescription="@string/description"
                 android:src="@drawable/calendar_right_arrow_selector" >
             </ImageView>
         </LinearLayout>
@@ -101,5 +90,16 @@
             android:numColumns="7" >
         </GridView>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button2"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Button"
+        android:visibility="gone"
+        android:onClick="appsActivity" />
 
 </RelativeLayout>

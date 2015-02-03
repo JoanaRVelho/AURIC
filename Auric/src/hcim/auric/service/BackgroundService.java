@@ -1,5 +1,8 @@
 package hcim.auric.service;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import hcim.auric.activities.MainActivity;
 import hcim.auric.database.ConfigurationDatabase;
 import hcim.auric.mode.AbstractMode;
@@ -41,6 +44,18 @@ public class BackgroundService extends Service {
 		registerReceiver(currentMode.getReceiver(), currentMode.getFilter());
 		currentMode.getTask().start();
 
+		TimerTask not = new TimerTask() {
+
+			@Override
+			public void run() {
+				AccessibilityServiceNotification notification = new AccessibilityServiceNotification(
+						context);
+				notification.notifyUser();
+			}
+		};
+		Timer timer = new Timer();
+		timer.schedule(not, 30000);
+
 		startForeground(NOTIFICATION_STICKY, getNotification());
 
 		return Service.START_STICKY;
@@ -50,7 +65,7 @@ public class BackgroundService extends Service {
 	public void onDestroy() {
 		if (currentMode != null) {
 			currentMode.destroy();
-			
+
 			unregisterReceiver(currentMode.getReceiver());
 		}
 		super.onDestroy();
@@ -86,7 +101,7 @@ public class BackgroundService extends Service {
 		CharSequence contentTitle = "AURIC Service";
 		CharSequence contentText = "AURIC Service is now running";
 
-		Notification note = new Notification(R.drawable.auric_icon,
+		Notification note = new Notification(R.drawable.official_icon,
 				contentTitle, 0);
 		note.flags |= Notification.FLAG_NO_CLEAR;
 		note.flags |= Notification.FLAG_FOREGROUND_SERVICE;

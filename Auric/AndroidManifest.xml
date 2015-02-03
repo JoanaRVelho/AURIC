@@ -79,6 +79,8 @@
         </activity>
         <activity android:name="hcim.auric.activities.setup.TestPhoto" >
         </activity>
+        <activity android:name="hcim.auric.activities.apps.ListAppsActivity" >
+        </activity>
         <activity
             android:name="hcim.auric.activities.setup.SetUp"
             android:screenOrientation="landscape"
@@ -110,12 +112,6 @@
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
         </service>
-
-        <receiver android:name="hcim.auric.service.AutoStart" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package hcim.auric.activities;
 
+import hcim.auric.activities.apps.ListAppsActivity;
 import hcim.auric.activities.passcode.Unlock;
 import hcim.auric.activities.settings.SettingsActivity;
 import hcim.auric.activities.setup.Welcome;
@@ -114,6 +115,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		calendarView.setAdapter(adapter);
 
 	}
+	
+	public void appsActivity(View v){
+		startActivity(new Intent(this, ListAppsActivity.class));
+	}
 
 	private void initDaysOfTheWeekLayout() {
 		GridView week = (GridView) findViewById(R.id.days_week);
@@ -126,7 +131,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				TextView t = new TextView(MainActivity.this);
 				t.setText(week[position]);
 				t.setTextColor(Color.WHITE);
-				t.setBackgroundResource(R.drawable.sub_bar);
+				t.setBackgroundResource(R.color.sky);
 				t.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
 
 				return t;

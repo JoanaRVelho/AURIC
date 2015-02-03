@@ -4,6 +4,8 @@ import hcim.auric.activities.passcode.ConfirmAndChangePasscode;
 import hcim.auric.activities.passcode.ConfirmAndTurnOffPasscode;
 import hcim.auric.activities.passcode.InsertPasscode;
 import hcim.auric.database.ConfigurationDatabase;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -42,7 +44,7 @@ public class GeneralFragment extends Fragment {
 	private String currentLogType;
 	private NumberPicker picker;
 
-	private boolean isChecked;
+	// private boolean isChecked;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,9 +70,9 @@ public class GeneralFragment extends Fragment {
 		picker = (NumberPicker) result.findViewById(R.id.rate_number_picker);
 		picker.setMinValue(0);
 		picker.setMaxValue(60);
-		int value = activity.configDB.getCameraPeriod()/1000;
+		int value = activity.configDB.getCameraPeriod() / 1000;
 		picker.setValue(value);
-		Log.d("AURIC", "camera period = "+ value);
+		Log.d("AURIC", "camera period = " + value);
 		picker.setWrapSelectorWheel(false);
 		picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
 		picker.setOnValueChangedListener(new OnValueChangeListener() {
@@ -78,8 +80,8 @@ public class GeneralFragment extends Fragment {
 			@Override
 			public void onValueChange(NumberPicker picker, int oldVal,
 					int newVal) {
-				//AbstractAuditTask.CAMERA_PERIOD_MILIS = newVal * 1000;
-				activity.configDB.setCameraPeriod(newVal*1000);
+				// AbstractAuditTask.CAMERA_PERIOD_MILIS = newVal * 1000;
+				activity.configDB.setCameraPeriod(newVal * 1000);
 			}
 		});
 
@@ -93,12 +95,15 @@ public class GeneralFragment extends Fragment {
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				activity.configDB.setIntrusionDetectorActivity(isChecked);
+				if (isChecked)
+					showConfirmDialog();
 			}
 
 		});
 
-		isChecked = activity.configDB.isIntrusionDetectorActive();
-		onOff.setChecked(isChecked);
+		// isChecked = activity.configDB.isIntrusionDetectorActive();
+		onOff.setChecked(false);
+		activity.configDB.setIntrusionDetectorActivity(false);
 	}
 
 	private void initModeSection(RelativeLayout result) {
@@ -200,7 +205,7 @@ public class GeneralFragment extends Fragment {
 		if (passcodeSwitch != null) {
 			boolean b = activity.configDB.hasPasscode();
 			passcodeSwitch.setChecked(b);
-			
+
 			if (b)
 				changePasscode.setVisibility(View.VISIBLE);
 			else {
@@ -254,18 +259,48 @@ public class GeneralFragment extends Fragment {
 			deviceSharing.setEnabled(true);
 			deviceSharing
 					.setChecked(activity.configDB.isDeviceSharingEnabled());
-			deviceSharing.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					activity.configDB.enableDeviceSharing(isChecked);					
-				}
-			});
+			deviceSharing
+					.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView,
+								boolean isChecked) {
+							activity.configDB.enableDeviceSharing(isChecked);
+						}
+					});
 
 		} else {
 			deviceSharing.setChecked(false);
 			deviceSharing.setEnabled(false);
 		}
+
+	}
+
+	private void showConfirmDialog() {
+		String msg = "Confirm the following settings:\n\nIntrusion Detection: "
+				+ activity.configDB.getMode()
+				+ "\nDevice Sharing: "
+				+ (activity.configDB.isDeviceSharingEnabled() ? "Yes\nLog Mode: "
+						: "No\nLog Mode: ") + activity.configDB.getLogType();
+
+		AlertDialog.Builder alertDialog;
+		alertDialog = new AlertDialog.Builder(activity);
+		alertDialog.setTitle("Auric Service");
+		alertDialog.setMessage(msg);
+		alertDialog.setPositiveButton("Confirm",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						activity.finish();
+					}
+				});
+		alertDialog.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						onOff.setChecked(false);
+					}
+				});
+
+		alertDialog.show();
 
 	}
 }

@@ -65,11 +65,11 @@ public class RecordEventBasedLog extends AccessibilityService {
 		AccessibilityServiceInfo serviceInfo = new AccessibilityServiceInfo();
 		// serviceInfo.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;
 
-		serviceInfo.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED
-				| AccessibilityEvent.TYPE_VIEW_LONG_CLICKED
-				// | AccessibilityEvent.TYPE_GESTURE_DETECTION_END
-				// | AccessibilityEvent.TYPE_GESTURE_DETECTION_START
-				| AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+		// serviceInfo.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED
+		// | AccessibilityEvent.TYPE_VIEW_LONG_CLICKED
+		// | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+		
+		serviceInfo.eventTypes = EventManager.getEventTypes();
 
 		serviceInfo.flags = AccessibilityServiceInfo.DEFAULT;
 		serviceInfo.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;

@@ -75,13 +75,6 @@ public class PicturesDatabase {
 		}
 	}
 
-	public int numberOfIntrusions() {
-		if (pictureDB != null) {
-			return pictureDB.numberOfPictures();
-		}
-		return 0;
-	}
-
 	public Picture getPicture(String id) {
 		if (pictureDB != null) {
 			return pictureDB.getPicture(id);
