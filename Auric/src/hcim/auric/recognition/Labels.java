@@ -13,28 +13,33 @@ import java.util.StringTokenizer;
 
 import android.util.Log;
 
-
 /**
- * https://github.com/ayuso2013/face-recognition
+ * 
+ * @author Joana Velho
+ * 
+ *         An adaptation of {@link https
+ *         ://github.com/ayuso2013/face-recognition}
+ *
  */
 public class Labels {
 	private static final String TAG = "AURIC";
+	private static final String FILENAME = "faces.txt";
 
 	private ArrayList<Label> list;
 	private String path;
 
 	class Label {
 		String label;
-		int num;
+		int number;
 
 		public Label(String s, int n) {
 			label = s;
-			num = n;
+			number = n;
 		}
 
 		@Override
 		public String toString() {
-			return label + "," + num;
+			return label + "," + number;
 		}
 	}
 
@@ -55,7 +60,7 @@ public class Labels {
 		Iterator<Label> Ilabel = list.iterator();
 		while (Ilabel.hasNext()) {
 			Label l = Ilabel.next();
-			if (l.num == i)
+			if (l.number == i)
 				return l.label;
 		}
 		return "";
@@ -67,14 +72,14 @@ public class Labels {
 		while (iterator.hasNext()) {
 			Label l = iterator.next();
 			if (l.label.equalsIgnoreCase(s))
-				return l.num;
+				return l.number;
 		}
 		return -1;
 	}
 
 	public void save() {
 		try {
-			File f = new File(path, "faces.txt");
+			File f = new File(path, FILENAME);
 			if (!f.exists()) {
 				f.createNewFile();
 			}
@@ -93,7 +98,7 @@ public class Labels {
 	}
 
 	public void read() {
-		File f = new File(path, "faces.txt");
+		File f = new File(path, FILENAME);
 		list = new ArrayList<Label>();
 
 		if (f.exists()) {
@@ -124,21 +129,21 @@ public class Labels {
 		Iterator<Label> Ilabel = list.iterator();
 		while (Ilabel.hasNext()) {
 			Label l = Ilabel.next();
-			if (l.num > m)
-				m = l.num;
+			if (l.number > m)
+				m = l.number;
 		}
 		return m;
 	}
 
 	public void remove(String picID) {
-		//read();
+		// read();
 		int idx = -1;
 		Label l;
 		for (int i = 0; i < list.size(); i++) {
 			l = list.get(i);
-			
+
 			if (idx != -1) {
-				l.num--;
+				l.number--;
 			} else {
 				if (l.label.equals(picID)) {
 					idx = i;

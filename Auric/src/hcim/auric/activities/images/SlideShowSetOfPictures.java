@@ -1,10 +1,12 @@
 package hcim.auric.activities.images;
 
-import hcim.auric.database.IntrusionsDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.recognition.Picture;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import android.view.View;
 
 public class SlideShowSetOfPictures extends SlideShowActivity {
 	public static final String EXTRA_ID_IDX = "extra_idx";
@@ -24,6 +26,16 @@ public class SlideShowSetOfPictures extends SlideShowActivity {
 		}
 
 		return list;
+	}
+	
+	@Override
+	protected void refresh(){
+		typeIcon.setVisibility(View.GONE);
+		setMessageVisibility(true);
+		Picture p = pictures.get(current);
+		setMessage(p.getDescription());
+		
+		super.refresh();
 	}
 
 	@Override

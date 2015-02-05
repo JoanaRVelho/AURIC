@@ -1,6 +1,6 @@
 package hcim.auric.record.screen.event_based;
 
-import hcim.auric.database.EventBasedLogDatabase;
+import hcim.auric.database.intrusions.EventBasedLogDatabase;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.util.Log;

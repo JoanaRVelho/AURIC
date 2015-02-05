@@ -2,7 +2,7 @@ package hcim.auric.mode;
 
 import hcim.auric.audit.AuditTask;
 import hcim.auric.audit.AuditTaskWithDeviceSharing;
-import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
 import hcim.auric.receiver.OriginalReceiver;
 import android.content.Context;
 import android.content.Intent;

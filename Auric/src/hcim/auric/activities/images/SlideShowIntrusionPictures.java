@@ -1,12 +1,13 @@
 package hcim.auric.activities.images;
 
-import hcim.auric.database.IntrusionsDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.Picture;
 
 import java.util.List;
 
 import android.os.Bundle;
+import android.view.View;
 
 public class SlideShowIntrusionPictures extends SlideShowActivity {
 	public static final String EXTRA_ID = "extra";
@@ -28,7 +29,7 @@ public class SlideShowIntrusionPictures extends SlideShowActivity {
 
 		return i.getImages();
 	}
-
+	
 	@Override
 	protected int startAt() {
 		return startAt;
@@ -36,6 +37,11 @@ public class SlideShowIntrusionPictures extends SlideShowActivity {
 
 	@Override
 	protected void refresh() {
+		typeIcon.setVisibility(View.GONE);
+		setMessageVisibility(true);
+		Picture p = pictures.get(current);
+		setMessage(p.getDescription());
+		
 		super.refresh();
 
 		// boolean detected = recognition.detectFace(getCurrentPicture()

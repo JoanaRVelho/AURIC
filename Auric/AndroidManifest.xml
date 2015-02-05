@@ -67,6 +67,10 @@
         </activity>
         <activity android:name="hcim.auric.record.screen.event_based.Details" >
         </activity>
+        <activity android:name="hcim.auric.activities.SessionsListActivity" >
+        </activity>
+        <activity android:name="hcim.auric.activities.SessionIntrusionsList" >
+        </activity>
         <activity android:name="hcim.auric.activities.images.SlideShowIntrusionPictures" >
         </activity>
         <activity android:name="hcim.auric.activities.images.SlideShowRecognizedPictures" >
@@ -101,7 +105,7 @@
             class=".RecordEventBasedLog"
             android:enabled="true"
             android:exported="false"
-            android:label="AURIC - Event based Log"
+            android:label="AURIC"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action

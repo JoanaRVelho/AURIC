@@ -1,7 +1,7 @@
 package hcim.auric.record.screen;
 
-import hcim.auric.database.IntrusionsDatabase;
-import hcim.auric.database.PicturesDatabase;
+import hcim.auric.database.configs.PicturesDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
@@ -80,11 +80,9 @@ public abstract class RunInteraction extends Activity {
 		PicturesDatabase picsDB = PicturesDatabase.getInstance(this);
 
 		for (Picture p : intrusion.getImages()) {
-			if (faceRecognition.detectFace(p.getImage())) {
+			if (faceRecognition.trainPicture(p.getImage(), p.getID())) {
 				p.setID(StringGenerator.generateOwnerName());
 				p.setType(FaceRecognition.MY_PICTURE_TYPE);
-
-				faceRecognition.trainPicture(p.getImage(), p.getID());
 				picsDB.addPicture(p);
 				intDB.updatePictureType(p);
 				return true;
@@ -98,10 +96,8 @@ public abstract class RunInteraction extends Activity {
 		PicturesDatabase picsDB = PicturesDatabase.getInstance(this);
 
 		for (Picture p : intrusion.getImages()) {
-			if (faceRecognition.detectFace(p.getImage())) {
+			if (faceRecognition.trainPicture(p.getImage(), p.getID())) {
 				p.setType(FaceRecognition.INTRUDER_PICTURE_TYPE);
-
-				faceRecognition.trainPicture(p.getImage(), p.getID());
 				picsDB.addPicture(p);
 				intDB.updatePictureType(p);
 				return true;
@@ -120,10 +116,16 @@ public abstract class RunInteraction extends Activity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						delete();
+						superFinish();
 					}
+
 				});
 		alertDialog.setNegativeButton("NO", null);
 		alertDialog.show();
+	}
+	
+	private void superFinish() {
+		super.finish();
 	}
 
 	protected abstract void delete();

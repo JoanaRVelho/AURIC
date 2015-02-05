@@ -4,8 +4,9 @@ import hcim.auric.activities.apps.ListAppsActivity;
 import hcim.auric.activities.passcode.Unlock;
 import hcim.auric.activities.settings.SettingsActivity;
 import hcim.auric.activities.setup.Welcome;
-import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.database.IntrusionsDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
+import hcim.auric.database.intrusions.SessionDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.utils.CalendarManager;
 
@@ -33,6 +34,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,6 +57,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private GridCellAdapter adapter;
 	private Calendar myCalendar;
 	private int month, year;
+	private CheckBox hide;
 
 	private static final int UNLOCK_CODE_SETTINGS = 20;
 	private static final int UNLOCK_CODE_INT = 30;
@@ -70,6 +75,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		configDB = ConfigurationDatabase.getInstance(this);
 		intrusionsDB = IntrusionsDatabase.getInstance(this);
 		fr = FaceRecognition.getInstance(this);
+		SessionDatabase.getInstance(this);
 	}
 
 	@Override
@@ -89,6 +95,19 @@ public class MainActivity extends Activity implements OnClickListener {
 					startUnlockActivity(UNLOCK_CODE_SETTINGS);
 				else
 					startSettingsActivity();
+			}
+		});
+		
+		hide = (CheckBox) findViewById(R.id.hide_not);
+		hide.setChecked(configDB.hideNotification());
+		hide.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked){
+					configDB.setHideNotification(isChecked);
+				}
+				
 			}
 		});
 
@@ -203,6 +222,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		} else {
 			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
 		}
+		
+		hide.setEnabled(!configDB.isIntrusionDetectorActive());
 	}
 
 	private void firstLaunch() {
@@ -235,11 +256,20 @@ public class MainActivity extends Activity implements OnClickListener {
 		startActivity(i);
 	}
 
+//	private void startIntrusionsListActivity() {
+//		if (dayClicked != null) {
+//			Intent i = new Intent(MainActivity.this,
+//					IntrusionsListActivity.class);
+//			i.putExtra(IntrusionsListActivity.EXTRA_ID, dayClicked);
+//			startActivity(i);
+//		}
+//	}
+	
 	private void startIntrusionsListActivity() {
 		if (dayClicked != null) {
 			Intent i = new Intent(MainActivity.this,
-					IntrusionsListActivity.class);
-			i.putExtra(IntrusionsListActivity.EXTRA_ID, dayClicked);
+					SessionsListActivity.class);
+			i.putExtra(SessionsListActivity.EXTRA_ID, dayClicked);
 			startActivity(i);
 		}
 	}

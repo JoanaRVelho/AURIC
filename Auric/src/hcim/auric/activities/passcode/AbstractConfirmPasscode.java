@@ -1,6 +1,6 @@
 package hcim.auric.activities.passcode;
 
-import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 

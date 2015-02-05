@@ -1,6 +1,6 @@
 package hcim.auric.audit;
 
-import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.IntrusionFactory;
 import hcim.auric.utils.CalendarManager;

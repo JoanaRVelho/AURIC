@@ -1,21 +1,21 @@
 package hcim.auric.activities.images;
 
 import hcim.auric.activities.settings.EditPicturesActivity;
-import hcim.auric.database.PicturesDatabase;
+import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.recognition.Picture;
 
 import java.util.List;
-
-import com.hcim.intrusiondetection.R;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.hcim.intrusiondetection.R;
 
 public class GridOfRecognizedPictures extends Activity {
 	protected ImageAdapter adapter;

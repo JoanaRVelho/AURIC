@@ -11,7 +11,7 @@ public class EventManager {
 		events = new SparseArray<String>();
 
 		events.put(AccessibilityEvent.TYPE_VIEW_CLICKED, "User tapped on ");
-		events.put(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED, "User tapped on ");
+		//events.put(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED, "User tapped on ");
 		events.put(AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "Text changed: ");
 		events.put(AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
 				"Text changed: ");

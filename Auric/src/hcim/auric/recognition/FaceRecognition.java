@@ -1,7 +1,7 @@
 package hcim.auric.recognition;
 
-import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.database.PicturesDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.utils.FileManager;
 
 import java.io.File;
@@ -30,7 +30,12 @@ import android.util.Log;
 import com.hcim.intrusiondetection.R;
 
 /**
- * https://github.com/ayuso2013/face-recognition
+ * 
+ * @author Joana Velho
+ * 
+ *         An adaptation of {@link https
+ *         ://github.com/ayuso2013/face-recognition}
+ *
  */
 public class FaceRecognition {
 
@@ -40,14 +45,9 @@ public class FaceRecognition {
 	public static final String MY_PICTURE_TYPE = "myface";
 	public static final String INTRUDER_PICTURE_TYPE = "intruder";
 	public static final String UNKNOWN_PICTURE_TYPE = "unknown";
-	public static final String NAME = "OWNER";
+	private static final String OWNER = "OWNER";
 
 	private static final int MIN = 0;
-
-	public int getMax() {
-		return ConfigurationDatabase.getInstance(context)
-				.getFaceRecognitionMax();
-	}
 
 	private File cascadeFile;
 	private CascadeClassifier cascadeClassifier;
@@ -56,8 +56,6 @@ public class FaceRecognition {
 	private BaseLoaderCallback loaderCallback;
 	private String path;
 	private PersonRecognizer recognizer;
-	private int lastResult;
-	private boolean matchOwner;
 
 	private Context context;
 
@@ -67,25 +65,6 @@ public class FaceRecognition {
 		}
 
 		return INSTANCE;
-	}
-
-	/**
-	 * Should only be called after recognizePicture
-	 * 
-	 * @return the difference between the picture used previously and its match
-	 */
-	public int getLastResult() {
-		return lastResult;
-	}
-
-	/**
-	 * Should only be called after recognizePicture
-	 * 
-	 * @return true if the picture matches to a picture of the owner, false
-	 *         otherwise
-	 */
-	public boolean lastResultMatchOwner() {
-		return matchOwner;
 	}
 
 	/**
@@ -102,6 +81,24 @@ public class FaceRecognition {
 	 */
 	public CascadeClassifier getCascadeClassifier() {
 		return cascadeClassifier;
+	}
+
+	/**
+	 * 
+	 * @return maximum difference between to faces
+	 */
+	public int getMax() {
+		return ConfigurationDatabase.getInstance(context)
+				.getFaceRecognitionMax();
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @return true if name starts with "OWNER"
+	 */
+	public static boolean matchsOwnerName(String name) {
+		return name.startsWith(OWNER);
 	}
 
 	/**
@@ -146,8 +143,7 @@ public class FaceRecognition {
 	 *         difference between the two images is between FaceRecognition.MIN
 	 *         and FaceRecognition.MAX.
 	 */
-	public boolean recognizePicture(Bitmap rgbBitmap) {
-		int max = getMax();
+	public RecognitionResult recognizePicture(Bitmap rgbBitmap) {
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
 
 		Mat rgbMat = new Mat();
@@ -159,17 +155,14 @@ public class FaceRecognition {
 		MatOfRect faces = detect(grayMat);
 		Rect[] facesArray = faces.toArray();
 
-		boolean result;
+		RecognitionResult result;
 		if (facesArray == null || facesArray.length == 0) {
 			Log.d(TAG, "Face Recognition - face detection failed");
-			result = false;
+			result = new RecognitionResult();
 		} else {
 			Log.d(TAG, "Face Recognition - face detected");
-			int recognitionResult = recognize(facesArray, grayMat);
-			Log.d(TAG, "Face Recognition - result = " + recognitionResult);
-
-			result = recognitionResult >= MIN && recognitionResult <= max;
-			lastResult = recognitionResult;
+			result = recognize(facesArray, grayMat);
+			Log.d(TAG, result.toString());
 		}
 
 		rgbMat.release();
@@ -204,29 +197,6 @@ public class FaceRecognition {
 		return result;
 	}
 
-	private Mat gray(Mat rgb) {
-		Mat gray = rgb.clone();
-
-		for (int i = 0; i < gray.height(); i++) {
-			for (int j = 0; j < gray.width(); j++) {
-				double y = 0.3 * gray.get(i, j)[0] + 0.59 * gray.get(i, j)[1]
-						+ 0.11 * gray.get(i, j)[2];
-				gray.put(i, j, new double[] { y, y, y, 255 });
-			}
-		}
-
-		return gray;
-	}
-
-	public Rect[] detectFaces(Mat rgbMat) {
-		Mat grayMat = gray(rgbMat);
-
-		MatOfRect faces = detect(grayMat);
-		Rect[] facesArray = faces.toArray();
-
-		return facesArray;
-	}
-
 	public void stopTrain() {
 		recognizer.train();
 	}
@@ -241,7 +211,6 @@ public class FaceRecognition {
 				f.delete();
 			}
 		}
-		// labels.remove(picID);
 		recognizer.untrain(picID);
 	}
 
@@ -249,21 +218,25 @@ public class FaceRecognition {
 		return loaderCallback;
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param c
+	 *            : Application context
+	 */
 	private FaceRecognition(Context c) {
 		this.context = c;
-		loaderCallback = new MyBaseLoaderCallback(c);
+		loaderCallback = new AuricBaseLoaderCallback(c);
 
 		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
 				loaderCallback)) {
 			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
 		}
-		
+
 		getMax();
 
 		FileManager fileManager = new FileManager(c);
 		path = fileManager.getOpenCVDirectory();
-
-		// labels = new Labels(path);
 
 		File f = new File(path);
 		if (!f.exists()) {
@@ -302,26 +275,44 @@ public class FaceRecognition {
 		m.release();
 	}
 
-	private int recognize(Rect[] facesArray, Mat grayMat) {
+	/**
+	 * Auxiliary method of {@link recognizePicture}
+	 * 
+	 * @param facesArray
+	 *            : an array of {@link org.opencv.core.Rect} that represents the
+	 *            faces detected
+	 * @param grayMat
+	 *            : gray scale {@link org.opencv.core.Mat}
+	 * @return a {@link RecognitionResult} object
+	 * @requires facesArray != null && facesArray.length > 0 && grayMat != null
+	 */
+	private RecognitionResult recognize(Rect[] facesArray, Mat grayMat) {
 		Mat m = new Mat();
 		m = grayMat.submat(facesArray[0]);
-		String resultString = recognizer.predict(m);
+		String match = recognizer.predict(m);
+		int difference = recognizer.getProb();
+
+		// recognizing face
 		PicturesDatabase db = PicturesDatabase.getInstance(context);
+		boolean matchOwner = db.isMyPicture(match);
+		boolean targetDifference = MIN <= difference && difference <= getMax();
+		boolean recognized = matchOwner && targetDifference;
 
-		Log.d(TAG, "Face Recognition - matches " + resultString);
-
-		int result = -1;
-		matchOwner = false;
-		if (db.isMyPicture(resultString)) {
-			result = recognizer.getProb();
-			matchOwner = true;
-		}
+		RecognitionResult result = new RecognitionResult(true, recognized,
+				match, difference);
 
 		m.release();
 
 		return result;
 	}
 
+	/**
+	 * Converts a RGB bitmap into a gray bitmap
+	 * 
+	 * @param img
+	 *            : a RGB bitmap
+	 * @return gray bitmap
+	 */
 	private static Bitmap convertToGray(Bitmap img) {
 		int width, height;
 		height = img.getHeight();
@@ -340,10 +331,22 @@ public class FaceRecognition {
 		return bmpGrayscale;
 	}
 
-	private class MyBaseLoaderCallback extends BaseLoaderCallback {
+	/**
+	 * Class AuricBaseLoaderCallback that extends BaseLoaderCallback
+	 * 
+	 * @author Joana Velho
+	 *
+	 */
+	private class AuricBaseLoaderCallback extends BaseLoaderCallback {
 		private Context c;
 
-		MyBaseLoaderCallback(Context c) {
+		/**
+		 * Constructor
+		 * 
+		 * @param c
+		 *            : Application context
+		 */
+		AuricBaseLoaderCallback(Context c) {
 			super(c);
 			this.c = c;
 		}

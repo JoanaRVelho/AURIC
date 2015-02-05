@@ -1,6 +1,6 @@
 package hcim.auric.record.log_type;
 
-import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
 import hcim.auric.record.screen.event_based.RecordEventBasedLog;
 import android.content.Context;
 

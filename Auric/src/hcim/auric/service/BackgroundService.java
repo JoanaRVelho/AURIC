@@ -1,13 +1,16 @@
 package hcim.auric.service;
 
+import hcim.auric.activities.MainActivity;
+import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.mode.AbstractMode;
+import hcim.auric.mode.OriginalMode;
+import hcim.auric.mode.VerboseMode;
+import hcim.auric.mode.WifiDemoMode;
+import hcim.auric.record.log_type.LogManager;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
-import hcim.auric.activities.MainActivity;
-import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.mode.AbstractMode;
-import hcim.auric.mode.OriginalMode;
-import hcim.auric.mode.WifiDemoMode;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -48,9 +51,21 @@ public class BackgroundService extends Service {
 
 			@Override
 			public void run() {
-				AccessibilityServiceNotification notification = new AccessibilityServiceNotification(
-						context);
-				notification.notifyUser();
+				if (launchNotification()) {
+					AccessibilityServiceNotification notification = new AccessibilityServiceNotification(
+							context);
+					notification.notifyUser();
+				}
+			}
+
+			private boolean launchNotification() {
+				ConfigurationDatabase db = ConfigurationDatabase
+						.getInstance(context);
+				String type = db.getLogType();
+
+				return LogManager.hasAccessibilityService(type)
+						&& !LogManager.accessibilityServiceEnabled(context,
+								type);
 			}
 		};
 		Timer timer = new Timer();
@@ -80,6 +95,9 @@ public class BackgroundService extends Service {
 				return new OriginalMode(context);
 			} else if (modeDescription.equals(ConfigurationDatabase.WIFI_MODE)) {
 				return new WifiDemoMode(context);
+			} else if (modeDescription
+					.equals(ConfigurationDatabase.VERBOSE_MODE)) {
+				return new VerboseMode(context);
 			} else {
 				return null;
 			}

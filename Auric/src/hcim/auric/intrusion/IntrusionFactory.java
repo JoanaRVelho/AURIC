@@ -4,7 +4,13 @@ public class IntrusionFactory {
 
 	public static Intrusion createIntrusion(String id, String date,
 			String time, int tag, String log) {
-		Intrusion i = new Intrusion();
+		Intrusion i;
+
+		if (isFalseIntrusion(tag)) {
+			i = new Interaction();
+		} else {
+			i = new Intrusion();
+		}
 
 		i.setDate(date);
 		i.setID(id);
@@ -15,4 +21,7 @@ public class IntrusionFactory {
 		return i;
 	}
 
+	private static boolean isFalseIntrusion(int tag) {
+		return tag == Interaction.FALSE_INTRUSION;
+	}
 }

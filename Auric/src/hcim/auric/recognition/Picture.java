@@ -10,6 +10,7 @@ public class Picture {
 	private String id;
 	private Bitmap img;
 	private String type;
+	private String description;
 
 	public Picture(String id, String type, Bitmap img) {
 		this.type = type;
@@ -31,6 +32,14 @@ public class Picture {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public static Bitmap[] getImages(Picture[] array) {

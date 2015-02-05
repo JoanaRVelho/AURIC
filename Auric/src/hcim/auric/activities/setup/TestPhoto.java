@@ -1,12 +1,17 @@
 package hcim.auric.activities.setup;
 
+import hcim.auric.camera.FrontPictureCallback;
 import hcim.auric.recognition.FaceRecognition;
+import hcim.auric.recognition.RecognitionResult;
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
+import android.graphics.BitmapFactory;
+import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,15 +23,16 @@ public class TestPhoto extends Activity {
 	private static final String INTRUDER = "Intruder";
 	private static final String OWNER = "Owner";
 	private static final String DETAILS = "\n\nDetails\n";
-	private static final String MATCH = "MATCH THE OWNER\n";
-	private static final String NOT_MATCH = "DOES NOT MATCH THE OWNER\n";
+	private static final String MATCH = "matches the owner\n";
+	private static final String NOT_MATCH = "does not match the owner\n";
 	private static final String DISTANCE = "Distance = ";
-	private static final int REQUEST_IMAGE_CAPTURE = 1;
+	private static final String TAG = "AURIC";
 
 	private FaceRecognition faceRecognition;
 
 	private ImageView img;
 	private TextView txt;
+	private Camera camera;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,53 +43,6 @@ public class TestPhoto extends Activity {
 		txt = (TextView) findViewById(R.id.result);
 
 		faceRecognition = FaceRecognition.getInstance(this);
-
-		dispatchTakePictureIntent();
-	}
-
-	private Bitmap flip(Bitmap src) {
-		Matrix m = new Matrix();
-		m.preScale(-1, 1);
-		//Bitmap src = d.getBitmap();
-		Bitmap dst = Bitmap.createBitmap(src, 0, 0, src.getWidth(),
-				src.getHeight(), m, false);
-		//dst.setDensity(DisplayMetrics.DENSITY_DEFAULT);
-		//return new BitmapDrawable(dst);
-		return dst;
-	}
-	
-	private String getData(Bitmap imageBitmap){
-		boolean faceDetected = faceRecognition.detectFace(imageBitmap);
-		boolean ownerRecognized = faceRecognition
-				.recognizePicture(imageBitmap);
-		int result = faceRecognition.getLastResult();
-		boolean matchOwner = faceRecognition.lastResultMatchOwner();
-
-		if (faceDetected) {
-			return (RESULT
-					+ (ownerRecognized ? OWNER : INTRUDER)
-					+ DETAILS
-					+ (matchOwner ? (MATCH + DISTANCE + result) : NOT_MATCH));
-		} else {
-			return ("Face Detection Failed! Take another picture!");
-		}
-	}
-	
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-			Bundle extras = data.getExtras();
-			Bitmap imageBitmap = (Bitmap) extras.get("data");
-			Bitmap flip = flip(imageBitmap);
-			
-			img.setImageBitmap(flip);
-			
-			String msg1 = getData(imageBitmap);
-			String msg2 = getData(flip);
-			
-			txt.setText("Normal\n"+msg1+ "\n\n\n\nFlip\n"+msg2);
-		}
 	}
 
 	/**
@@ -91,13 +50,60 @@ public class TestPhoto extends Activity {
 	 * @param v
 	 */
 	public void takePicture(View v) {
-		dispatchTakePictureIntent();
+		camera = null;
+
+		try {
+			camera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
+		} catch (RuntimeException e) {
+			camera = null;
+			Log.e(TAG, "CameraManager - " + e.getMessage());
+		}
+		try {
+			if (camera == null) {
+			} else {
+				SurfaceTexture dummySurfaceTextureF = new SurfaceTexture(0);
+				try {
+					camera.setPreviewTexture(dummySurfaceTextureF);
+					camera.startPreview();
+				} catch (Exception e) {
+					Log.e(TAG, "CameraManager - " + e.getMessage());
+				}
+
+				camera.takePicture(null, null, new PictureCallback() {
+
+					@Override
+					public void onPictureTaken(byte[] data, Camera camera) {
+						Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0,
+								data.length);
+						bitmap = FrontPictureCallback.rotateBitmap(bitmap);
+						
+						img.setImageBitmap(bitmap);
+						txt.setText(getData(bitmap));
+					}
+				});
+			}
+		} catch (Exception e) {
+			if (camera != null)
+				camera.release();
+		}
 	}
 
-	private void dispatchTakePictureIntent() {
-		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-			startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+	private String getData(Bitmap imageBitmap) {
+		RecognitionResult result = faceRecognition
+				.recognizePicture(imageBitmap);
+
+		boolean faceDetected = result.isFaceDetected();
+
+		if (faceDetected) {
+			boolean ownerRecognized = result.isFaceRecognized();
+			int diff = result.getDifference();
+			boolean matchOwner = FaceRecognition.matchsOwnerName(result
+					.getMatch());
+			return (RESULT + (ownerRecognized ? OWNER : INTRUDER) + DETAILS + (matchOwner ? (MATCH
+					+ DISTANCE + diff)
+					: NOT_MATCH));
+		} else {
+			return ("Face Detection Failed! Take another picture!");
 		}
 	}
 }

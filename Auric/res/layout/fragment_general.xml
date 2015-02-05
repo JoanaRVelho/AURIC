@@ -90,15 +90,21 @@
                 android:id="@+id/change_passcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:layout_below="@+id/switch_passcode"
-                android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/button_design"
                 android:text="@string/passcode_change"
                 android:textColor="#FFF" />
+
+            <TextView
+                android:id="@+id/textViewEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/change_passcode" />
 
             <Switch
                 android:id="@+id/switch_passcode"

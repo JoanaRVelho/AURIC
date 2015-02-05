@@ -1,7 +1,5 @@
 package hcim.auric.activities.images;
 
-import hcim.auric.database.PicturesDatabase;
-import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
 import hcim.auric.utils.OnSwipeTouchListener;
 
@@ -13,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.hcim.intrusiondetection.R;
 
@@ -24,7 +23,7 @@ public abstract class SlideShowActivity extends Activity {
 	private ImageView[] dots;
 	private ImageView img;
 	protected ImageView typeIcon;
-//	protected TextView msg;
+	protected TextView msg;
 	protected LinearLayout lin;
 
 	@Override
@@ -36,15 +35,8 @@ public abstract class SlideShowActivity extends Activity {
 		current = startAt();
 
 		// init txt
-//		msg = (TextView) findViewById(R.id.double_tap_msg);
-//		msg.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				onClickMessage();
-//			}
-//		});
-//		setMessageVisibility(false);
+		msg = (TextView) findViewById(R.id.double_tap_msg);
+		setMessageVisibility(false);
 
 		// init type icon
 		typeIcon = (ImageView) findViewById(R.id.type_pic);
@@ -82,6 +74,14 @@ public abstract class SlideShowActivity extends Activity {
 		refresh();
 	}
 
+	protected void setMessageVisibility(boolean b) {
+		msg.setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+	}
+	
+	protected void setMessage(String t){
+		msg.setText(t);
+	}
+
 	protected void initDots() {
 		// init dots
 		lin = (LinearLayout) findViewById(R.id.dots);
@@ -94,26 +94,26 @@ public abstract class SlideShowActivity extends Activity {
 	}
 	
 	protected void refresh() {
-		String id = pictures.get(current).getID();
-		PicturesDatabase db = PicturesDatabase.getInstance(this);
-
-		if (db.hasPicture(id)) {
-			String type = db.getPicture(id).getType();
-
-			if (type != null) {
-				if (type.equals(FaceRecognition.MY_PICTURE_TYPE)) {
-					typeIcon.setVisibility(View.VISIBLE);
-					typeIcon.setImageResource(R.drawable.green);
-				} else if (type.equals(FaceRecognition.INTRUDER_PICTURE_TYPE)) {
-					typeIcon.setVisibility(View.VISIBLE);
-					typeIcon.setImageResource(R.drawable.red);
-				} else {
-					typeIcon.setVisibility(View.INVISIBLE);
-				}
-			}
-		} else {
-			typeIcon.setVisibility(View.INVISIBLE);
-		}
+//		String id = pictures.get(current).getID();
+//		PicturesDatabase db = PicturesDatabase.getInstance(this);
+//
+//		if (db.hasPicture(id)) {
+//			String type = db.getPicture(id).getType();
+//
+//			if (type != null) {
+//				if (type.equals(FaceRecognition.MY_PICTURE_TYPE)) {
+//					typeIcon.setVisibility(View.VISIBLE);
+//					typeIcon.setImageResource(R.drawable.green);
+//				} else if (type.equals(FaceRecognition.INTRUDER_PICTURE_TYPE)) {
+//					typeIcon.setVisibility(View.VISIBLE);
+//					typeIcon.setImageResource(R.drawable.red);
+//				} else {
+//					typeIcon.setVisibility(View.INVISIBLE);
+//				}
+//			}
+//		} else {
+//			typeIcon.setVisibility(View.INVISIBLE);
+//		}
 
 		img.setImageBitmap(pictures.get(current).getImage());
 		dots[current].setImageResource(R.drawable.azul);

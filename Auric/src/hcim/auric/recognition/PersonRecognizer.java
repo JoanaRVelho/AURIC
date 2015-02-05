@@ -22,7 +22,11 @@ import com.googlecode.javacv.cpp.opencv_core.MatVector;
 import com.googlecode.javacv.cpp.opencv_imgproc;
 
 /**
- * https://github.com/ayuso2013/face-recognition
+ * 
+ * @author Joana Velho
+ * 
+ * An adaptation of {@link https://github.com/ayuso2013/face-recognition}
+ *
  */
 public class PersonRecognizer {
 

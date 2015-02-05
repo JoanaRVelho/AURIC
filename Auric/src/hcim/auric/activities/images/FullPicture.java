@@ -1,10 +1,11 @@
 package hcim.auric.activities.images;
 
-import java.util.List;
-
-import hcim.auric.database.PicturesDatabase;
+import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
+
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;

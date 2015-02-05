@@ -1,8 +1,8 @@
 package hcim.auric.activities.settings;
 
 import hcim.auric.activities.images.SlideShowRecognizedPictures;
-import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.database.PicturesDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.record.log_type.LogManager;
 import hcim.auric.service.BackgroundService;
@@ -31,14 +31,11 @@ public class SettingsActivity extends FragmentActivity implements
 	protected ConfigurationDatabase configDB;
 	protected PicturesDatabase picsDB;
 	protected FaceRecognition faceRecognition;
-	protected boolean start;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings_activity);
-
-		start = false;
 
 		configDB = ConfigurationDatabase.getInstance(this);
 		picsDB = PicturesDatabase.getInstance(this);
@@ -72,8 +69,6 @@ public class SettingsActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-
-		stopBackgroundService();
 	}
 
 	@Override
@@ -98,26 +93,7 @@ public class SettingsActivity extends FragmentActivity implements
 	public void finish() {
 		printStatus();
 
-		// if (readyToStart()) {
-		// if (!start) {
-		// startBackgroundService();
-		// }
-		// super.finish();
-		// } else {
-		// if (!configDB.isIntrusionDetectorActive()) {
-		// super.finish();
-		// } else {
-		// if (!accessibilityServiceEnabled()) {
-		// if (!start) {
-		// startBackgroundService(); // linha nova
-		// settingsDialog();
-		// }
-		// }
-		// }
-		// }
 		if (configDB.isIntrusionDetectorActive()) {
-			startBackgroundService();
-
 			if (!accessibilityServiceEnabled())
 				settingsDialog();
 			else
@@ -161,9 +137,10 @@ public class SettingsActivity extends FragmentActivity implements
 		return true;
 	}
 
-//	private boolean readyToStart() {
-//		return (configDB.isIntrusionDetectorActive() && accessibilityServiceEnabled());
-//	}
+	// private boolean readyToStart() {
+	// return (configDB.isIntrusionDetectorActive() &&
+	// accessibilityServiceEnabled());
+	// }
 
 	private void printStatus() {
 		Log.i(TAG,
@@ -181,14 +158,10 @@ public class SettingsActivity extends FragmentActivity implements
 	}
 
 	protected void stopBackgroundService() {
-		start = false;
-		if (configDB.isIntrusionDetectorActive())
-			stopService(new Intent(this, BackgroundService.class));
+		stopService(new Intent(this, BackgroundService.class));
 	}
 
 	protected void startBackgroundService() {
-		if (configDB.isIntrusionDetectorActive())
-			start = true;
 		startService(new Intent(this, BackgroundService.class));
 	}
 

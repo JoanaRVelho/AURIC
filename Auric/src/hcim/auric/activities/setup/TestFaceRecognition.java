@@ -1,6 +1,6 @@
 package hcim.auric.activities.setup;
 
-import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.PersonRecognizer;
 
@@ -60,7 +60,7 @@ public class TestFaceRecognition extends Activity implements
 
 			if (msg != null && msg.obj != null && msg.obj.equals(SEARCH)) {
 				if (resultName != null
-						&& resultName.startsWith(FaceRecognition.NAME)) {
+						&& FaceRecognition.matchsOwnerName(resultName)) {
 					result.setText("Match the owner - Difference="
 							+ recognitionResult);
 				} else {
@@ -174,7 +174,7 @@ public class TestFaceRecognition extends Activity implements
 			msg.obj = SEARCH;
 			handler.sendMessage(msg);
 
-			if (resultName.startsWith(FaceRecognition.NAME)) {
+			if (FaceRecognition.matchsOwnerName(resultName)) {
 				if (recognitionResult < 0)
 					Core.rectangle(mRgba, facesArray[i].tl(),
 							facesArray[i].br(), FACE_RECT_RED, 3);

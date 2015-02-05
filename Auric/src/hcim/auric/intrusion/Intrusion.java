@@ -12,13 +12,13 @@ public class Intrusion {
 	public static final int MODERATE = 2;
 	public static final int HIGH = 3;
 
-	private String id;
-	private String date;
-	private String time;
-	private int tag;
-	private String logType;
+	protected String id;
+	protected String date;
+	protected String time;
+	protected int tag;
+	protected String logType;
 
-	private List<Picture> images;
+	protected List<Picture> images;
 
 	Intrusion() {
 	}

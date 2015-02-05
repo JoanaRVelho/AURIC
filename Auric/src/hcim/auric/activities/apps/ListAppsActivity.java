@@ -1,10 +1,8 @@
 package hcim.auric.activities.apps;
 
-import hcim.auric.database.TargetAppDatabase;
+import hcim.auric.database.configs.TargetAppDatabase;
 
 import java.util.List;
-
-import com.hcim.intrusiondetection.R;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -14,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.hcim.intrusiondetection.R;
 
 public class ListAppsActivity extends Activity {
 

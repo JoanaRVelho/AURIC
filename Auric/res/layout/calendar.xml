@@ -33,7 +33,7 @@
             android:layout_width="fill_parent"
             android:layout_height="60sp"
             android:background="@drawable/topbar"
-            android:gravity="left|top"
+            android:gravity="start|top"
             android:height="60sp"
             android:orientation="horizontal" >
 
@@ -42,7 +42,7 @@
                 android:layout_width="20sp"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
-                android:layout_marginLeft="10sp"
+                android:layout_marginStart="10sp"
                 android:contentDescription="@string/description"
                 android:src="@drawable/calendar_left_arrow_selector" >
             </ImageView>
@@ -62,7 +62,7 @@
                 android:layout_width="20sp"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
-                android:layout_marginRight="10sp"
+                android:layout_marginEnd="10sp"
                 android:contentDescription="@string/description"
                 android:src="@drawable/calendar_right_arrow_selector" >
             </ImageView>
@@ -98,8 +98,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="Button"
+        android:text="@string/list_apps"
         android:visibility="gone"
         android:onClick="appsActivity" />
+
+    <CheckBox
+        android:id="@+id/hide_not"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/hide_not" />
 
 </RelativeLayout>

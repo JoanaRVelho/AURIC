@@ -48,7 +48,6 @@
         android:layout_centerHorizontal="true"
         android:text="@string/taprecog"
         android:textColor="@color/white"
-        android:visibility="gone"
         android:background="@color/sky" />
 
     <Button

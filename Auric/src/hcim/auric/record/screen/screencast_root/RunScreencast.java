@@ -1,7 +1,7 @@
 package hcim.auric.record.screen.screencast_root;
 
 import hcim.auric.activities.images.SlideShowIntrusionPictures;
-import hcim.auric.database.IntrusionsDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.recognition.Picture;
 import hcim.auric.record.screen.RunInteraction;
 import hcim.auric.utils.FileManager;
@@ -288,7 +288,7 @@ public class RunScreencast extends RunInteraction {
 		}
 		dir.delete();
 
-		super.finish();
+//		super.finish();
 	}
 
 	// @Override

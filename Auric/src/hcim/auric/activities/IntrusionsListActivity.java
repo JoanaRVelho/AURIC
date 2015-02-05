@@ -1,7 +1,7 @@
 package hcim.auric.activities;
 
-import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.database.IntrusionsDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.record.screen.event_based.RunTimelineActivity;
 import hcim.auric.record.screen.screencast_root.RunScreencast;
@@ -11,7 +11,6 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,11 +23,13 @@ import com.hcim.intrusiondetection.R;
 
 public class IntrusionsListActivity extends Activity {
 	public static final String EXTRA_ID = "extra";
-	
+
 	private IntrusionsDatabase intrusionsDB;
 	private String date;
 	private LinearLayout layout;
 	private ProgressBar bar;
+
+	private TextView t;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,18 +44,8 @@ public class IntrusionsListActivity extends Activity {
 		Bundle extras = getIntent().getExtras();
 		date = extras.getString(EXTRA_ID);
 
-		TextView t = (TextView) findViewById(R.id.textView1);
+		t = (TextView) findViewById(R.id.textView1);
 		t.setText(date + " Intrusion");
-
-		List<Intrusion> intrusions = intrusionsDB
-				.getIntrusionsDataFromADay(date);
-
-		if (intrusions != null) {
-			if (intrusions.size() > 1)
-				t.append("s");
-
-			addButtons(intrusions);
-		}
 	}
 
 	@Override
@@ -69,6 +60,11 @@ public class IntrusionsListActivity extends Activity {
 		if (intrusions == null || intrusions.size() == 0)
 			finish();
 
+		if (intrusions != null) {
+			if (intrusions.size() > 1)
+				t.append("s");
+		}
+
 		addButtons(intrusions);
 		bar.setVisibility(View.GONE);
 
@@ -77,14 +73,8 @@ public class IntrusionsListActivity extends Activity {
 
 	private void addButtons(final List<Intrusion> intrusions) {
 		runOnUiThread(new Runnable() {
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
-				Drawable checked = getResources().getDrawable(
-						R.drawable.mark_false);
-				Drawable unchecked = getResources().getDrawable(
-						R.drawable.mark_new);
-
 				for (Intrusion i : intrusions) {
 					Button b = new Button(IntrusionsListActivity.this);
 					b.setText("Intrusion " + i.getTime());
@@ -92,10 +82,10 @@ public class IntrusionsListActivity extends Activity {
 
 					switch (i.getTag()) {
 					case Intrusion.UNCHECKED:
-						b.setBackgroundDrawable(unchecked);
+						b.setBackgroundResource(R.drawable.mark_new);
 						break;
 					default:
-						b.setBackgroundDrawable(checked);
+						b.setBackgroundResource(R.drawable.mark_false);
 						break;
 					}
 
@@ -123,8 +113,7 @@ public class IntrusionsListActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			bar.setVisibility(View.VISIBLE);
-			Intrusion i = IntrusionsDatabase.getInstance(
-					IntrusionsListActivity.this).getIntrusion(intrusion);
+			Intrusion i = intrusionsDB.getIntrusion(intrusion);
 			runActivity(i);
 		}
 

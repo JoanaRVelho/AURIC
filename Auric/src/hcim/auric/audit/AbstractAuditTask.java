@@ -2,8 +2,8 @@ package hcim.auric.audit;
 
 import hcim.auric.camera.CameraManager;
 import hcim.auric.camera.FrontPictureCallback;
-import hcim.auric.database.ConfigurationDatabase;
-import hcim.auric.database.IntrusionsDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.record.IntruderCaptureTask;
 import hcim.auric.record.log_type.LogManager;

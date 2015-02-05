@@ -1,8 +1,8 @@
 package hcim.auric.record.screen.event_based;
 
 import hcim.auric.activities.images.SlideShowSetOfPictures;
-import hcim.auric.database.EventBasedLogDatabase;
-import hcim.auric.database.IntrusionsDatabase;
+import hcim.auric.database.intrusions.EventBasedLogDatabase;
+import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.recognition.Picture;
 
 import java.util.ArrayList;

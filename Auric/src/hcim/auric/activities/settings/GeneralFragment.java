@@ -3,7 +3,7 @@ package hcim.auric.activities.settings;
 import hcim.auric.activities.passcode.ConfirmAndChangePasscode;
 import hcim.auric.activities.passcode.ConfirmAndTurnOffPasscode;
 import hcim.auric.activities.passcode.InsertPasscode;
-import hcim.auric.database.ConfigurationDatabase;
+import hcim.auric.database.configs.ConfigurationDatabase;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,6 +27,7 @@ import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.hcim.intrusiondetection.R;
 
@@ -34,17 +35,23 @@ public class GeneralFragment extends Fragment {
 	private SettingsActivity activity;
 
 	private Switch onOff;
+
+	private TextView modeTitle;
 	private Spinner modeSpinner;
 	private String currentMode;
 	private CheckBox deviceSharing;
 	private String selectedMode;
+
 	private Button changePasscode;
 	private Switch passcodeSwitch;
+
+	private TextView logTitle;
 	private Spinner logSpinner;
 	private String currentLogType;
-	private NumberPicker picker;
 
-	// private boolean isChecked;
+	private TextView periodTitle;
+	private TextView periodDesc;
+	private NumberPicker picker;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,12 +65,33 @@ public class GeneralFragment extends Fragment {
 		return result;
 	}
 
+	@Override
+	public void onResume() {
+		if (passcodeSwitch != null) {
+			boolean b = activity.configDB.hasPasscode();
+			passcodeSwitch.setChecked(b);
+
+			if (b)
+				changePasscode.setVisibility(View.VISIBLE);
+			else {
+				changePasscode.setVisibility(View.GONE);
+			}
+		}
+		super.onResume();
+	}
+
 	private void initView(RelativeLayout result) {
+		initOnOffSwitch(result);
 		initModeSection(result);
 		initPasscodeSection(result);
 		initLogOptions(result);
-		initOnOffSwitch(result);
 		initNumberPicker(result);
+
+		if (onOff.isChecked()) {
+			setVisibility(View.GONE);
+		} else {
+			setVisibility(View.VISIBLE);
+		}
 	}
 
 	private void initNumberPicker(RelativeLayout result) {
@@ -84,26 +112,32 @@ public class GeneralFragment extends Fragment {
 				activity.configDB.setCameraPeriod(newVal * 1000);
 			}
 		});
-
+		periodTitle = (TextView) result.findViewById(R.id.rate_title);
+		periodDesc = (TextView) result.findViewById(R.id.rate_desc);
 	}
 
 	private void initOnOffSwitch(RelativeLayout result) {
 		onOff = (Switch) result.findViewById(R.id.on_off);
+		boolean on = activity.configDB.isIntrusionDetectorActive();
+		onOff.setChecked(on);
+
 		onOff.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				activity.configDB.setIntrusionDetectorActivity(isChecked);
+
+				Log.d("AURIC", "check=" + isChecked);
 				if (isChecked)
 					showConfirmDialog();
+				else {
+					activity.stopBackgroundService();
+					setVisibility(View.VISIBLE);
+				}
 			}
 
 		});
-
-		// isChecked = activity.configDB.isIntrusionDetectorActive();
-		onOff.setChecked(false);
-		activity.configDB.setIntrusionDetectorActivity(false);
 	}
 
 	private void initModeSection(RelativeLayout result) {
@@ -131,6 +165,8 @@ public class GeneralFragment extends Fragment {
 
 		deviceSharing = (CheckBox) result.findViewById(R.id.checkBox1);
 		enableCheckBox();
+
+		modeTitle = (TextView) result.findViewById(R.id.mode_title);
 	}
 
 	private void initPasscodeSection(RelativeLayout result) {
@@ -187,32 +223,23 @@ public class GeneralFragment extends Fragment {
 		});
 
 		selectCurrentLogType();
+
+		logTitle = (TextView) result.findViewById(R.id.log_type_title);
 	}
 
 	private void selectCurrentMode() {
 		currentMode = activity.configDB.getMode();
 
-		if (currentMode.equals(ConfigurationDatabase.WIFI_MODE)) {
-			modeSpinner.setSelection(1);
-		}
 		if (currentMode.equals(ConfigurationDatabase.ORIGINAL_MODE)) {
 			modeSpinner.setSelection(0);
 		}
-	}
-
-	@Override
-	public void onResume() {
-		if (passcodeSwitch != null) {
-			boolean b = activity.configDB.hasPasscode();
-			passcodeSwitch.setChecked(b);
-
-			if (b)
-				changePasscode.setVisibility(View.VISIBLE);
-			else {
-				changePasscode.setVisibility(View.INVISIBLE);
-			}
+		if (currentMode.equals(ConfigurationDatabase.VERBOSE_MODE)) {
+			modeSpinner.setSelection(1);
 		}
-		super.onResume();
+		if (currentMode.equals(ConfigurationDatabase.WIFI_MODE)) {
+			modeSpinner.setSelection(2);
+		}
+
 	}
 
 	private void selectCurrentLogType() {
@@ -276,6 +303,17 @@ public class GeneralFragment extends Fragment {
 
 	}
 
+	private void setVisibility(int v) {
+		modeTitle.setVisibility(v);
+		modeSpinner.setVisibility(v);
+		deviceSharing.setVisibility(v);
+		logTitle.setVisibility(v);
+		logSpinner.setVisibility(v);
+		periodTitle.setVisibility(v);
+		periodDesc.setVisibility(v);
+		picker.setVisibility(v);
+	}
+
 	private void showConfirmDialog() {
 		String msg = "Confirm the following settings:\n\nIntrusion Detection: "
 				+ activity.configDB.getMode()
@@ -290,6 +328,7 @@ public class GeneralFragment extends Fragment {
 		alertDialog.setPositiveButton("Confirm",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
+						activity.startBackgroundService();
 						activity.finish();
 					}
 				});

@@ -1,6 +1,7 @@
 package hcim.auric.audit;
 
 import hcim.auric.intrusion.Intrusion;
+import hcim.auric.recognition.RecognitionResult;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -36,7 +37,8 @@ public class AuditTaskWithDeviceSharing extends AuditTask {
 
 	@Override
 	public void actionNewPicture(Bitmap capturedFace) {
-		boolean intrusion = !recognizer.recognizePicture(capturedFace);
+		RecognitionResult result = recognizer.recognizePicture(capturedFace);
+		boolean intrusion = !result.isFaceRecognized();
 
 		Log.d(TAG, "Audit Task DS - intrusion=" + intrusion);
 

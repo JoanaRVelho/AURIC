@@ -40,9 +40,11 @@
     <string name="takepicture">Take a Picture</string>
     <string name="rate">Authentication Period</string>
     <string name="recogpics">Recognized Pictures</string>
+    <string name="hide_not">hide notification</string>
 
     <string-array name="mode_array">
         <item>Original Mode</item>
+        <item>Original Verbose Mode</item>
         <item>Laboratory Test Mode</item>
     </string-array>
     <string-array name="log_array">
