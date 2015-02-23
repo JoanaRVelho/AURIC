@@ -35,6 +35,9 @@ public class Picture {
 	}
 
 	public String getDescription() {
+		if(description == null){
+			return "";
+		}
 		return description;
 	}
 

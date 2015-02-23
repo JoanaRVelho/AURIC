@@ -1,7 +1,7 @@
 package hcim.auric.database.intrusions;
 
-import hcim.auric.record.screen.event_based.EventBasedLog;
-import hcim.auric.record.screen.event_based.EventBasedLogItem;
+import hcim.auric.record.events.EventBasedLog;
+import hcim.auric.record.events.EventBasedLogItem;
 
 import java.util.List;
 

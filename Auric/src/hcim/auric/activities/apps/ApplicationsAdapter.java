@@ -4,6 +4,8 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +18,14 @@ import com.hcim.intrusiondetection.R;
 
 @SuppressLint({ "ViewHolder", "InflateParams" })
 public class ApplicationsAdapter implements ListAdapter {
-	
+
 	private List<ApplicationData> list;
 	private Context context;
+	private PackageManager packageManager;
 
 	public ApplicationsAdapter(Context context, List<ApplicationData> list) {
 		this.context = context;
+		this.packageManager = context.getPackageManager();
 		this.list = list;
 	}
 
@@ -52,21 +56,25 @@ public class ApplicationsAdapter implements ListAdapter {
 
 		View view = new View(context);
 		view = inflater.inflate(R.layout.list_apps_item, null);
-		
+
 		ImageView icon = (ImageView) view.findViewById(R.id.app_icon);
 		TextView name = (TextView) view.findViewById(R.id.app_name);
 		TextView packageName = (TextView) view.findViewById(R.id.app_package);
-		
+
 		ApplicationData app = list.get(position);
-		
-		icon.setImageDrawable(app.getIcon());
+
+		try {
+			icon.setImageDrawable(packageManager.getApplicationIcon(app
+					.getPackageName()));
+		} catch (NameNotFoundException e) {
+		}
 		name.setText(app.getName());
 		packageName.setText(app.getPackageName());
-		
-		if(app.isSelected()){
+
+		if (app.isTarget()) {
 			ListAppsActivity.setSelectedItemView(view);
 		}
-		
+
 		return view;
 	}
 

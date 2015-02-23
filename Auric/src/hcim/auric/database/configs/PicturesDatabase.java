@@ -6,7 +6,6 @@ import hcim.auric.recognition.Picture;
 import java.util.List;
 
 import android.content.Context;
-import android.util.Log;
 
 public class PicturesDatabase {
 	public static final String TAG = "AURIC";
@@ -29,9 +28,6 @@ public class PicturesDatabase {
 	public void addPicture(Picture p) {
 		if (pictureDB != null) {
 			pictureDB.insertPicture(p);
-			Log.d(TAG,
-					"addPicture: Picture ID=" + p.getID() + ", type="
-							+ p.getType());
 		}
 		printList();
 	}
@@ -69,9 +65,6 @@ public class PicturesDatabase {
 	public void removePicture(Picture p) {
 		if (pictureDB != null) {
 			pictureDB.removePicture(p);
-			Log.d(TAG,
-					"removePicture: Picture ID=" + p.getID() + ", type="
-							+ p.getType());
 		}
 	}
 
@@ -81,26 +74,25 @@ public class PicturesDatabase {
 		}
 		return null;
 	}
-	
-	public void printList(){
+
+	public void printList() {
 		if (pictureDB != null) {
 			List<Picture> list = pictureDB.getAllPictures();
 			StringBuilder s = new StringBuilder();
-			for(Picture p :list){
-				s.append(p.toString()+"\n");
+			for (Picture p : list) {
+				s.append(p.toString() + "\n");
 			}
-			Log.i("AURIC",s.toString());
 		}
 	}
 
-	public boolean hasPicture(String id) {		
+	public boolean hasPicture(String id) {
 		return getPicture(id) != null;
 	}
 
 	public void setPictureType(Picture p) {
-		if(pictureDB != null){
+		if (pictureDB != null) {
 			pictureDB.setPictureType(p);
 		}
-		
+
 	}
 }

@@ -1,18 +1,15 @@
 package hcim.auric.receiver;
 
-import hcim.auric.audit.AbstractAuditTask;
+import hcim.auric.audit.AuditQueue;
 import android.content.BroadcastReceiver;
 
 public abstract class AbstractReceiver extends BroadcastReceiver {
 	protected static final String TAG = "AURIC";
 
-	protected AbstractAuditTask task;
-
-	public AbstractAuditTask getTask() {
-		return task;
+	protected AuditQueue queue;
+	
+	public AbstractReceiver(AuditQueue queue){
+		this.queue = queue;
 	}
 
-	public void setTask(AbstractAuditTask task) {
-		this.task = task;
-	}
 }

@@ -6,8 +6,6 @@ import hcim.auric.utils.CalendarManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 /**
  * Class that represents an interaction with the device since the screen was ON
  * until gets OFF
@@ -18,6 +16,7 @@ import android.util.Log;
 public class Session {
 	protected String id;
 	protected String date;
+	protected boolean isIntrusion;
 	protected List<String> interactions;
 	protected String time;
 
@@ -28,16 +27,15 @@ public class Session {
 		date = CalendarManager.getDate(timestamp);
 		time = CalendarManager.getTime(timestamp);
 		interactions = new ArrayList<String>();
-
-		Log.e("AURIC", toString());
 	}
 
 	public Session(String id, String date, String time,
-			List<String> interactions) {
+			List<String> interactions, boolean tag) {
 		this.id = id;
 		this.date = date;
 		this.time = time;
 		this.interactions = interactions;
+		this.isIntrusion = tag;
 	}
 
 	public String getID() {
@@ -75,12 +73,24 @@ public class Session {
 		return time;
 	}
 
-	public List<Intrusion> getInteractions(IntrusionsDatabase db) {
+	public List<Intrusion> getIntrusions(IntrusionsDatabase db) {
 		List<Intrusion> result = new ArrayList<Intrusion>();
 
 		for (String s : interactions) {
 			result.add(db.getIntrusion(s));
 		}
 		return result;
+	}
+
+	public boolean hasIntrusions() {
+		return !interactions.isEmpty();
+	}
+
+	public boolean isTaggedAsIntrusion() {
+		return isIntrusion;
+	}
+
+	public void setTagIntrusion(boolean isIntrusion) {
+		this.isIntrusion = isIntrusion;
 	}
 }

@@ -1,5 +1,6 @@
 package hcim.auric.activities.setup;
 
+import hcim.auric.camera.CameraView;
 import hcim.auric.database.configs.ConfigurationDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.PersonRecognizer;
@@ -29,10 +30,11 @@ public class TestFaceRecognition extends Activity implements
 		CvCameraViewListener2 {
 
 	private static final String SEARCH = "search";
-	
+	private static final String NOT = "not";
+
 	private static final Scalar FACE_RECT_GREEN = new Scalar(0, 255, 0, 255);
 	private static final Scalar FACE_RECT_RED = new Scalar(255, 0, 0, 255);
-	
+
 	private static final int FRONT_CAMERA = 1;
 	private static final int BACK_CAMERA = 2;
 
@@ -58,13 +60,17 @@ public class TestFaceRecognition extends Activity implements
 		@Override
 		public void handleMessage(Message msg) {
 
-			if (msg != null && msg.obj != null && msg.obj.equals(SEARCH)) {
-				if (resultName != null
-						&& FaceRecognition.matchsOwnerName(resultName)) {
-					result.setText("Match the owner - Difference="
-							+ recognitionResult);
-				} else {
-					result.setText("Does not match the owner");
+			if (msg != null && msg.obj != null) {
+				if (msg.obj.equals(SEARCH)) {
+					if (resultName != null
+							&& FaceRecognition.matchsOwnerName(resultName)) {
+						result.setText("Match the owner - Difference="
+								+ recognitionResult);
+					} else {
+						result.setText("Does not match the owner");
+					}
+				} else if (msg.obj.equals(NOT)) {
+					result.setText("");
 				}
 			}
 		}
@@ -84,7 +90,7 @@ public class TestFaceRecognition extends Activity implements
 		currentCamera = BACK_CAMERA;
 
 		result = (TextView) findViewById(R.id.result_msg);
-		
+
 		max = ConfigurationDatabase.getInstance(this).getFaceRecognitionMax();
 	}
 
@@ -159,7 +165,7 @@ public class TestFaceRecognition extends Activity implements
 
 		Rect[] facesArray = faces.toArray();
 
-		if ((facesArray.length >= 1)) {
+		if (facesArray.length >= 1) {
 			int i = 0;
 			Mat m = new Mat();
 			m = mGray.submat(facesArray[i]);
@@ -190,7 +196,12 @@ public class TestFaceRecognition extends Activity implements
 			}
 
 			faces.release();
+		} else {
+			Message msg = new Message();
+			msg.obj = NOT;
+			handler.sendMessage(msg);
 		}
+
 		return mRgba;
 	}
 }

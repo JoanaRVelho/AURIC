@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
 
-    <hcim.auric.activities.setup.CameraView
+    <hcim.auric.camera.CameraView
         android:id="@+id/surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

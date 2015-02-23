@@ -59,13 +59,13 @@
         </activity>
         <activity android:name="hcim.auric.activities.images.FullPicture" >
         </activity>
-        <activity android:name="hcim.auric.record.screen.screencast_root.RunScreencast" >
+        <activity android:name="hcim.auric.record.screencast.RunScreencast" >
         </activity>
-        <activity android:name="hcim.auric.record.screen.event_based.details.RunDetails" >
+        <activity android:name="hcim.auric.record.event_based.details.RunDetails" >
         </activity>
-        <activity android:name="hcim.auric.record.screen.event_based.RunTimelineActivity" >
+        <activity android:name="hcim.auric.record.events.RunTimelineActivitySession" >
         </activity>
-        <activity android:name="hcim.auric.record.screen.event_based.Details" >
+        <activity android:name="hcim.auric.record.events.Details" >
         </activity>
         <activity android:name="hcim.auric.activities.SessionsListActivity" >
         </activity>
@@ -101,17 +101,17 @@
             android:enabled="true" >
         </service>
         <service
-            android:name="hcim.auric.record.screen.event_based.RecordEventBasedLog"
-            class=".RecordEventBasedLog"
+            android:name="hcim.auric.accessibility.AuricEvents"
+            class="hcim.auric.accessibility.AuricEvents"
             android:enabled="true"
             android:exported="false"
-            android:label="AURIC"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>
                 <action
-                    android:name=".RecordEventBasedLog"
-                    android:value=".RecordEventBasedLog" />
+                    android:name="hcim.auric.accessibility.AuricEvents"
+                    android:value="hcim.auric.accessibility.AuricEvents" />
             </intent-filter>
+            
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>

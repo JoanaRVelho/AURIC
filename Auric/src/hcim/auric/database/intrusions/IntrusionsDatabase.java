@@ -3,7 +3,7 @@ package hcim.auric.database.intrusions;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
-import hcim.auric.utils.CalendarManager;
+import hcim.auric.recognition.RecognitionResult;
 import hcim.auric.utils.StringGenerator;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import android.graphics.Bitmap;
 
 public class IntrusionsDatabase {
 	private static IntrusionsDatabase INSTANCE;
-	
+
 	private SQLiteIntrusionData intrusionsDB;
 	private SQLiteIntruderPictures intrusionsPicturesDB;
 
@@ -35,20 +35,22 @@ public class IntrusionsDatabase {
 			intrusionsDB.addIntrusion(i);
 		}
 	}
-	
+
 	public Intrusion getIntrusion(String id) {
 		Intrusion i = intrusionsDB.getIntrusion(id);
-		List<Picture> pics = intrusionsPicturesDB.getAllPictures(id);
+		if (i == null)
+			return null;
 
+		List<Picture> pics = intrusionsPicturesDB.getAllPictures(id);
 		i.setImages(pics);
 
 		return i;
 	}
 
-	public void printAll(){
+	public void printAll() {
 		intrusionsDB.printAll();
 	}
-	
+
 	public void deleteIntrusion(String id, boolean onlyPictures) {
 		if (!onlyPictures)
 			intrusionsDB.deleteIntrusion(id);
@@ -68,12 +70,47 @@ public class IntrusionsDatabase {
 		return null;
 	}
 
-	public void insertPictureOfTheIntruder(String intrusionID, Bitmap img) {
+	public void insertPictureOfTheIntruder(String intrusionID, Bitmap img,
+			RecognitionResult result) {
 		if (intrusionsPicturesDB != null) {
 			Picture p = new Picture(StringGenerator.generateName(),
 					FaceRecognition.UNKNOWN_PICTURE_TYPE, img);
 
+			if (result != null)
+				p.setDescription(result.description());
+
 			intrusionsPicturesDB.insertPicture(intrusionID, p);
+		}
+	}
+
+	public void deletePicturesOfTheIntruder(String intrusionID) {
+		if (intrusionsPicturesDB != null) {
+			intrusionsPicturesDB.deleteAllPictures(intrusionID);
+		}
+	}
+
+	public void updatePicturesUnknownIntrusion(String intrusionID) {
+		if (intrusionsPicturesDB != null) {
+			intrusionsPicturesDB.updatePicturesUnknownIntrusion(intrusionID);
+		}
+	}
+
+	public void insertPictureUnknownIntrusion(Bitmap img,
+			RecognitionResult result) {
+		if (intrusionsPicturesDB != null) {
+			Picture p = new Picture(StringGenerator.generateName(),
+					FaceRecognition.UNKNOWN_PICTURE_TYPE, img);
+
+			if (result != null)
+				p.setDescription(result.description());
+
+			intrusionsPicturesDB.insertPictureUnknownIntrusion(p);
+		}
+	}
+
+	public void deletePicturesUnknownIntrusion() {
+		if (intrusionsPicturesDB != null) {
+			intrusionsPicturesDB.deletePicturesUnknownIntrusion();
 		}
 	}
 
@@ -82,18 +119,17 @@ public class IntrusionsDatabase {
 			intrusionsPicturesDB.updatePictureType(p);
 		}
 	}
-
-	public boolean dayOfIntrusion(String theday, String themonth, String theyear) {
-		return dayOfIntrusion(CalendarManager.getDateFormat(theday, themonth,
-				theyear));
-	}
-
-	public boolean dayOfIntrusion(String date) {
-		List<Intrusion> list = intrusionsDB
-				.getAllIntrusionsFromDay(date);
-
-		return !(list == null || list.size() == 0);
-	}
+//
+//	public boolean dayOfIntrusion(String theday, String themonth, String theyear) {
+//		return dayOfIntrusion(CalendarManager.getDateFormat(theday, themonth,
+//				theyear));
+//	}
+//
+//	public boolean dayOfIntrusion(String date) {
+//		List<Intrusion> list = intrusionsDB.getAllIntrusionsFromDay(date);
+//
+//		return !(list == null || list.size() == 0);
+//	}
 
 	public List<Intrusion> getIntrusions(int severity) {
 		List<Intrusion> result = null;
@@ -111,7 +147,7 @@ public class IntrusionsDatabase {
 	public int numberOfIntrusions(int severity) {
 		if (intrusionsDB != null)
 			return intrusionsDB.numberOfIntrusions(severity);
-		
+
 		return 0;
 	}
 

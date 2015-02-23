@@ -91,25 +91,13 @@
         </GridView>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/button2"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:text="@string/list_apps"
-        android:visibility="gone"
-        android:onClick="appsActivity" />
-
     <CheckBox
-        android:id="@+id/hide_not"
+        android:id="@+id/show_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="@string/hide_not" />
+        android:text="@string/show_all_sessions" />
 
 </RelativeLayout>

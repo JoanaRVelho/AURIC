@@ -1,130 +1,63 @@
 package hcim.auric.audit;
 
-import hcim.auric.intrusion.Intrusion;
-import hcim.auric.recognition.FaceRecognition;
-import hcim.auric.recognition.RecognitionResult;
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.Log;
 
-public class AuditTask extends AbstractAuditTask {
-	public static final String ACTION_OFF = "OFF";
-	public static final String ACTION_ON = "ON";
 
-	protected FaceRecognition recognizer;
-	protected boolean startLog;
+public abstract class AuditTask extends Thread implements IAuditTask {
+	private AuditQueue queue;
 
-	public AuditTask(Context c) {
-		super(c);
+	private static boolean screenOff;
 
-		recognizer = FaceRecognition.getInstance(context);
-		startLog = false;
+	public AuditTask(AuditQueue queue) {
+		this.queue = queue;
+	}
+
+	@Override
+	public void interrupt() {
+		getRecorder().stop();
+		getRecorder().destroy();
+		getDetector().stop();
+	}
+
+	@Override
+	public void stopTask() {
+		interrupt();
+	}
+	
+	@Override
+	public void startTask() {
+		this.start();
+	}
+
+	public static boolean isScreenOff() {
+		return screenOff;
 	}
 
 	@Override
 	public void run() {
-		Log.d(TAG, "AuditTask - start");
-
 		TaskMessage taskMessage;
 		String id;
 		while (true) {
 
 			if (!queue.isEmpty()) {
-				try {
-					taskMessage = queue.take();
-					id = taskMessage.getID();
+				taskMessage = queue.getNext();
 
-					Log.d(TAG, "AuditTask - task = " + id);
+				if (taskMessage != null) {
+					id = taskMessage.getID();
+					Log.i(TAG, "AuditTask - task = " + id);
 
 					if (id.equals(ACTION_OFF)) {
 						screenOff = true;
-						actionOff();
 					}
 					if (id.equals(ACTION_ON)) {
 						screenOff = false;
-						actionOn();
-					}
-					if (id.equals(ACTION_NEW_PICTURE)) {
-						actionNewPicture(taskMessage.getPic());
 					}
 
-				} catch (InterruptedException e) {
-					Log.e(TAG, "Audit Task - " + e.getMessage());
+					onMessageReceived(taskMessage);
 				}
-
 			}
 		}
 	}
 
-	public void actionOn() {		
-		if (!startLog) {
-			camera.takePicture();
-		}
-	}
-
-	public void actionOff() {
-		if (startLog) {
-			log.stopLogging();
-			intrusionsDB.insertIntrusionData(currentIntrusion);
-			Log.d(TAG, "AuditTask - stop logging");
-
-			stopTimerTask();
-
-			currentIntrusion = null;
-			notifier.cancelNotification();
-		}
-
-		startLog = false;
-	}
-
-	public void actionNewPicture(Bitmap capturedFace) {
-		RecognitionResult result = recognizer.recognizePicture(capturedFace);
-		boolean intrusion = !result.isFaceRecognized();
-
-		Log.d(TAG, "AuditTask - intrusion=" + intrusion);
-
-		if (intrusion) {
-			if (!startLog) { // iniciar auditoria
-				startLog = true;
-
-				Log.d(TAG, "AuditTask - new intrusion, start audit");
-				currentIntrusion = new Intrusion(log.type());
-
-				intrusionsDB.insertPictureOfTheIntruder(
-						currentIntrusion.getID(), capturedFace);
-
-				log.startLogging(currentIntrusion.getID());
-				Log.d(TAG, "AuditTask - start logging");
-
-				notifier.notifyUser();
-
-				startTimerTask(true);
-			} else { // continuar auditoria
-			//	Log.d(TAG, "AuditTask - continue");
-				if (currentIntrusion == null) {
-					return;
-				}
-				intrusionsDB.insertPictureOfTheIntruder(
-						currentIntrusion.getID(), capturedFace);
-			}
-		} else {
-			if (startLog) { // parar auditoria
-				Log.d(TAG, "AuditTask - stop audit");
-
-				stopTimerTask();
-
-				if (currentIntrusion != null) {
-					log.stopLogging();
-					intrusionsDB
-							.deleteIntrusion(currentIntrusion.getID(), true);
-					currentIntrusion = null;
-				}
-				startLog = false;
-
-				Log.d(TAG, "AuditTask - stop logging");
-
-				notifier.cancelNotification();
-			}
-		}
-	}
+	protected abstract void onMessageReceived(TaskMessage taskMessage);
 }

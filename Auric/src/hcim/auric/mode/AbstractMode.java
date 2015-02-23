@@ -1,6 +1,6 @@
 package hcim.auric.mode;
 
-import hcim.auric.audit.AbstractAuditTask;
+import hcim.auric.audit.IAuditTask;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -8,19 +8,15 @@ import android.content.IntentFilter;
 public abstract class AbstractMode {
 	protected BroadcastReceiver receiver;
 	protected IntentFilter filter;
-	protected AbstractAuditTask task;
 	protected Context context;
-	
+	protected IAuditTask task;
+
 	public AbstractMode(Context c) {
 		context = c;
 	}
 
-	public AbstractAuditTask getTask() {
+	public IAuditTask getTask() {
 		return task;
-	}
-
-	public void setTask(AbstractAuditTask task) {
-		this.task = task;
 	}
 
 	public BroadcastReceiver getReceiver() {
@@ -32,7 +28,15 @@ public abstract class AbstractMode {
 	}
 
 	public void destroy() {
-		if(task != null)
-			task.interrupt();
+		if (task != null)
+			task.stopTask();
+	}
+
+	public String getDetectorType() {
+		return task.getDetector().type();
+	}
+
+	public String getRecorderType() {
+		return task.getRecorder().type();
 	}
 }

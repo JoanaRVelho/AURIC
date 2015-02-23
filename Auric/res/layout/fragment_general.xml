@@ -43,7 +43,17 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/mode_spinner"
-                android:text="@string/device_sharing" />
+                android:text="@string/device_sharing"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/checkBoxRecord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/log_options"
+                android:text="@string/record_all"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/mode_title"
@@ -65,9 +75,17 @@
                 android:layout_below="@+id/mode_title"
                 android:layout_marginTop="14dp" />
 
+            <CheckBox
+                android:id="@+id/hide_not"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mode_spinner"
+                android:layout_marginStart="10dp"
+                android:text="@string/hide_not" />
+
             <Spinner
                 android:id="@+id/log_options"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/log_type_title"
@@ -122,11 +140,11 @@
                 android:layout_width="fill_parent"
                 android:layout_height="25sp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/checkBox1"
+                android:layout_below="@+id/hide_not"
                 android:layout_marginTop="16dp"
                 android:background="@color/sky"
                 android:gravity="center"
-                android:text="@string/log_type"
+                android:text="@string/record_type"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/white" />
 
@@ -135,13 +153,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="25sp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/log_options"
+                android:layout_below="@+id/checkBoxRecord"
                 android:layout_marginTop="16dp"
                 android:background="@color/sky"
                 android:gravity="center"
                 android:text="@string/rate"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#FFF" />
+                android:textColor="#FFF"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/rate_desc"
@@ -151,7 +170,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
-                android:text="@string/ratedesc" />
+                android:text="@string/ratedesc"
+                android:visibility="gone" />
 
             <NumberPicker
                 android:id="@+id/rate_number_picker"
@@ -159,7 +179,42 @@
                 android:layout_height="110dp"
                 android:layout_below="@+id/rate_desc"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp" />
+                android:layout_marginTop="15dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/number_pictures"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mode_spinner"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/number_pictures"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/select_apps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mode_spinner"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_design"
+                android:gravity="center"
+                android:onClick="appsActivity"
+                android:text="@string/select_apps"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+
+            <NumberPicker
+                android:id="@+id/pictures_number_picker"
+                android:layout_width="50dp"
+                android:layout_height="110dp"
+                android:layout_below="@+id/number_pictures"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp"
+                android:visibility="gone" />
         </RelativeLayout>
     </ScrollView>
 

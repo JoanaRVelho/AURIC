@@ -16,21 +16,29 @@ public class Intrusion {
 	protected String date;
 	protected String time;
 	protected int tag;
-	protected String logType;
+	protected String recorderType;
 
 	protected List<Picture> images;
 
 	Intrusion() {
 	}
 
-	public Intrusion(String log) {
+	public Intrusion(String recorderType) {
 		long timestamp = System.currentTimeMillis();
 
-		id = Long.toString(timestamp);
-		date = CalendarManager.getDate(timestamp);
-		time = CalendarManager.getTime(timestamp);
-		tag = UNCHECKED;
-		logType = log;
+		this.id = Long.toString(timestamp);
+		this.date = CalendarManager.getDate(timestamp);
+		this.time = CalendarManager.getTime(timestamp);
+		this.tag = UNCHECKED;
+		this.recorderType = recorderType;
+	}
+
+	public Intrusion(String recorderType, long timestamp) {
+		this.id = Long.toString(timestamp);
+		this.date = CalendarManager.getDate(timestamp);
+		this.time = CalendarManager.getTime(timestamp);
+		this.tag = UNCHECKED;
+		this.recorderType = recorderType;
 	}
 
 	public boolean isChecked() {
@@ -70,11 +78,11 @@ public class Intrusion {
 	}
 
 	public String getLogType() {
-		return logType;
+		return recorderType;
 	}
 
 	public void setLogType(String logType) {
-		this.logType = logType;
+		this.recorderType = logType;
 	}
 
 	public List<Picture> getImages() {
@@ -84,10 +92,10 @@ public class Intrusion {
 	public void setImages(List<Picture> images) {
 		this.images = images;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Intrusion [id=" + id + ", date=" + date + ", time=" + time
-				+ ", tag=" + tag + ", logType=" + logType + "]";
+				+ ", tag=" + tag + ", logType=" + recorderType + "]";
 	}
 }

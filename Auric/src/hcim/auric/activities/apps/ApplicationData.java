@@ -1,21 +1,25 @@
 package hcim.auric.activities.apps;
 
+import java.io.Serializable;
+
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 
-public class ApplicationData implements Comparable<Object>{
+public class ApplicationData implements Comparable<Object>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String name;
 	private String packageName;
-	private Drawable icon;
-	private boolean selected;
+	private boolean target;
 
 	public ApplicationData(ApplicationInfo info, PackageManager packageManager) {
 		this.name = info.loadLabel(packageManager).toString();
 		this.packageName = info.packageName;
-		this.icon = info.loadIcon(packageManager);
-		this.selected = false;
+		this.target = false;
 	}
 
 	public String getName() {
@@ -26,22 +30,18 @@ public class ApplicationData implements Comparable<Object>{
 		return packageName;
 	}
 
-	public Drawable getIcon() {
-		return icon;
+	public boolean isTarget() {
+		return target;
 	}
 
-	public boolean isSelected() {
-		return selected;
-	}
-
-	public void setSelected(boolean selected) {
-		this.selected = selected;
+	public void setTarget(boolean selected) {
+		this.target = selected;
 	}
 
 	@Override
 	public String toString() {
-		return "ApplicationInfo [name=" + name + ", packageName=" + packageName
-				+ "]";
+		return "ApplicationData [name=" + name + ", packageName=" + packageName
+				+ ", target=" + target + "]";
 	}
 
 	@Override

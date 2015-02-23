@@ -25,7 +25,6 @@ import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.hcim.intrusiondetection.R;
 
@@ -35,13 +34,13 @@ import com.hcim.intrusiondetection.R;
  * 
  *         An adaptation of {@link https
  *         ://github.com/ayuso2013/face-recognition}
- *
+ * 
  */
 public class FaceRecognition {
 
 	private static FaceRecognition INSTANCE;
 
-	private static final String TAG = "AURIC";
+	public static final String TAG = "AURIC";
 	public static final String MY_PICTURE_TYPE = "myface";
 	public static final String INTRUDER_PICTURE_TYPE = "intruder";
 	public static final String UNKNOWN_PICTURE_TYPE = "unknown";
@@ -157,12 +156,9 @@ public class FaceRecognition {
 
 		RecognitionResult result;
 		if (facesArray == null || facesArray.length == 0) {
-			Log.d(TAG, "Face Recognition - face detection failed");
 			result = new RecognitionResult();
 		} else {
-			Log.d(TAG, "Face Recognition - face detected");
 			result = recognize(facesArray, grayMat);
-			Log.d(TAG, result.toString());
 		}
 
 		rgbMat.release();
@@ -186,7 +182,6 @@ public class FaceRecognition {
 
 		boolean result = true;
 		if (facesArray == null || facesArray.length == 0) {
-			Log.d(TAG, "Face Recognition - face detection failed");
 			result = false;
 		}
 
@@ -230,7 +225,8 @@ public class FaceRecognition {
 
 		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
 				loaderCallback)) {
-			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
+			// Log.e(TAG,
+			// "Face Recognition - Cannot connect to OpenCV Manager");
 		}
 
 		getMax();
@@ -242,12 +238,12 @@ public class FaceRecognition {
 		if (!f.exists()) {
 			boolean success = f.mkdirs();
 			if (!success) {
-				Log.e(TAG, "Face Recognition - Error creating directory");
+				// Log.e(TAG, "Face Recognition - Error creating directory");
 			} else {
-				Log.i(TAG, "Face Recognition - Directory created");
+				// Log.i(TAG, "Face Recognition - Directory created");
 			}
 		} else {
-			Log.i(TAG, "Face Recognition - Directory already exists");
+			// Log.i(TAG, "Face Recognition - Directory already exists");
 		}
 	}
 
@@ -335,7 +331,7 @@ public class FaceRecognition {
 	 * Class AuricBaseLoaderCallback that extends BaseLoaderCallback
 	 * 
 	 * @author Joana Velho
-	 *
+	 * 
 	 */
 	private class AuricBaseLoaderCallback extends BaseLoaderCallback {
 		private Context c;
@@ -355,7 +351,7 @@ public class FaceRecognition {
 		public void onManagerConnected(int status) {
 			switch (status) {
 			case LoaderCallbackInterface.SUCCESS: {
-				Log.d(TAG, "Face Recognition - OpenCV loaded successfully");
+				// Log.d(TAG, "Face Recognition - OpenCV loaded successfully");
 
 				recognizer = new PersonRecognizer(path);
 				recognizer.load();
@@ -378,19 +374,19 @@ public class FaceRecognition {
 					cascadeClassifier = new CascadeClassifier(
 							cascadeFile.getAbsolutePath());
 					if (cascadeClassifier.empty()) {
-						Log.e(TAG,
-								"Face Recognition - Failed to load cascade classifier");
+						// Log.e(TAG,
+						// "Face Recognition - Failed to load cascade classifier");
 						cascadeClassifier = null;
 					} else {
-						Log.d(TAG,
-								"Face Recognition - Loaded cascade classifier from "
-										+ cascadeFile.getAbsolutePath());
+						// Log.d(TAG,
+						// "Face Recognition - Loaded cascade classifier from "
+						// + cascadeFile.getAbsolutePath());
 					}
 					cascadeDir.delete();
 
 				} catch (IOException e) {
-					Log.e(TAG, "Face Recognition - Failed to load cascade. "
-							+ "Exception thrown: " + e);
+					// Log.e(TAG, "Face Recognition - Failed to load cascade. "
+					// + "Exception thrown: " + e);
 				}
 			}
 				break;

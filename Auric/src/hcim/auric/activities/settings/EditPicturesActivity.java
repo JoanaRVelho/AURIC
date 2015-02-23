@@ -1,6 +1,6 @@
 package hcim.auric.activities.settings;
 
-import hcim.auric.activities.setup.CameraView;
+import hcim.auric.camera.CameraView;
 import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
@@ -67,12 +67,12 @@ public class EditPicturesActivity extends Activity implements
 		public void run() {
 			if (lastMat != null)
 				lastMat.release();
+
 			trainAllPictures();
 			runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
-
 					showMessageDialog();
 				}
 			});
@@ -172,14 +172,24 @@ public class EditPicturesActivity extends Activity implements
 
 	@Override
 	public void finish() {
-		run.start();
+		if (list.isEmpty()) {
+			cameraView.disableView();
+			cameraView.release();
+			
+			if (lastMat != null)
+				lastMat.release();
 
-		bar.setVisibility(View.VISIBLE);
-		cameraView.disableView();
-		cameraView.release();
-		cameraView.setVisibility(View.INVISIBLE);
-		takePicture.setVisibility(View.INVISIBLE);
-		switchCam.setVisibility(View.INVISIBLE);
+			super.finish();
+		} else {
+			run.start();
+
+			bar.setVisibility(View.VISIBLE);
+			cameraView.disableView();
+			cameraView.release();
+			cameraView.setVisibility(View.INVISIBLE);
+			takePicture.setVisibility(View.INVISIBLE);
+			switchCam.setVisibility(View.INVISIBLE);
+		}
 	}
 
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
@@ -248,7 +258,7 @@ public class EditPicturesActivity extends Activity implements
 		alertDialog = new AlertDialog.Builder(EditPicturesActivity.this);
 		alertDialog.setTitle("Picture Configuration");
 		String msg = list.size() == 1 ? " picture." : " pictures.";
-		alertDialog.setMessage("You took " + list.size() + msg );
+		alertDialog.setMessage("You took " + list.size() + msg);
 		alertDialog.setNeutralButton("OK",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {

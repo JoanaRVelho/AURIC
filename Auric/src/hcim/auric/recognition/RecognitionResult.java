@@ -1,5 +1,6 @@
 package hcim.auric.recognition;
 
+
 public class RecognitionResult {
 	private boolean faceDetected;
 	private boolean faceRecognized;
@@ -37,11 +38,29 @@ public class RecognitionResult {
 		return difference;
 	}
 
+	public String description() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Face Detected: ");
+		builder.append(faceDetected);
+		builder.append(", Face Recognized as Owner: ");
+		builder.append(faceRecognized);
+
+		if (faceRecognized) {
+			builder.append(", Difference: ");
+			builder.append(difference);
+		}
+		return builder.toString();
+	}
+
 	@Override
 	public String toString() {
 		return "Face Recognition Result -> [faceDetected=" + faceDetected
 				+ ", faceRecognized=" + faceRecognized + ", match=" + match
 				+ ", difference=" + difference + "]";
+	}
+
+	public boolean matchOwner() {
+		return FaceRecognition.matchsOwnerName(match);
 	}
 
 }

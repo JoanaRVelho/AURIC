@@ -23,6 +23,7 @@ public class ListAppsActivity extends Activity {
 	private ListView listView;
 	private List<ApplicationData> list;
 	private TargetAppDatabase db;
+	private static boolean update;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +32,17 @@ public class ListAppsActivity extends Activity {
 
 		db = TargetAppDatabase.getInstance(this);
 
-		list = ApplicationsManager.getInstalledAppsSortedByName(getPackageManager());
+		list = ApplicationsManager
+				.getInstalledAppsSortedByName(getPackageManager());
 
 		for (ApplicationData app : list) {
-			if (db.hasApplication(app.getPackageName())) {
-				app.setSelected(true);
+			if (db.isTargetApplication(app.getPackageName())) {
+				app.setTarget(true);
 			} else {
-				app.setSelected(false);
+				app.setTarget(false);
 			}
 		}
+		update = false;
 
 		listView = (ListView) findViewById(R.id.list_apps);
 		listView.setAdapter(new ApplicationsAdapter(this, list));
@@ -49,10 +52,10 @@ public class ListAppsActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				ApplicationData app = list.get(position);
-				boolean selected = app.isSelected();
-				app.setSelected(!selected);
+				boolean selected = app.isTarget();
+				app.setTarget(!selected);
 
-				if (app.isSelected()) {
+				if (app.isTarget()) {
 					setSelectedItemView(view);
 				} else {
 					setNotSelectedItemView(view);
@@ -67,6 +70,8 @@ public class ListAppsActivity extends Activity {
 		txt.setTextColor(Color.BLACK);
 		txt = (TextView) view.findViewById(R.id.app_package);
 		txt.setTextColor(Color.BLACK);
+
+		update = true;
 	}
 
 	protected static void setSelectedItemView(View view) {
@@ -75,24 +80,23 @@ public class ListAppsActivity extends Activity {
 		txt.setTextColor(Color.WHITE);
 		txt = (TextView) view.findViewById(R.id.app_package);
 		txt.setTextColor(Color.WHITE);
+		update = true;
 	}
 
 	@Override
 	public void finish() {
-		updateTargetApps();
+		if (update)
+			updateTargetApps();
+		
 		super.finish();
 	}
 
 	private void updateTargetApps() {
 		for (ApplicationData app : list) {
-			if (app.isSelected()) {
-				if (!db.hasApplication(app.getPackageName())) {
-					db.insertApplication(app);
-				}
-			}else{
-				if (db.hasApplication(app.getPackageName())) {
-					db.removeApplication(app);
-				}
+			if (!db.hasApplication(app.getPackageName())) {
+				db.insertApplication(app);
+			} else {
+				db.updateApplication(app);
 			}
 		}
 

@@ -65,6 +65,19 @@ public class SQLiteTargetApps extends SQLiteOpenHelper {
 		db.close();
 	}
 
+	public void updateApplication(ApplicationData app) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_ID, app.getPackageName());
+		values.put(KEY_DATA, Converter.serialize(app));
+
+		db.update(TABLE_APPS, values, KEY_ID + " = '" + app.getPackageName()
+				+ "'", null);
+
+		db.close();
+	}
+
 	public void removeApplication(ApplicationData app) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -81,7 +94,7 @@ public class SQLiteTargetApps extends SQLiteOpenHelper {
 
 		if (cursor == null)
 			return null;
-		
+
 		cursor.moveToFirst();
 
 		if (cursor.getCount() <= 0)

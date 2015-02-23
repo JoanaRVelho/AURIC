@@ -23,8 +23,12 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 	private static final String KEY_INT = "intrusion";
 	private static final String KEY_PICTURE = "picture";
 	private static final String KEY_TYPE = "type";
+	private static final String KEY_DESCRIPTION = "description";
 	private static final String[] COLUMNS = { KEY_ID, KEY_INT, KEY_PICTURE,
-			KEY_TYPE };
+			KEY_TYPE, KEY_DESCRIPTION };
+	
+	
+	private static final String DUMMY = "DUMMY";
 
 	public SQLiteIntruderPictures(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -34,7 +38,7 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_INTRUSION_TABLE = "CREATE TABLE " + TABLE_INTRUSIONS
 				+ " ( " + KEY_ID + " TEXT PRIMARY KEY, " + KEY_INT + " TEXT, "
-				+ KEY_PICTURE + " BLOB, " + KEY_TYPE + " TEXT )";
+				+ KEY_PICTURE + " BLOB, " + KEY_TYPE + " TEXT, " + KEY_DESCRIPTION + " TEXT )";
 
 		db.execSQL(CREATE_INTRUSION_TABLE);
 	}
@@ -54,10 +58,46 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 		values.put(KEY_INT, intrusionID);
 		values.put(KEY_TYPE, p.getType());
 		values.put(KEY_PICTURE, Converter.bitmapToByteArray(p.getImage()));
+		values.put(KEY_DESCRIPTION, p.getDescription());
 
 		db.insert(TABLE_INTRUSIONS, null, values);
 
 		db.close();
+	}
+
+	public void updatePictureType(Picture p) {
+		SQLiteDatabase db = this.getWritableDatabase();
+	
+		ContentValues values = new ContentValues();
+		values.put(KEY_TYPE, p.getType());
+		db.update(TABLE_INTRUSIONS, values, KEY_ID + "='" + p.getID() + "'",
+				null);
+	
+		db.close();
+	}
+
+	public Picture getPicture(String pictureID) {
+		SQLiteDatabase db = this.getReadableDatabase();
+	
+		Cursor cursor = db.query(TABLE_INTRUSIONS, COLUMNS, KEY_ID + "='"
+				+ pictureID + "'", null, null, null, null, null);
+	
+		if (cursor != null)
+			cursor.moveToFirst();
+	
+		if (cursor.getCount() <= 0)
+			return null;
+	
+		byte[] blob = cursor.getBlob(2);
+		String type = cursor.getString(3);
+		String desc = cursor.getString(4);
+	
+		Picture picture = new Picture(pictureID, type,
+				(Bitmap) Converter.byteArrayToBitmap(blob));
+		picture.setDescription(desc);
+	
+		db.close();
+		return picture;
 	}
 
 	/**
@@ -70,7 +110,7 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 	public List<Picture> getAllPictures(String intrusionID) {
 		List<Picture> result = new ArrayList<Picture>();
 		Bitmap b;
-		String type, id;
+		String type, id, desc;
 		Picture p;
 
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -87,8 +127,10 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 			do {
 				id = cursor.getString(0);
 				b = (Bitmap) Converter.byteArrayToBitmap(cursor.getBlob(2));
-				type = cursor.getString(0);
+				type = cursor.getString(3);
+				desc = cursor.getString(4);
 				p = new Picture(id, type, b);
+				p.setDescription(desc);
 
 				result.add(p);
 			} while (cursor.moveToNext());
@@ -107,36 +149,23 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public Picture getPicture(String pictureID) {
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		Cursor cursor = db.query(TABLE_INTRUSIONS, COLUMNS, KEY_ID + "='"
-				+ pictureID + "'", null, null, null, null, null);
-
-		if (cursor != null)
-			cursor.moveToFirst();
-
-		if (cursor.getCount() <= 0)
-			return null;
-
-		byte[] blob = cursor.getBlob(2);
-		String type = cursor.getString(3);
-
-		Picture picture = new Picture(pictureID, type,
-				(Bitmap) Converter.byteArrayToBitmap(blob));
-
-		db.close();
-		return picture;
+	public void insertPictureUnknownIntrusion(Picture p) {
+		insertPicture(DUMMY, p);		
 	}
 
-	public void updatePictureType(Picture p) {
+	public void updatePicturesUnknownIntrusion(String intrusionID) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
-		values.put(KEY_TYPE, p.getType());
-		db.update(TABLE_INTRUSIONS, values, KEY_ID + "='" + p.getID() + "'",
+		values.put(KEY_INT, intrusionID);
+		db.update(TABLE_INTRUSIONS, values, KEY_INT + "='" + DUMMY + "'",
 				null);
 
 		db.close();
+	}
+
+	public void deletePicturesUnknownIntrusion() {
+		deleteAllPictures(DUMMY);
+		
 	}
 }

@@ -1,10 +1,10 @@
 package hcim.auric.activities.settings;
 
-import hcim.auric.activities.images.SlideShowRecognizedPictures;
+import hcim.auric.accessibility.AuricEvents;
+import hcim.auric.activities.apps.ListAppsActivity;
 import hcim.auric.database.configs.ConfigurationDatabase;
 import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
-import hcim.auric.record.log_type.LogManager;
 import hcim.auric.service.BackgroundService;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -17,6 +17,7 @@ import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 
 import com.hcim.intrusiondetection.R;
 
@@ -69,6 +70,10 @@ public class SettingsActivity extends FragmentActivity implements
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
+	}
+
+	public void appsActivity(View v) {
+		startActivity(new Intent(this, ListAppsActivity.class));
 	}
 
 	@Override
@@ -128,10 +133,11 @@ public class SettingsActivity extends FragmentActivity implements
 	 *         otherwise
 	 */
 	private boolean accessibilityServiceEnabled() {
-		String type = configDB.getLogType();
+		String recorder = configDB.getRecorderType();
+		String detector = configDB.getDetectorType();
 
-		if (LogManager.hasAccessibilityService(type)) {
-			return LogManager.accessibilityServiceEnabled(this, type);
+		if (AuricEvents.hasAccessibilityService(recorder, detector)) {
+			return AuricEvents.accessibilityServiceEnabled(this);
 		}
 
 		return true;
@@ -146,15 +152,18 @@ public class SettingsActivity extends FragmentActivity implements
 		Log.i(TAG,
 				"SettingsActivity - STATUS: "
 						+ (configDB.isIntrusionDetectorActive() ? "ON" : "OFF"));
-		Log.i(TAG, "SettingsActivity - MODE: " + configDB.getMode());
-		Log.i(TAG, "SettingsActivity - DV:" + configDB.isDeviceSharingEnabled());
-		Log.i(TAG, "SettingsActivity - LOG TYPE: " + configDB.getLogType());
+		Log.i(TAG, "SettingsActivity - MODE: " + configDB.getDetectorType());
+		Log.i(TAG, "SettingsActivity - Strategy: " + configDB.getStrategyType());
+		Log.i(TAG, "SettingsActivity - LOG TYPE: " + configDB.getRecorderType());
 		Log.i(TAG,
 				"SettingsActivity - FACE RECOGNITION MAX PARAM: "
 						+ configDB.getFaceRecognitionMax());
 		Log.i(TAG,
 				"SettingsActivity - CAMERA PERIOD PARAM: "
 						+ configDB.getCameraPeriod());
+		Log.i(TAG,
+				"SettingsActivity - Number Pictures: "
+						+ configDB.getNumberOfPicturesPerDetection());
 	}
 
 	protected void stopBackgroundService() {
@@ -164,11 +173,11 @@ public class SettingsActivity extends FragmentActivity implements
 	protected void startBackgroundService() {
 		startService(new Intent(this, BackgroundService.class));
 	}
-
-	public void goToRecognizedPictures() {
-		Intent i = new Intent(SettingsActivity.this,
-				SlideShowRecognizedPictures.class);
-		startActivity(i);
-	}
+	//
+	// public void goToRecognizedPictures() {
+	// Intent i = new Intent(SettingsActivity.this,
+	// SlideShowRecognizedPictures.class);
+	// startActivity(i);
+	// }
 
 }

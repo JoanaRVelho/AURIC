@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:columnCount="5"
-    android:rowCount="1">
+    android:rowCount="1" >
+
     <TextView
         android:id="@+id/text_timeline"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_column="4"
-        android:layout_marginLeft="10dp"
+        android:layout_column="3"
         android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -18,18 +19,18 @@
         android:id="@+id/icon_timeline"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_column="2"
+        android:layout_gravity="center_horizontal"
         android:layout_marginLeft="10dp"
-        android:layout_column="3"
-        android:contentDescription="@string/description"
-        android:layout_gravity="center_horizontal" />
+        android:contentDescription="@string/description" />
 
     <TextView
         android:id="@+id/time_timeline"
         android:layout_width="60dp"
         android:layout_height="50dp"
-        android:layout_column="1"
-        android:layout_marginLeft="10dp"
+        android:layout_column="0"
         android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
         android:layout_row="0"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -38,11 +39,18 @@
         android:id="@+id/intruders_layout"
         android:layout_width="57dp"
         android:layout_height="wrap_content"
-        android:layout_column="2"
+        android:layout_column="1"
         android:layout_gravity="right|top"
         android:layout_marginLeft="10dp"
         android:layout_row="0"
-        android:orientation="vertical">
+        android:orientation="vertical" >
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tagInt"
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:layout_column="4"
+        android:layout_row="0" />
 
 </GridLayout>

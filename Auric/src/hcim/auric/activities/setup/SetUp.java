@@ -1,5 +1,6 @@
 package hcim.auric.activities.setup;
 
+import hcim.auric.camera.CameraView;
 import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;

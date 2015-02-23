@@ -6,9 +6,14 @@ public class Interaction extends Intrusion {
 	public Interaction() {
 		super();
 	}
+	public Interaction(String recorderType){
+		super(recorderType);
+		
+		tag = FALSE_INTRUSION;
+	}
 
-	public Interaction(String log){
-		super(log);
+	public Interaction(String recorderType, long timestamp){
+		super(recorderType, timestamp);
 		
 		tag = FALSE_INTRUSION;
 	}

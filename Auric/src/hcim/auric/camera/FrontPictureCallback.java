@@ -1,7 +1,7 @@
 package hcim.auric.camera;
 
-import hcim.auric.audit.AbstractAuditTask;
-import hcim.auric.audit.AuditTask;
+import hcim.auric.audit.AuditQueue;
+import hcim.auric.audit.IAuditTask;
 import hcim.auric.audit.TaskMessage;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,16 +9,17 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 
 public class FrontPictureCallback implements Camera.PictureCallback {
-	// protected static final String TAG = "AURIC";
+	protected AuditQueue queue;
 
-	protected AbstractAuditTask task;
-
-	public FrontPictureCallback(AbstractAuditTask task) {
-		this.task = task;
+	public FrontPictureCallback(AuditQueue queue) {
+		this.queue = queue;
 	}
 
 	@Override
 	public void onPictureTaken(byte[] data, Camera camera) {
+		camera.stopPreview();
+		camera.release();
+
 		BitmapFactory.Options config = new BitmapFactory.Options();
 		config.inPreferredConfig = Bitmap.Config.RGB_565;
 		config.inSampleSize = 2;
@@ -26,18 +27,10 @@ public class FrontPictureCallback implements Camera.PictureCallback {
 
 		bm = rotateBitmap(bm, 270);
 
-		// if (bm == null) {
-		// Log.d(TAG, "FrontPictureCallback - null bitmap");
-		// } else {
-		// Log.d(TAG, "FrontPictureCallback - picture taken");
-		// }
-
-		TaskMessage t = new TaskMessage(AuditTask.ACTION_NEW_PICTURE);
+		TaskMessage t = new TaskMessage(IAuditTask.ACTION_NEW_PICTURE);
 		t.setPic(bm);
-		task.addTaskMessage(t);
+		queue.addTaskMessage(t);
 
-		camera.stopPreview();
-		camera.release();
 	}
 
 	public static Bitmap rotateBitmap(Bitmap source) {

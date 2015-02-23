@@ -1,10 +1,12 @@
 package hcim.auric.activities;
 
-import hcim.auric.activities.apps.ListAppsActivity;
 import hcim.auric.activities.passcode.Unlock;
 import hcim.auric.activities.settings.SettingsActivity;
 import hcim.auric.activities.setup.Welcome;
 import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.configs.PicturesDatabase;
+import hcim.auric.database.configs.TargetAppDatabase;
+import hcim.auric.database.intrusions.EventBasedLogDatabase;
 import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.database.intrusions.SessionDatabase;
 import hcim.auric.recognition.FaceRecognition;
@@ -57,7 +59,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	private GridCellAdapter adapter;
 	private Calendar myCalendar;
 	private int month, year;
-	private CheckBox hide;
 
 	private static final int UNLOCK_CODE_SETTINGS = 20;
 	private static final int UNLOCK_CODE_INT = 30;
@@ -65,17 +66,24 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private String dayClicked;
 
-	private IntrusionsDatabase intrusionsDB;
 	private ConfigurationDatabase configDB;
 	private FaceRecognition fr;
+	private SessionDatabase sessionsDB;
 
+	private CheckBox showAllCheckBox;
+	private boolean showAll;
 	private int flag;
+	private Context context;
 
 	private void initDatabase() {
 		configDB = ConfigurationDatabase.getInstance(this);
-		intrusionsDB = IntrusionsDatabase.getInstance(this);
 		fr = FaceRecognition.getInstance(this);
-		SessionDatabase.getInstance(this);
+		sessionsDB = SessionDatabase.getInstance(this);
+
+		PicturesDatabase.getInstance(this);
+		TargetAppDatabase.getInstance(this);
+		EventBasedLogDatabase.getInstance(this);
+		IntrusionsDatabase.getInstance(this);
 	}
 
 	@Override
@@ -84,6 +92,30 @@ public class MainActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.calendar);
 
 		initDatabase();
+		context = this;
+
+		showAll = configDB.showAllSessions();
+		showAllCheckBox = (CheckBox) findViewById(R.id.show_all);
+		showAllCheckBox.setChecked(showAll);
+		showAllCheckBox
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						showAll = isChecked;
+						configDB.setShowAllSessions(isChecked);
+						runOnUiThread(new Runnable() {
+							public void run() {
+								adapter = new GridCellAdapter(month, year);
+								adapter.notifyDataSetChanged();
+								calendarView.setAdapter(adapter);
+							}
+						});
+
+					}
+
+				});
 
 		// init layout
 		Button config = (Button) findViewById(R.id.button1);
@@ -95,19 +127,6 @@ public class MainActivity extends Activity implements OnClickListener {
 					startUnlockActivity(UNLOCK_CODE_SETTINGS);
 				else
 					startSettingsActivity();
-			}
-		});
-		
-		hide = (CheckBox) findViewById(R.id.hide_not);
-		hide.setChecked(configDB.hideNotification());
-		hide.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(isChecked){
-					configDB.setHideNotification(isChecked);
-				}
-				
 			}
 		});
 
@@ -128,15 +147,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		calendarView = (GridView) this.findViewById(R.id.calendar);
 
-		adapter = new GridCellAdapter(this, R.id.calendar_day_gridcell, month,
-				year);
+		adapter = new GridCellAdapter(month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 
-	}
-	
-	public void appsActivity(View v){
-		startActivity(new Intent(this, ListAppsActivity.class));
 	}
 
 	private void initDaysOfTheWeekLayout() {
@@ -208,8 +222,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	protected void onResume() {
-		adapter = new GridCellAdapter(this, R.id.calendar_day_gridcell, month,
-				year);
+		adapter = new GridCellAdapter(month, year);
 		adapter.notifyDataSetChanged();
 		calendarView.setAdapter(adapter);
 
@@ -222,8 +235,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		} else {
 			Log.e(TAG, "Face Recognition - Cannot connect to OpenCV Manager");
 		}
-		
-		hide.setEnabled(!configDB.isIntrusionDetectorActive());
 	}
 
 	private void firstLaunch() {
@@ -256,19 +267,18 @@ public class MainActivity extends Activity implements OnClickListener {
 		startActivity(i);
 	}
 
-//	private void startIntrusionsListActivity() {
-//		if (dayClicked != null) {
-//			Intent i = new Intent(MainActivity.this,
-//					IntrusionsListActivity.class);
-//			i.putExtra(IntrusionsListActivity.EXTRA_ID, dayClicked);
-//			startActivity(i);
-//		}
-//	}
-	
+	// private void startIntrusionsListActivity() {
+	// if (dayClicked != null) {
+	// Intent i = new Intent(MainActivity.this,
+	// IntrusionsListActivity.class);
+	// i.putExtra(IntrusionsListActivity.EXTRA_ID, dayClicked);
+	// startActivity(i);
+	// }
+	// }
+
 	private void startIntrusionsListActivity() {
 		if (dayClicked != null) {
-			Intent i = new Intent(MainActivity.this,
-					SessionsListActivity.class);
+			Intent i = new Intent(MainActivity.this, SessionsListActivity.class);
 			i.putExtra(SessionsListActivity.EXTRA_ID, dayClicked);
 			startActivity(i);
 		}
@@ -299,8 +309,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	private void setGridCellAdapterToDate(int month, int year) {
-		adapter = new GridCellAdapter(this, R.id.calendar_day_gridcell, month,
-				year);
+		adapter = new GridCellAdapter(month, year);
 		myCalendar.set(year, month - 1, myCalendar.get(Calendar.DAY_OF_MONTH));
 		currentMonth.setText(CalendarManager.monthYearString(month, year));
 		adapter.notifyDataSetChanged();
@@ -308,8 +317,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	public class GridCellAdapter extends BaseAdapter implements OnClickListener {
-		private final Context _context;
-
 		private final List<String> list;
 		private static final int DAY_OFFSET = 1;
 
@@ -319,12 +326,12 @@ public class MainActivity extends Activity implements OnClickListener {
 		private Button gridcell;
 		private TextView num_events_per_day;
 		private final HashMap<String, Integer> eventsPerMonthMap;
+		private boolean showAll;
 
-		public GridCellAdapter(Context context, int textViewResourceId,
-				int month, int year) {
+		public GridCellAdapter(int month, int year) {
 			super();
-			this._context = context;
 			this.list = new ArrayList<String>();
+			this.showAll = configDB.showAllSessions();
 
 			Calendar calendar = Calendar.getInstance();
 			setCurrentDayOfMonth(calendar.get(Calendar.DAY_OF_MONTH));
@@ -461,7 +468,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View row = convertView;
 			if (row == null) {
-				LayoutInflater inflater = (LayoutInflater) _context
+				LayoutInflater inflater = (LayoutInflater) context
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				row = inflater.inflate(R.layout.screen_gridcell, parent, false);
 			}
@@ -509,9 +516,13 @@ public class MainActivity extends Activity implements OnClickListener {
 							R.color.lightgray));
 				}
 			}
-			if (intrusionsDB.dayOfIntrusion(theday, themonth, theyear)) {
+
+			boolean dayOfSession = sessionsDB.dayOfSession(theday, themonth,
+					theyear, showAll);
+			if (dayOfSession) {
 				gridcell.setTextColor(getResources().getColor(R.color.orange));
 			}
+
 			return row;
 		}
 
@@ -519,7 +530,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		public void onClick(View view) {
 			String date_month_year = (String) view.getTag();
 
-			if (!intrusionsDB.dayOfIntrusion(date_month_year)) {
+			if (!sessionsDB.dayOfSession(date_month_year, showAll)) {
 				return;
 			}
 			dayClicked = date_month_year;

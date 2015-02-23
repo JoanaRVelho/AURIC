@@ -38,6 +38,12 @@ public class TargetAppDatabase {
 		}
 	}
 
+	public void updateApplication(ApplicationData app) {
+		if (targetApps != null) {
+			targetApps.updateApplication(app);
+		}
+	}
+
 	public void removeApplication(ApplicationData app) {
 		if (targetApps != null) {
 			targetApps.removeApplication(app);
@@ -72,6 +78,15 @@ public class TargetAppDatabase {
 	public boolean hasApplication(String packageName) {
 		if (targetApps != null) {
 			return targetApps.hasApplication(packageName);
+		}
+		return false;
+	}
+
+	public boolean isTargetApplication(String packageName) {
+		if (targetApps != null) {
+			ApplicationData app = getApplication(packageName);
+			if (app != null)
+				return app.isTarget();
 		}
 		return false;
 	}

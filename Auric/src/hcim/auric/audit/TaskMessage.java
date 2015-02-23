@@ -6,6 +6,16 @@ public class TaskMessage {
 	private String ID;
 	private Bitmap pic;
 	private String timestamp;
+	private String packageName;
+	private boolean intrusion;
+
+	public boolean isIntrusion() {
+		return intrusion;
+	}
+
+	public void setIntrusion(boolean intrusion) {
+		this.intrusion = intrusion;
+	}
 
 	public TaskMessage(String id) {
 		this.ID = id;
@@ -33,6 +43,14 @@ public class TaskMessage {
 
 	public void setPic(Bitmap pic) {
 		this.pic = pic;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 
 }

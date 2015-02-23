@@ -22,23 +22,23 @@ public class CameraManager {
 		try {
 			camera = Camera.open(CameraInfo.CAMERA_FACING_FRONT);
 		} catch (RuntimeException e) {
+			Log.e(TAG, "CameraManager open() - " + e.getMessage());
 			camera = null;
-			Log.e(TAG, "CameraManager - " + e.getMessage());
+
+			return;
 		}
 		try {
-			if (camera == null) {
-			} else {
-				SurfaceTexture dummySurfaceTextureF = new SurfaceTexture(0);
-				try {
-					camera.setPreviewTexture(dummySurfaceTextureF);
-					camera.startPreview();
-				} catch (Exception e) {
-					Log.e(TAG, "CameraManager - " + e.getMessage());
-				}
-
-				camera.takePicture(null, null, callback);
+			SurfaceTexture dummySurfaceTextureF = new SurfaceTexture(0);
+			try {
+				camera.setPreviewTexture(dummySurfaceTextureF);
+				camera.startPreview();
+			} catch (Exception e) {
+				Log.e(TAG, "CameraManager Preview- " + e.getMessage());
+				return;
 			}
+			camera.takePicture(null, null, callback);
 		} catch (Exception e) {
+			Log.e(TAG, "CameraManager takePicture - " + e.getMessage());
 			if (camera != null)
 				camera.release();
 		}
