@@ -16,14 +16,26 @@
             android:id="@+id/button1"
             android:layout_width="50sp"
             android:layout_height="50sp"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:background="@drawable/gear" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/button1"
+            android:layout_alignBottom="@+id/button1"
+            android:layout_centerHorizontal="true"
+            android:text="@string/calendar"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/orange" />
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:id="@+id/calendar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/header"
         android:background="@color/lightgray"
         android:orientation="vertical" >
@@ -33,7 +45,7 @@
             android:layout_width="fill_parent"
             android:layout_height="60sp"
             android:background="@drawable/topbar"
-            android:gravity="start|top"
+            android:gravity="left|top"
             android:height="60sp"
             android:orientation="horizontal" >
 
@@ -42,7 +54,7 @@
                 android:layout_width="20sp"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
-                android:layout_marginStart="10sp"
+                android:layout_marginLeft="10sp"
                 android:contentDescription="@string/description"
                 android:src="@drawable/calendar_left_arrow_selector" >
             </ImageView>
@@ -62,42 +74,34 @@
                 android:layout_width="20sp"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
-                android:layout_marginEnd="10sp"
+                android:layout_marginRight="10sp"
                 android:contentDescription="@string/description"
                 android:src="@drawable/calendar_right_arrow_selector" >
             </ImageView>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <GridView
+            android:id="@+id/days_week"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:orientation="horizontal" >
-
-            <GridView
-                android:id="@+id/days_week"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:numColumns="7" >
-            </GridView>
-        </LinearLayout>
+            android:numColumns="7" >
+        </GridView>
 
         <GridView
             android:id="@+id/calendar"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:numColumns="7" >
         </GridView>
     </LinearLayout>
 
     <CheckBox
-        android:id="@+id/show_all"
+        android:id="@+id/show_only_int"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="10dp"
-        android:layout_alignParentBottom="true"
-        android:text="@string/show_all_sessions" />
+        android:text="@string/show_only_int" />
 
 </RelativeLayout>

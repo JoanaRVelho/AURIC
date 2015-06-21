@@ -1,8 +1,10 @@
 package hcim.auric.recognition;
 
-import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.SettingsPreferences;
 import hcim.auric.database.configs.PicturesDatabase;
 import hcim.auric.utils.FileManager;
+import hcim.auric.utils.LogUtils;
+import hcim.auric.utils.StringGenerator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,11 +14,12 @@ import java.io.InputStream;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Rect;
 import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import android.content.Context;
@@ -33,23 +36,22 @@ import com.hcim.intrusiondetection.R;
  * @author Joana Velho
  * 
  *         An adaptation of {@link https
- *         ://github.com/ayuso2013/face-recognition}
+ *         ://github.com/ayuso2013/face-recognition/
+ *         blob/master/src/org/opencv/javacv/facerecognition/FdActivity.java}
  * 
  */
 public class FaceRecognition {
 
 	private static FaceRecognition INSTANCE;
 
-	public static final String TAG = "AURIC";
-	public static final String MY_PICTURE_TYPE = "myface";
-	public static final String INTRUDER_PICTURE_TYPE = "intruder";
-	public static final String UNKNOWN_PICTURE_TYPE = "unknown";
-	private static final String OWNER = "OWNER";
+	private static final String MY_PICTURE_TYPE = "myface";
+	private static final String INTRUDER_PICTURE_TYPE = "intruder";
+	private static final String UNKNOWN_PICTURE_TYPE = "unknown";
 
 	private static final int MIN = 0;
 
 	private File cascadeFile;
-	private CascadeClassifier cascadeClassifier;
+	private CascadeClassifier faceDetector;
 	private int absoluteFaceSize = 0;
 
 	private BaseLoaderCallback loaderCallback;
@@ -68,27 +70,10 @@ public class FaceRecognition {
 
 	/**
 	 * 
-	 * @return the object PersonRecognizer used
-	 */
-	public PersonRecognizer getRecognizer() {
-		return recognizer;
-	}
-
-	/**
-	 * 
-	 * @return the object CascadeClassifier used
-	 */
-	public CascadeClassifier getCascadeClassifier() {
-		return cascadeClassifier;
-	}
-
-	/**
-	 * 
 	 * @return maximum difference between to faces
 	 */
 	public int getMax() {
-		return ConfigurationDatabase.getInstance(context)
-				.getFaceRecognitionMax();
+		return new SettingsPreferences(context).getFaceRecognitionMax();
 	}
 
 	/**
@@ -97,7 +82,52 @@ public class FaceRecognition {
 	 * @return true if name starts with "OWNER"
 	 */
 	public static boolean matchsOwnerName(String name) {
-		return name.startsWith(OWNER);
+		return name.startsWith(StringGenerator.getOwnerPrefix());
+	}
+
+	public static String getMyPictureType() {
+		return MY_PICTURE_TYPE;
+	}
+
+	public static String getIntruderPictureType() {
+		return INTRUDER_PICTURE_TYPE;
+	}
+
+	public static String getUnknownPictureType() {
+		return UNKNOWN_PICTURE_TYPE;
+	}
+	
+	/**
+	 * Add a Picture to the Database
+	 * 
+	 * @param grayBitmap
+	 * @param name
+	 * @return true if succeeded, false otherwise
+	 */
+	public boolean trainGrayPicture(Bitmap grayBitmap, String name) {
+		Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
+		Mat equalizedMat = equalizeMat(grayMat);
+
+		MatOfRect faces = detect(equalizedMat);
+		Rect[] facesArray = faces.toArray();
+
+		boolean result;
+		if (facesArray == null || facesArray.length == 0) {
+			result = false;
+		} else {
+			Mat cropped = equalizedMat.submat(facesArray[0]); // crop
+			recognizer.addPerson(cropped, name);
+
+			cropped.release();
+			result = true;
+		}
+
+		faces.release();
+		equalizedMat.release();
+
+		grayMat.release();
+
+		return result;
 	}
 
 	/**
@@ -109,91 +139,48 @@ public class FaceRecognition {
 	 */
 	public boolean trainPicture(Bitmap rgbBitmap, String name) {
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
+		Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
+		Mat equalizedMat = equalizeMat(grayMat);
 
-		Mat rgbMat = new Mat();
-		Mat grayMat = new Mat();
-
-		Utils.bitmapToMat(rgbBitmap, rgbMat);
-		Utils.bitmapToMat(grayBitmap, grayMat);
-
-		MatOfRect faces = detect(grayMat);
+		MatOfRect faces = detect(equalizedMat);
 		Rect[] facesArray = faces.toArray();
 
 		boolean result;
 		if (facesArray == null || facesArray.length == 0) {
 			result = false;
 		} else {
-			train(facesArray, name, rgbMat);
+			Mat cropped = equalizedMat.submat(facesArray[0]); // crop
+			recognizer.addPerson(cropped, name);
+
+			cropped.release();
 			result = true;
 		}
 
-		rgbMat.release();
-		grayMat.release();
 		faces.release();
+		equalizedMat.release();
+
+		grayMat.release();
 
 		return result;
 	}
 
 	/**
-	 * Check if the bitmap is a picture of the owner pictures
+	 * Train a Mat already gray and cropped
 	 * 
-	 * @param rgbBitmap
-	 * @return true if the bitmap matches a picture of the owner and the
-	 *         difference between the two images is between FaceRecognition.MIN
-	 *         and FaceRecognition.MAX.
+	 * @param croppedGrayMat
+	 *            : cropped gray Mat of a face previously detected
+	 * @param name
+	 *            : face's name
 	 */
-	public RecognitionResult recognizePicture(Bitmap rgbBitmap) {
-		Bitmap grayBitmap = convertToGray(rgbBitmap);
+	public void trainMat(Mat croppedGrayMat, String name) {
+		LogUtils.info("croppedGrayMat= channels:" + croppedGrayMat.channels()
+				+ ", type:" + croppedGrayMat.type() + ",depth:"
+				+ croppedGrayMat.depth());
+		Mat equalizedMat = equalizeMat(croppedGrayMat);
 
-		Mat rgbMat = new Mat();
-		Mat grayMat = new Mat();
+		recognizer.addPerson(equalizedMat, name);
 
-		Utils.bitmapToMat(rgbBitmap, rgbMat);
-		Utils.bitmapToMat(grayBitmap, grayMat);
-
-		MatOfRect faces = detect(grayMat);
-		Rect[] facesArray = faces.toArray();
-
-		RecognitionResult result;
-		if (facesArray == null || facesArray.length == 0) {
-			result = new RecognitionResult();
-		} else {
-			result = recognize(facesArray, grayMat);
-		}
-
-		rgbMat.release();
-		grayMat.release();
-		faces.release();
-
-		return result;
-	}
-
-	public boolean detectFace(Bitmap rgbBitmap) {
-		Bitmap grayBitmap = convertToGray(rgbBitmap);
-
-		Mat rgbMat = new Mat();
-		Mat grayMat = new Mat();
-
-		Utils.bitmapToMat(rgbBitmap, rgbMat);
-		Utils.bitmapToMat(grayBitmap, grayMat);
-
-		MatOfRect faces = detect(grayMat);
-		Rect[] facesArray = faces.toArray();
-
-		boolean result = true;
-		if (facesArray == null || facesArray.length == 0) {
-			result = false;
-		}
-
-		rgbMat.release();
-		grayMat.release();
-		faces.release();
-
-		return result;
-	}
-
-	public void stopTrain() {
-		recognizer.train();
+		equalizedMat.release();
 	}
 
 	public void untrainPicture(String picID) {
@@ -209,66 +196,57 @@ public class FaceRecognition {
 		recognizer.untrain(picID);
 	}
 
-	public BaseLoaderCallback getLoaderCallback() {
-		return loaderCallback;
+	public void stopTrain() {
+		recognizer.train();
 	}
 
 	/**
-	 * Constructor
+	 * Check if the bitmap is a picture of the owner pictures
 	 * 
-	 * @param c
-	 *            : Application context
+	 * @param rgbBitmap
+	 * @return true if the bitmap matches a picture of the owner and the
+	 *         difference between the two images is between FaceRecognition.MIN
+	 *         and FaceRecognition.MAX.
 	 */
-	private FaceRecognition(Context c) {
-		this.context = c;
-		loaderCallback = new AuricBaseLoaderCallback(c);
+	public RecognitionResult recognizePicture(Bitmap rgbBitmap) {
+		Bitmap grayBitmap = convertToGray(rgbBitmap);
+		Mat gray16uc4 = OpenCVUtils.bitmapToMat(grayBitmap);
+		Mat grayMat = new Mat(gray16uc4.height(), gray16uc4.width(), CvType.CV_8UC1);
+		
+		Imgproc.cvtColor(gray16uc4, grayMat, Imgproc.COLOR_BGRA2GRAY);
+		Mat equalizedMat = equalizeMat(grayMat);
 
-		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
-				loaderCallback)) {
-			// Log.e(TAG,
-			// "Face Recognition - Cannot connect to OpenCV Manager");
-		}
+		MatOfRect faces = detect(equalizedMat);
+		Rect[] facesArray = faces.toArray();
 
-		getMax();
-
-		FileManager fileManager = new FileManager(c);
-		path = fileManager.getOpenCVDirectory();
-
-		File f = new File(path);
-		if (!f.exists()) {
-			boolean success = f.mkdirs();
-			if (!success) {
-				// Log.e(TAG, "Face Recognition - Error creating directory");
-			} else {
-				// Log.i(TAG, "Face Recognition - Directory created");
-			}
+		RecognitionResult result;
+		if (facesArray == null || facesArray.length == 0) {
+			result = new RecognitionResult();
 		} else {
-			// Log.i(TAG, "Face Recognition - Directory already exists");
+			result = recognize(facesArray, equalizedMat);
 		}
+
+		grayMat.release();
+		faces.release();
+		equalizedMat.release();
+
+		return result;
 	}
 
-	private MatOfRect detect(Mat gray) {
-		MatOfRect faces = new MatOfRect();
+	public RecognitionResult recognizeMat(Mat graySubMat) {
+		String match = recognizer.predict(graySubMat);
+		int difference = recognizer.getProb();
 
-		if (cascadeClassifier != null)
-			cascadeClassifier.detectMultiScale(gray, faces, 1.1, 2, 2,
-					new Size(absoluteFaceSize, absoluteFaceSize), new Size());
+		// recognizing face
+		PicturesDatabase db = PicturesDatabase.getInstance(context);
+		boolean matchOwner = db.isMyPicture(match);
+		boolean targetDifference = MIN <= difference && difference <= getMax();
+		boolean recognized = matchOwner && targetDifference;
 
-		return faces;
-	}
+		RecognitionResult result = new RecognitionResult(true, recognized,
+				match, difference);
 
-	private void train(Rect[] facesArray, String name, Mat rgbMat) {
-		Mat m = new Mat();
-		Rect r = facesArray[0];
-
-		m = rgbMat.submat(r);
-
-		// if (countImages < MAX_IMG) {
-		recognizer.add(m, name);
-		// countImages++;
-		// }
-
-		m.release();
+		return result;
 	}
 
 	/**
@@ -302,6 +280,51 @@ public class FaceRecognition {
 		return result;
 	}
 
+	public boolean detectFace(Bitmap rgbBitmap) {
+		Bitmap grayBitmap = convertToGray(rgbBitmap);
+
+		Mat rgbaMat = OpenCVUtils.bitmapToMat(rgbBitmap);
+		Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
+
+		Rect[] facesArray = getDetectedFaces(grayMat);
+
+		boolean result = true;
+		if (facesArray == null) {
+			result = false;
+		}
+
+		rgbaMat.release();
+		grayMat.release();
+
+		return result;
+	}
+
+	public Rect[] getDetectedFaces(Mat grayMat) {
+		Mat equalizedMat = equalizeMat(grayMat);
+
+		MatOfRect faces = detect(equalizedMat);
+		Rect[] facesArray = faces.toArray();
+
+		if (facesArray == null || facesArray.length == 0) {
+			return null;
+		}
+
+		faces.release();
+		equalizedMat.release();
+
+		return facesArray;
+	}
+
+	private MatOfRect detect(Mat gray) {
+		MatOfRect faces = new MatOfRect();
+
+		if (faceDetector != null)
+			faceDetector.detectMultiScale(gray, faces, 1.1, 2, 2, new Size(
+					absoluteFaceSize, absoluteFaceSize), new Size());
+
+		return faces;
+	}
+
 	/**
 	 * Converts a RGB bitmap into a gray bitmap
 	 * 
@@ -327,13 +350,58 @@ public class FaceRecognition {
 		return bmpGrayscale;
 	}
 
+	private Mat equalizeMat(Mat gray) {
+		Mat result = new Mat(gray.height(), gray.width(), CvType.CV_8UC1);
+		Imgproc.equalizeHist(gray, result);
+		LogUtils.info("equalized");
+		return result;
+	}
+
+	public BaseLoaderCallback getLoaderCallback() {
+		return loaderCallback;
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param c
+	 *            : Application context
+	 */
+	private FaceRecognition(Context c) {
+		this.context = c;
+		loaderCallback = new Loader(c);
+
+		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
+				loaderCallback)) {
+			// Log.e(TAG,
+			// "Face Recognition - Cannot connect to OpenCV Manager");
+		}
+
+		getMax();
+
+		FileManager fileManager = new FileManager(c);
+		path = fileManager.getOpenCVDirectory();
+
+		File f = new File(path);
+		if (!f.exists()) {
+			boolean success = f.mkdirs();
+			if (!success) {
+				// Log.e(TAG, "Face Recognition - Error creating directory");
+			} else {
+				// Log.i(TAG, "Face Recognition - Directory created");
+			}
+		} else {
+			// Log.i(TAG, "Face Recognition - Directory already exists");
+		}
+	}
+
 	/**
 	 * Class AuricBaseLoaderCallback that extends BaseLoaderCallback
 	 * 
 	 * @author Joana Velho
 	 * 
 	 */
-	private class AuricBaseLoaderCallback extends BaseLoaderCallback {
+	private class Loader extends BaseLoaderCallback {
 		private Context c;
 
 		/**
@@ -342,7 +410,7 @@ public class FaceRecognition {
 		 * @param c
 		 *            : Application context
 		 */
-		AuricBaseLoaderCallback(Context c) {
+		Loader(Context c) {
 			super(c);
 			this.c = c;
 		}
@@ -351,42 +419,34 @@ public class FaceRecognition {
 		public void onManagerConnected(int status) {
 			switch (status) {
 			case LoaderCallbackInterface.SUCCESS: {
-				// Log.d(TAG, "Face Recognition - OpenCV loaded successfully");
-
 				recognizer = new PersonRecognizer(path);
-				recognizer.load();
+				recognizer.train();
 
 				try {
-					InputStream is = c.getResources().openRawResource(
+					InputStream inFace = c.getResources().openRawResource(
 							R.raw.lbpcascade_frontalface);
-					File cascadeDir = c.getDir("cascade", Context.MODE_PRIVATE);
+					File cascadeDir = c.getDir("cascadeFace",
+							Context.MODE_PRIVATE);
 					cascadeFile = new File(cascadeDir, "lbpcascade.xml");
-					FileOutputStream os = new FileOutputStream(cascadeFile);
+					FileOutputStream outFace = new FileOutputStream(cascadeFile);
 
 					byte[] buffer = new byte[4096];
 					int bytesRead;
-					while ((bytesRead = is.read(buffer)) != -1) {
-						os.write(buffer, 0, bytesRead);
+					while ((bytesRead = inFace.read(buffer)) != -1) {
+						outFace.write(buffer, 0, bytesRead);
 					}
-					is.close();
-					os.close();
+					inFace.close();
+					outFace.close();
 
-					cascadeClassifier = new CascadeClassifier(
+					faceDetector = new CascadeClassifier(
 							cascadeFile.getAbsolutePath());
-					if (cascadeClassifier.empty()) {
-						// Log.e(TAG,
-						// "Face Recognition - Failed to load cascade classifier");
-						cascadeClassifier = null;
-					} else {
-						// Log.d(TAG,
-						// "Face Recognition - Loaded cascade classifier from "
-						// + cascadeFile.getAbsolutePath());
+					if (faceDetector.empty()) {
+						faceDetector = null;
 					}
 					cascadeDir.delete();
 
 				} catch (IOException e) {
-					// Log.e(TAG, "Face Recognition - Failed to load cascade. "
-					// + "Exception thrown: " + e);
+					LogUtils.exception(e);
 				}
 			}
 				break;

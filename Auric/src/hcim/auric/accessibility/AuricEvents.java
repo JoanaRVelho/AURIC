@@ -1,9 +1,7 @@
 package hcim.auric.accessibility;
 
-import hcim.auric.detector.AppDetector;
-import hcim.auric.detector.DetectorManager;
 import hcim.auric.record.RecorderManager;
-import hcim.auric.record.events.RecordEvents;
+import hcim.auric.record.events.EventRecorder;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
@@ -18,19 +16,35 @@ import android.view.accessibility.AccessibilityEvent;
  * 
  */
 public class AuricEvents extends AccessibilityService {
-	
+	private volatile static boolean stop;
+
+	public static void start() {
+		stop = false;
+	}
+
+	public static void stop() {
+		stop = true;
+	}
+
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		RecordEvents recorder = RecordEvents.getInstance(this);
-		
-		if (recorder != null) {
-			recorder.onAccessibilityEvent(event);
+		if (stop) {
+			return;
 		}
 
-		AppDetector appDetector = AppDetector.getInstance(this
-				.getApplicationContext());
-		if (appDetector != null)
-			appDetector.onAccessibilityEvent(event);
+		EventRecorder recorder = EventRecorder.getInstance();
+
+		if (recorder != null) {
+			recorder.onAccessibilityEvent(event);
+
+			//TODO delete all  
+//			String packageName = event.getPackageName().toString();
+//			String text = Converter.listCharSequenceToString(event.getText());
+//			String time = String.valueOf(event.getEventTime());
+//			String log = "[text=" + text + ", packageName=" + packageName
+//					+ ", time=" + time + ", type=" + event.getEventType() + "]";
+//			Log.d("AURIC", log);
+		}
 	}
 
 	@Override
@@ -48,22 +62,19 @@ public class AuricEvents extends AccessibilityService {
 		serviceInfo.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
 
 		setServiceInfo(serviceInfo);
+
+		stop = true;
 	}
 
-	public static boolean hasAccessibilityService(String recorder,
-			String detector) {
+	public static boolean hasAccessibilityService(String recorder) {
 		if (recorder.equals(RecorderManager.EVENT_BASED)) {
-			return true;
-		}
-		if (detector.equals(DetectorManager.APPS)) {
 			return true;
 		}
 		return false;
 	}
 
 	public static boolean accessibilityServiceEnabled(Context c) {
-		boolean b = checkAccessibilitySettings(
-				c,
+		boolean b = checkAccessibilitySettings(c,
 				"com.hcim.intrusiondetection/hcim.auric.accessibility.AuricEvents");
 		return b;
 	}

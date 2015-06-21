@@ -6,9 +6,9 @@ import hcim.auric.detector.IDetector;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.Session;
 import hcim.auric.recognition.RecognitionResult;
+import hcim.auric.utils.Converter;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 /**
  * During a session, this task is always checking who the operator is and
@@ -17,9 +17,10 @@ import android.util.Log;
  * @author Joana Velho
  * 
  */
-public class DeviceSharingStrategy extends FaceRecognitionStrategy {
+public class DeviceSharingStrategy extends AbstractStrategy {
 	protected long timestamp;
 	private DetectorByFaceRecognition detector;
+	private boolean first;
 
 	public DeviceSharingStrategy(Context context, AuditQueue queue, int n) {
 		super(context);
@@ -36,10 +37,9 @@ public class DeviceSharingStrategy extends FaceRecognitionStrategy {
 	public void actionOn() {
 		detector.start();
 
-		currentSession = new Session();
-		timestamp = System.currentTimeMillis();
-		currentIntrusion = null;
-
+		currentSession = new Session(getRecorder().type());
+		currentIntrusion = new Intrusion();
+		first = true;
 		recorder.start(currentIntrusion.getID());
 	}
 
@@ -48,15 +48,14 @@ public class DeviceSharingStrategy extends FaceRecognitionStrategy {
 		if (currentIntrusion != null) {
 			recorder.stop();
 			detector.stop();
-			Log.d(TAG, "AuditTask - stop logging");
 
-			intrusionsDB.insertIntrusionData(currentIntrusion);
+			sessionsDB.insertIntrusionData(currentIntrusion);
 			currentIntrusion = null;
 
 			notifier.cancelNotification();
 		}
 
-		if (currentSession.hasIntrusions()) {
+		if (!currentSession.isEmpty()) {
 			sessionsDB.insertSession(currentSession);
 		}
 		currentSession = null;
@@ -64,26 +63,27 @@ public class DeviceSharingStrategy extends FaceRecognitionStrategy {
 
 	@Override
 	public void actionResult(boolean intrusion) {
-		String recorderType = recorder.type();
-
+		// FIXME
 		if (intrusion) {
 			notifier.notifyUser();
 
-			if (currentIntrusion == null) {
-				currentIntrusion = new Intrusion(recorderType, timestamp);
-				recorder.start(currentIntrusion.getID());
-				currentSession.addInteraction(currentIntrusion);
-				currentSession.setTagIntrusion(true);
-			}
-			intrusionsDB.updatePicturesUnknownIntrusion(currentIntrusion
-					.getID());
+			if (first) {
+				currentSession.addIntrusion(currentIntrusion);
+				currentSession.flagAsIntrusion();
+				notifier.notifyUser();
+				sessionsDB.updatePicturesUnknownIntrusion(currentIntrusion
+						.getID());
+			} else {
+				if (currentIntrusion == null) {
 
+				}
+			}
 		} else { // isn't an intrusion
 			notifier.cancelNotification();
 
 			if (currentIntrusion != null) { // first
-				intrusionsDB.insertIntrusionData(currentIntrusion);
-				intrusionsDB.deletePicturesUnknownIntrusion();
+				sessionsDB.insertIntrusionData(currentIntrusion);
+				sessionsDB.deletePicturesUnknownIntrusion();
 				currentIntrusion = null;
 			}
 		}
@@ -92,12 +92,13 @@ public class DeviceSharingStrategy extends FaceRecognitionStrategy {
 	}
 
 	@Override
-	public void actionNewPicture(Bitmap bmp) {
-		if (bmp != null) {
-			RecognitionResult result = detector.newData(bmp);
-			intrusionsDB.insertPictureUnknownIntrusion(bmp, result);
-		} else {
-			Log.e(TAG, "DeviceSharingStrategy - Bitmap is null");
+	public void actionNewData(byte[] data) {
+		if (data != null) {
+			Bitmap original = Converter.decodeCameraDataToBitmap(data);
+			Bitmap small = Converter.decodeCameraDataToSmallBitmap(data);
+
+			RecognitionResult result = detector.newData(original);
+			sessionsDB.insertPictureUnknownIntrusion(small, result);
 		}
 	}
 

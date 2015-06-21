@@ -1,7 +1,7 @@
 package hcim.auric.database.intrusions;
 
 import hcim.auric.intrusion.Intrusion;
-import hcim.auric.intrusion.IntrusionFactory;
+import hcim.auric.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class SQLiteIntrusionData extends SQLiteOpenHelper {
 
@@ -22,10 +21,9 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	private static final String KEY_ID = "id";
 	private static final String KEY_DATE = "date";
 	private static final String KEY_TIME = "time";
-	private static final String KEY_LOG = "log_type";
 	private static final String KEY_TAG = "tag";
 	private static final String[] COLUMNS = { KEY_ID, KEY_DATE, KEY_TIME,
-			KEY_TAG, KEY_LOG };
+			KEY_TAG };
 
 	public SQLiteIntrusionData(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,8 +33,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_INTRUSION_TABLE = "CREATE TABLE " + TABLE_INTRUSIONS
 				+ " ( " + KEY_ID + " TEXT PRIMARY KEY, " + KEY_DATE + " TEXT, "
-				+ KEY_TIME + " TEXT, " + KEY_TAG + " INTEGER, " + KEY_LOG
-				+ " TEXT )";
+				+ KEY_TIME + " TEXT, " + KEY_TAG + " INTEGER )";
 
 		db.execSQL(CREATE_INTRUSION_TABLE);
 	}
@@ -56,7 +53,6 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		values.put(KEY_DATE, i.getDate());
 		values.put(KEY_TIME, i.getTime());
 		values.put(KEY_TAG, i.getTag());
-		values.put(KEY_LOG, i.getLogType());
 
 		db.insert(TABLE_INTRUSIONS, null, values);
 
@@ -77,9 +73,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 			return null;
 		}
 
-		Intrusion intrusion = IntrusionFactory.createIntrusion(
-				cursor.getString(0), cursor.getString(1), cursor.getString(2),
-				cursor.getInt(3), cursor.getString(4));
+		Intrusion intrusion = assembleIntrusion(cursor);
 
 		db.close();
 
@@ -101,8 +95,6 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		Cursor cursor = db.query(true, TABLE_INTRUSIONS, COLUMNS, KEY_DATE
 				+ "='" + date + "'", null, null, null, null, null);
 
-		Intrusion i = null;
-
 		if (cursor == null) {
 			db.close();
 			return null;
@@ -114,11 +106,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 				return null;
 			}
 			do {
-				i = IntrusionFactory.createIntrusion(cursor.getString(0),
-						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3), cursor.getString(4));
-
-				result.add(i);
+				result.add(assembleIntrusion(cursor));
 			} while (cursor.moveToNext());
 		}
 		db.close();
@@ -137,17 +125,15 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery("select * from " + TABLE_INTRUSIONS, null);
 		Intrusion i;
-		Log.d("AURIC", "print all intrusions");
+		LogUtils.debug("Print all intrusions:");
 
 		if (cursor.moveToFirst()) {
 			if (cursor.getCount() <= 0) {
 				db.close();
 			}
 			do {
-				i = IntrusionFactory.createIntrusion(cursor.getString(0),
-						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3), cursor.getString(4));
-				Log.d("AURIC", i.toString());
+				i = assembleIntrusion(cursor);
+				LogUtils.debug(i.toString());
 
 			} while (cursor.moveToNext());
 		}
@@ -170,9 +156,7 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 				return null;
 			}
 			do {
-				i = IntrusionFactory.createIntrusion(cursor.getString(0),
-						cursor.getString(1), cursor.getString(2),
-						cursor.getInt(3), cursor.getString(4));
+				i = assembleIntrusion(cursor);
 				result.add(i);
 
 			} while (cursor.moveToNext());
@@ -180,6 +164,31 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 		db.close();
 
 		return result;
+	}
+
+	public List<Intrusion> getAllIntrusions() {
+		List<Intrusion> result = new ArrayList<Intrusion>();
+	
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery("select * from " + TABLE_INTRUSIONS, null);
+	
+		if (cursor.moveToFirst()) {
+			if (cursor.getCount() <= 0) {
+				db.close();
+			}
+			do {
+				result.add(assembleIntrusion(cursor));
+	
+			} while (cursor.moveToNext());
+		}
+		db.close();
+	
+		return result;
+	}
+
+	private Intrusion assembleIntrusion(Cursor cursor) {
+		return new Intrusion(cursor.getString(0), cursor.getString(1),
+				cursor.getString(2), cursor.getInt(3));
 	}
 
 	public int numberOfIntrusions(int severity) {
@@ -198,5 +207,11 @@ public class SQLiteIntrusionData extends SQLiteOpenHelper {
 
 		db.close();
 
+	}
+
+	public void deleteAll() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.execSQL("DELETE FROM " + TABLE_INTRUSIONS);
+		db.close();
 	}
 }

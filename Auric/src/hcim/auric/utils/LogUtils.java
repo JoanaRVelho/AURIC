@@ -9,12 +9,16 @@ public class LogUtils {
 		Log.e(TAG, e.getMessage());
 	}
 
-	public static void d(String s) {
+	public static void debug(String s) {
 		Log.d(TAG, s);
 	}
 	
-	public static void i(String s) {
+	public static void info(String s) {
 		Log.i(TAG, s);
+	}
+	
+	public static void error(String s) {
+		Log.e(TAG, s);
 	}
 
 }

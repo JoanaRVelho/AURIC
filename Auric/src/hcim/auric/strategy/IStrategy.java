@@ -2,11 +2,8 @@ package hcim.auric.strategy;
 
 import hcim.auric.detector.IDetector;
 import hcim.auric.record.IRecorder;
-import android.graphics.Bitmap;
 
 public interface IStrategy {
-	public final String TAG = "AURIC";
-	
 	public IRecorder getRecorder();
 	
 	public IDetector getDetector();
@@ -15,7 +12,7 @@ public interface IStrategy {
 
 	public void actionOff();
 
-	public void actionNewPicture(Bitmap bmp);
+	public void actionNewData(byte[] data);
 
 	public void actionResult(boolean intrusion);
 

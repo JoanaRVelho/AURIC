@@ -3,6 +3,7 @@ package hcim.auric.utils;
 import java.io.File;
 
 import android.content.Context;
+import android.os.StatFs;
 
 public class FileManager {
 
@@ -23,44 +24,90 @@ public class FileManager {
 	}
 
 	/**
-	 * @return opencv's directory path 
+	 * @return field study folder path
+	 */
+	public String getFieldStudyFolder() {
+		String result = getPrivateExternal() + File.separator + "field_study";
+		
+		File dir = new File(result);
+		if(!dir.exists())
+			dir.mkdir();
+		return result;
+	}
+	
+	public String getOpenAppFile(){
+		return getFieldStudyFolder() + File.separator + "openFile.txt";
+	}
+
+	public boolean isFieldStudyDataStored(String sessionID) {
+		File f = new File(getFieldStudyFile(sessionID));
+		return f.exists();
+	}
+
+	/**
+	 * @return field study folder path
+	 */
+	public String getFieldStudyFile(String sessionID) {
+		return getFieldStudyFolder() + File.separator + sessionID;
+	}
+
+	/**
+	 * @return opencv's directory path
 	 */
 	public String getOpenCVDirectory() {
 		return getPrivateExternal() + File.separator + "face_recognition";
 	}
 
-
-	private String getIntrusionRootDirectory() {
-		return getPrivateExternal() + File.separator + "intrusions";
-	}
-
-
 	/**
 	 * 
-	 * @param intrusionID
-	 * @return intrusion directory path 
+	 * @return base path
 	 */
-	public String getIntrusionDirectory(String intrusionID) {
-		return getIntrusionRootDirectory() + File.separator + intrusionID;
+	private String getSessionsRootDirectory() {
+		return getPrivateExternal() + File.separator + "sessions";
 	}
 
 	/**
 	 * 
-	 * @param intrusionID 
-	 * @param number : screenshot number
+	 * @param sessionID
+	 * @return session directory path
+	 */
+	public String getSessionDirectory(String sessionID) {
+		return getSessionsRootDirectory() + File.separator + sessionID;
+	}
+
+	/**
+	 * 
+	 * @param sessionID
+	 * @param number
+	 *            : screenshot number
 	 * @return screenshot path
 	 */
-	public String getScreenshot(String intrusionID, int number) {
-		return getIntrusionDirectory(intrusionID) + File.separator + number
-				+ PNG;
+	public String getScreenshotPath(String sessionID, int number) {
+		return getSessionDirectory(sessionID) + File.separator + number + PNG;
 	}
-	
+
+	public boolean hasSpaceAvailableInOpenCVDirectory(int sizeInBytes) {
+		return hasSpaceAvailable(getOpenCVDirectory(), sizeInBytes);
+	}
+
+	public boolean hasSpaceAvailableInScreenshotsDirectory(int sizeInBytes) {
+		return hasSpaceAvailable(getOpenCVDirectory(), sizeInBytes);
+	}
+
 	/**
+	 * Checks if there is enough space to store data
 	 * 
-	 * @param intrusionID 
-	 * @return log path
+	 * @param directory
+	 *            : directory path where the data is going to be stored
+	 * @param sizeInBytes
+	 *            : size of data to be stored in bytes
+	 * @return
 	 */
-	public String getIntrusionLog(String intrusionID){
-		return getIntrusionDirectory(intrusionID) + File.separator + "log"; 
+	@SuppressWarnings("deprecation")
+	private static boolean hasSpaceAvailable(String directory, int sizeInBytes) {
+		StatFs stat = new StatFs(directory);
+		long bytesAvailable = (long) stat.getBlockSize()
+				* (long) stat.getAvailableBlocks();
+		return bytesAvailable < sizeInBytes;
 	}
 }

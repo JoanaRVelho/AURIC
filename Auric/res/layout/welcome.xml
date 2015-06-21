@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/button_design"
         android:onClick="startConfiguration"
         android:text="@string/startconfig"
@@ -35,11 +35,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView1"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:contentDescription="@string/description"
         android:adjustViewBounds="true"
-        android:src="@drawable/official_icon" />
+        android:src="@drawable/perfect_icon" />
 
     <TextView
         android:id="@+id/textView2"
@@ -47,11 +47,12 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/letsstart"
         android:layout_centerHorizontal="true"
+        android:layout_below="@+id/imageView1"
         android:gravity="center"
         android:text="@string/brief"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="15dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/darkorange" />
 

@@ -1,0 +1,5 @@
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeNotificationStateChanged"
+    android:accessibilityFeedbackType="feedbackSpoken"
+    android:description="@string/access_service"
+    android:notificationTimeout="100" />

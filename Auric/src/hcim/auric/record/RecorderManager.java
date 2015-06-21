@@ -1,8 +1,9 @@
 package hcim.auric.record;
 
-import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.SettingsPreferences;
 import hcim.auric.record.events.EventRecorder;
 import hcim.auric.record.screencast.ScreencastRecorder;
+import hcim.auric.utils.HeterogeneityManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,13 @@ public class RecorderManager {
 	static {
 		recorders = new ArrayList<String>();
 		recorders.add(EVENT_BASED);
-//		recorders.add(SCREENCAST_ROOT);
+		if (HeterogeneityManager.isRooted())
+			recorders.add(SCREENCAST_ROOT);
 	}
 
 	public static IRecorder getSelectedRecorder(Context context) {
-		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
-		String type = db.getRecorderType();
+		SettingsPreferences s = new SettingsPreferences(context);
+		String type = s.getRecorderType();
 		if (type != null) {
 			if (type.equals(SCREENCAST_ROOT))
 				return new ScreencastRecorder(context);

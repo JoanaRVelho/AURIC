@@ -2,6 +2,7 @@ package hcim.auric.database.configs;
 
 import hcim.auric.recognition.FaceRecognition;
 import hcim.auric.recognition.Picture;
+import hcim.auric.utils.LogUtils;
 
 import java.util.List;
 
@@ -29,7 +30,6 @@ public class PicturesDatabase {
 		if (pictureDB != null) {
 			pictureDB.insertPicture(p);
 		}
-		printList();
 	}
 
 	public List<Picture> getAllPictures() {
@@ -57,7 +57,7 @@ public class PicturesDatabase {
 		if (pictureDB != null) {
 			String type = pictureDB.getPictureType(id);
 
-			return type != null && type.equals(FaceRecognition.MY_PICTURE_TYPE);
+			return type != null && type.equals(FaceRecognition.getMyPictureType());
 		}
 		return false;
 	}
@@ -82,6 +82,8 @@ public class PicturesDatabase {
 			for (Picture p : list) {
 				s.append(p.toString() + "\n");
 			}
+
+			LogUtils.debug(s.toString());
 		}
 	}
 

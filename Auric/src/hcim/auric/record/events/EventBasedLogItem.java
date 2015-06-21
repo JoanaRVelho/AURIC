@@ -1,5 +1,6 @@
 package hcim.auric.record.events;
 
+import hcim.auric.accessibility.EventManager;
 import hcim.auric.recognition.Picture;
 import hcim.auric.utils.Converter;
 import hcim.auric.utils.TimeManager;
@@ -14,8 +15,15 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.view.accessibility.AccessibilityEvent;
 
+/**
+ * 
+ * @author Joana Velho
+ * 
+ */
 public class EventBasedLogItem {
 	static final String TAG = "AURIC";
+
+	private static final String PHONE = "com.android.phone";
 
 	private int id;
 	private String appName;
@@ -23,6 +31,7 @@ public class EventBasedLogItem {
 	private ArrayList<String> details;
 	private List<Picture> pictures;
 	private Drawable icon;
+	private int eventType;
 
 	// attributes used for showing results
 	private int colorRes;
@@ -35,10 +44,37 @@ public class EventBasedLogItem {
 		this.packageName = event.getPackageName().toString();
 		this.appName = getAppName(packageName, context);
 		this.details = new ArrayList<String>();
-		String aux = Converter.listCharSequenceToString(event.getText());
 
-		if (!aux.equals(""))
-			this.details.add(aux);
+		this.eventType = event.getEventType();
+
+		if (EventManager.hasDetails(eventType)) {
+			String s = processDetails(event);
+
+			if (s != null && !s.equals(""))
+				details.add(s);
+		} else if (packageName.equals(PHONE)) {
+			String aux = Converter.listCharSequenceToString(event.getText());
+			if (aux != null && !aux.equals("")) {
+				details.add(aux);
+			}
+		}
+	}
+
+	public static String processDetails(AccessibilityEvent event) {
+		CharSequence seq = event.getContentDescription();
+		String contentDescription = seq == null ? "" : seq.toString();
+
+		String prefix = EventManager.getPrefix(event.getEventType());
+
+		if (contentDescription.equals("")) {
+			String aux = Converter.listCharSequenceToString(event.getText());
+
+			if (!aux.equals("")) {
+				return (prefix + "\"" + aux + "\"");
+			} else
+				return "";
+		}
+		return (prefix + "\"" + contentDescription + "\"");
 	}
 
 	public EventBasedLogItem(Context c, int id, String appName, String time,
@@ -70,6 +106,10 @@ public class EventBasedLogItem {
 
 	public int getId() {
 		return id;
+	}
+
+	public int getEventType() {
+		return eventType;
 	}
 
 	public boolean nothingToShow() {
@@ -109,10 +149,12 @@ public class EventBasedLogItem {
 	}
 
 	public String detailsToString() {
+		if (details == null || details.isEmpty())
+			return "nothing to show";
+
 		StringBuilder builder = new StringBuilder();
 
 		for (String s : details) {
-			builder.append("User tapped on ");
 			builder.append(s);
 			builder.append("\n\n");
 		}
@@ -181,7 +223,11 @@ public class EventBasedLogItem {
 		if (info == null)
 			return "UNKNOWN";
 
-		String result = pm.getApplicationLabel(info).toString();
+		CharSequence seq = pm.getApplicationLabel(info);
+		if (seq == null)
+			return "UNKNOWN";
+
+		String result = seq.toString();
 
 		if (result.equals("")) {
 			return "UNKNOWN";
@@ -215,4 +261,5 @@ public class EventBasedLogItem {
 	public void setIntrusionID(String intrusionID) {
 		this.intrusionID = intrusionID;
 	}
+
 }

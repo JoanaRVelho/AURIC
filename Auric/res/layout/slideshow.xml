@@ -34,9 +34,10 @@
         android:id="@+id/type_pic"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignBottom="@+id/intruder_pict"
         android:contentDescription="@string/description"
+        android:visibility="gone"
         android:src="@drawable/black" />
 
     <TextView
@@ -55,8 +56,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignBottom="@+id/intruder_pict"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
         android:background="@drawable/trash_button"
         android:visibility="invisible" />
 

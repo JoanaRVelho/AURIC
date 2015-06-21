@@ -1,8 +1,8 @@
 package hcim.auric.record.events;
 
-import hcim.auric.activities.images.SlideShowSetOfPictures;
 import hcim.auric.database.intrusions.EventBasedLogDatabase;
-import hcim.auric.database.intrusions.IntrusionsDatabase;
+import hcim.auric.database.intrusions.SessionDatabase;
+import hcim.auric.general_activities.images.SlideShowSetOfPictures;
 import hcim.auric.recognition.Picture;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class Details extends Activity {
 	}
 
 	private void addPictures(List<String> pics, LinearLayout intruder) {
-		IntrusionsDatabase db = IntrusionsDatabase.getInstance(this);
+		SessionDatabase db = SessionDatabase.getInstance(this);
 		Picture p;
 		int i = 0; 
 		for (String id : pics) {

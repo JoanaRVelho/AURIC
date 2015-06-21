@@ -45,6 +45,11 @@ public class CalendarManager {
 				+ c.get(Calendar.YEAR);
 	}
 
+	public static String currentDay() {
+		Calendar c = Calendar.getInstance();
+		return c.get(Calendar.DAY_OF_MONTH)+"";
+	}
+
 	public static String currentMonth() {
 		Calendar c = Calendar.getInstance();
 		return CalendarManager.getMonthAsString(c.get(Calendar.MONTH));

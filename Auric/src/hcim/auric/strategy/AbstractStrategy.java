@@ -1,6 +1,5 @@
 package hcim.auric.strategy;
 
-import hcim.auric.database.intrusions.IntrusionsDatabase;
 import hcim.auric.database.intrusions.SessionDatabase;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.Session;
@@ -12,14 +11,12 @@ import android.content.Context;
 public abstract class AbstractStrategy implements IStrategy {
 	protected Session currentSession;
 	protected Intrusion currentIntrusion;
-	protected IntrusionsDatabase intrusionsDB;
 	protected SessionDatabase sessionsDB;
 
 	protected IntrusionNotifier notifier;
 	protected IRecorder recorder;
 
 	public AbstractStrategy(Context context) {
-		this.intrusionsDB = IntrusionsDatabase.getInstance(context);
 		this.sessionsDB = SessionDatabase.getInstance(context);
 		this.currentIntrusion = null;
 		this.currentSession = null;

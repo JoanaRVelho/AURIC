@@ -12,6 +12,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -40,6 +41,37 @@ public class Converter {
 		}
 	}
 
+	public static Bitmap decodeCameraDataToBitmap(byte[] data) {
+		BitmapFactory.Options config = new BitmapFactory.Options();
+		config.inPreferredConfig = Bitmap.Config.RGB_565;
+
+		Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length,
+				config);
+		bitmap = rotateBitmap(bitmap);
+		return bitmap;
+	}
+
+	public static Bitmap decodeCameraDataToSmallBitmap(byte[] data) {
+		BitmapFactory.Options config = new BitmapFactory.Options();
+		config.inPreferredConfig = Bitmap.Config.RGB_565;
+		config.inSampleSize = 2;
+
+		Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length, config);
+		bm = rotateBitmap(bm);
+		return bm;
+	}
+
+	public static Bitmap rotateBitmap(Bitmap source) {
+		return rotateBitmap(source, 270);
+	}
+
+	private static Bitmap rotateBitmap(Bitmap source, float angle) {
+		Matrix matrix = new Matrix();
+		matrix.postRotate(angle);
+		return Bitmap.createBitmap(source, 0, 0, source.getWidth(),
+				source.getHeight(), matrix, true);
+	}
+
 	public static Bitmap byteArrayToBitmap(byte[] array) {
 		Bitmap bitmap = BitmapFactory.decodeByteArray(array, 0, array.length);
 		return bitmap;
@@ -56,7 +88,7 @@ public class Converter {
 	public static Bitmap drawableToBitmap(Drawable drawable) {
 		if (drawable == null)
 			return null;
-		
+
 		if (drawable instanceof BitmapDrawable) {
 			return ((BitmapDrawable) drawable).getBitmap();
 		}
@@ -71,10 +103,20 @@ public class Converter {
 	}
 
 	public static String listCharSequenceToString(List<CharSequence> text) {
+		if (text == null || text.isEmpty())
+			return "";
+
 		StringBuilder sb = new StringBuilder();
 		for (CharSequence s : text) {
-			sb.append(s);
+			if (!(s.length() == 1 && s.charAt(0) == '\n')) {
+				sb.append(s);
+				sb.append("\n");
+			}
 		}
+
+		if (sb.charAt(sb.length() - 1) == '\n')
+			return sb.substring(0, sb.length() - 1);
+
 		return sb.toString();
 	}
 }

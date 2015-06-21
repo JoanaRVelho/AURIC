@@ -9,7 +9,7 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true" >
+        android:layout_alignParentLeft="true" >
 
         <Switch
             android:id="@+id/on_off"
@@ -26,7 +26,7 @@
         android:id="@+id/config_scroll"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/header"
         android:layout_marginTop="10dp" >
 
@@ -37,33 +37,15 @@
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
-            <CheckBox
-                android:id="@+id/checkBox1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/mode_spinner"
-                android:text="@string/device_sharing"
-                android:visibility="gone" />
-
-            <CheckBox
-                android:id="@+id/checkBoxRecord"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/log_options"
-                android:text="@string/record_all"
-                android:visibility="gone" />
-
             <TextView
                 android:id="@+id/mode_title"
                 android:layout_width="fill_parent"
                 android:layout_height="25sp"
-                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@color/sky"
                 android:gravity="center"
-                android:text="@string/mode"
+                android:text="@string/detection"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#FFF" />
 
@@ -71,33 +53,51 @@
                 android:id="@+id/mode_spinner"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/mode_title"
-                android:layout_marginTop="14dp" />
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/mode_title" />
 
             <CheckBox
                 android:id="@+id/hide_not"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/mode_spinner"
-                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:text="@string/hide_not" />
+
+            <TextView
+                android:id="@+id/strategy_title"
+                android:layout_width="fill_parent"
+                android:layout_height="25sp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/rate_number_picker"
+                android:layout_marginTop="12dp"
+                android:background="@color/sky"
+                android:gravity="center"
+                android:text="@string/strategy"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#FFF" />
+
+            <Spinner
+                android:id="@+id/strategy_spinner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/strategy_title" />
 
             <Spinner
                 android:id="@+id/log_options"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/log_type_title"
-                android:layout_marginTop="15dp" />
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/log_type_title" />
 
             <TextView
                 android:id="@+id/passcode_title"
                 android:layout_width="fill_parent"
                 android:layout_height="25sp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/rate_number_picker"
-                android:layout_marginTop="16dp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/log_options"
+                android:layout_marginTop="12dp"
                 android:background="@color/sky"
                 android:gravity="center"
                 android:text="@string/passcode_title"
@@ -108,9 +108,9 @@
                 android:id="@+id/change_passcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_below="@+id/switch_passcode"
-                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/button_design"
                 android:text="@string/passcode_change"
@@ -121,14 +121,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/change_passcode" />
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/deleteAll" />
 
             <Switch
                 android:id="@+id/switch_passcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:layout_below="@+id/passcode_title"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
@@ -139,9 +139,9 @@
                 android:id="@+id/log_type_title"
                 android:layout_width="fill_parent"
                 android:layout_height="25sp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/hide_not"
-                android:layout_marginTop="16dp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/strategy_spinner"
+                android:layout_marginTop="12dp"
                 android:background="@color/sky"
                 android:gravity="center"
                 android:text="@string/record_type"
@@ -149,29 +149,14 @@
                 android:textColor="@color/white" />
 
             <TextView
-                android:id="@+id/rate_title"
-                android:layout_width="fill_parent"
-                android:layout_height="25sp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/checkBoxRecord"
-                android:layout_marginTop="16dp"
-                android:background="@color/sky"
-                android:gravity="center"
-                android:text="@string/rate"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#FFF"
-                android:visibility="gone" />
-
-            <TextView
                 android:id="@+id/rate_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/rate_title"
+                android:layout_below="@+id/hide_not"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
-                android:text="@string/ratedesc"
-                android:visibility="gone" />
+                android:text="@string/ratedesc" />
 
             <NumberPicker
                 android:id="@+id/rate_number_picker"
@@ -179,8 +164,7 @@
                 android:layout_height="110dp"
                 android:layout_below="@+id/rate_desc"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp"
-                android:visibility="gone" />
+                android:layout_marginTop="15dp" />
 
             <TextView
                 android:id="@+id/number_pictures"
@@ -193,20 +177,6 @@
                 android:text="@string/number_pictures"
                 android:visibility="gone" />
 
-            <Button
-                android:id="@+id/select_apps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/mode_spinner"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/button_design"
-                android:gravity="center"
-                android:onClick="appsActivity"
-                android:text="@string/select_apps"
-                android:textColor="@color/white"
-                android:visibility="gone" />
-
             <NumberPicker
                 android:id="@+id/pictures_number_picker"
                 android:layout_width="50dp"
@@ -215,6 +185,17 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:visibility="gone" />
+
+            <Button
+                android:id="@+id/deleteAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/change_passcode"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/button_design"
+                android:text="@string/delete_all"
+                android:textColor="@color/white" />
         </RelativeLayout>
     </ScrollView>
 

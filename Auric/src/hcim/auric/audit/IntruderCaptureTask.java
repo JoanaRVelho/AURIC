@@ -1,8 +1,8 @@
 package hcim.auric.audit;
 
-import hcim.auric.camera.CameraManager;
-import hcim.auric.camera.FrontPictureCallback;
-import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.camera.inconspicuous.CameraManager;
+import hcim.auric.camera.inconspicuous.FrontPictureCallback;
+import hcim.auric.database.SettingsPreferences;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,12 +14,11 @@ public class IntruderCaptureTask {
 
 	private TimerTask timerTask;
 	private Timer timer;
-	private boolean stop;
 	private int cameraPeriod;
 
 	public IntruderCaptureTask(AuditQueue queue, Context context) {
 		this.camera = new CameraManager(new FrontPictureCallback(queue));
-		ConfigurationDatabase db = ConfigurationDatabase.getInstance(context);
+		SettingsPreferences db = new SettingsPreferences(context);
 
 		this.cameraPeriod = db.getCameraPeriod();
 	}
@@ -30,25 +29,24 @@ public class IntruderCaptureTask {
 
 				@Override
 				public void run() {
-					if (!stop)
-						camera.takePicture();
+					camera.takePicture();
 				}
 			};
-			stop = false;
 			timer = new Timer();
 			timer.schedule(timerTask, cameraPeriod);
-		}else{
+		} else {
 			camera.takePicture();
 		}
 	}
 
 	public void stop() {
-		stop = true;
-		if (timer != null && timerTask != null) {
+		if (timerTask != null)
 			timerTask.cancel();
+
+		if (timer != null)
 			timer.cancel();
-			timer = null;
-			timerTask = null;
-		}
+
+		timer = null;
+		timerTask = null;
 	}
 }

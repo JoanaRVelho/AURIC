@@ -11,34 +11,28 @@ public class Intrusion {
 	public static final int LOW = 1;
 	public static final int MODERATE = 2;
 	public static final int HIGH = 3;
+	public static final int FALSE_INTRUSION = 4;
 
 	protected String id;
 	protected String date;
 	protected String time;
 	protected int tag;
-	protected String recorderType;
-
 	protected List<Picture> images;
 
-	Intrusion() {
+	public Intrusion(String id, String date, String time, int tag) {
+		this.id = id;
+		this.date = date;
+		this.time = time;
+		this.tag = tag;
 	}
 
-	public Intrusion(String recorderType) {
+	public Intrusion() {
 		long timestamp = System.currentTimeMillis();
 
 		this.id = Long.toString(timestamp);
 		this.date = CalendarManager.getDate(timestamp);
 		this.time = CalendarManager.getTime(timestamp);
 		this.tag = UNCHECKED;
-		this.recorderType = recorderType;
-	}
-
-	public Intrusion(String recorderType, long timestamp) {
-		this.id = Long.toString(timestamp);
-		this.date = CalendarManager.getDate(timestamp);
-		this.time = CalendarManager.getTime(timestamp);
-		this.tag = UNCHECKED;
-		this.recorderType = recorderType;
 	}
 
 	public boolean isChecked() {
@@ -69,20 +63,20 @@ public class Intrusion {
 		this.tag = i;
 	}
 
+	public boolean isFalseIntrusion() {
+		return tag == FALSE_INTRUSION;
+	}
+
+	public void markAsFalse() {
+		tag = FALSE_INTRUSION;
+	}
+
 	public String getID() {
 		return id;
 	}
 
 	public void setID(String id) {
 		this.id = id;
-	}
-
-	public String getLogType() {
-		return recorderType;
-	}
-
-	public void setLogType(String logType) {
-		this.recorderType = logType;
 	}
 
 	public List<Picture> getImages() {
@@ -92,10 +86,10 @@ public class Intrusion {
 	public void setImages(List<Picture> images) {
 		this.images = images;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Intrusion [id=" + id + ", date=" + date + ", time=" + time
-				+ ", tag=" + tag + ", logType=" + recorderType + "]";
+				+ ", tag=" + tag + "]";
 	}
 }

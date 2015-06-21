@@ -1,13 +1,17 @@
 package hcim.auric.audit;
 
-import android.graphics.Bitmap;
 
 public class TaskMessage {
 	private String ID;
-	private Bitmap pic;
+//	private Bitmap pic;
+	private byte[] data;
 	private String timestamp;
 	private String packageName;
 	private boolean intrusion;
+
+	public TaskMessage(String id) {
+		this.ID = id;
+	}
 
 	public boolean isIntrusion() {
 		return intrusion;
@@ -17,8 +21,12 @@ public class TaskMessage {
 		this.intrusion = intrusion;
 	}
 
-	public TaskMessage(String id) {
-		this.ID = id;
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
 	public String getTimestamp() {
@@ -37,13 +45,13 @@ public class TaskMessage {
 		ID = iD;
 	}
 
-	public Bitmap getPic() {
-		return pic;
-	}
-
-	public void setPic(Bitmap pic) {
-		this.pic = pic;
-	}
+//	public Bitmap getPic() {
+//		return pic;
+//	}
+//
+//	public void setPic(Bitmap pic) {
+//		this.pic = pic;
+//	}
 
 	public String getPackageName() {
 		return packageName;

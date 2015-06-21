@@ -6,9 +6,9 @@ import hcim.auric.detector.IDetector;
 import hcim.auric.intrusion.Intrusion;
 import hcim.auric.intrusion.Session;
 import hcim.auric.recognition.RecognitionResult;
+import hcim.auric.utils.Converter;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 /**
  * During a session, this task assumes that the device is being attacked and
@@ -19,7 +19,7 @@ import android.util.Log;
  * @author Joana Velho
  * 
  */
-public class SimpleStrategy extends FaceRecognitionStrategy {
+public class SimpleStrategy extends AbstractStrategy {
 	protected boolean first;
 	private DetectorByFaceRecognition detector;
 
@@ -33,12 +33,12 @@ public class SimpleStrategy extends FaceRecognitionStrategy {
 	public void actionOn() {
 		detector.start();
 
-		currentIntrusion = new Intrusion(recorder.type());
+		currentSession = new Session(recorder.type());
+		currentIntrusion = new Intrusion();
 		recorder.start(currentIntrusion.getID());
-
-		currentSession = new Session();
-		currentSession.addInteraction(currentIntrusion);
-		currentSession.setTagIntrusion(true);
+		
+		currentSession.addIntrusion(currentIntrusion);
+		currentSession.flagAsIntrusion();
 
 		first = true;
 	}
@@ -48,9 +48,8 @@ public class SimpleStrategy extends FaceRecognitionStrategy {
 		if (currentIntrusion != null) {
 			recorder.stop();
 			detector.stop();
-			Log.d(TAG, "AuditTask - stop logging");
 
-			intrusionsDB.insertIntrusionData(currentIntrusion);
+			sessionsDB.insertIntrusionData(currentIntrusion);
 			sessionsDB.insertSession(currentSession);
 
 			currentIntrusion = null;
@@ -70,7 +69,7 @@ public class SimpleStrategy extends FaceRecognitionStrategy {
 		} else {
 			detector.stop();
 			notifier.cancelNotification();
-			intrusionsDB.deletePicturesOfTheIntruder(this.currentIntrusion
+			sessionsDB.deletePicturesOfTheIntruder(this.currentIntrusion
 					.getID());
 			recorder.stop();
 
@@ -86,9 +85,13 @@ public class SimpleStrategy extends FaceRecognitionStrategy {
 	}
 
 	@Override
-	public void actionNewPicture(Bitmap bmp) {
-		RecognitionResult result = detector.newData(bmp);
-		intrusionsDB.insertPictureOfTheIntruder(currentIntrusion.getID(), bmp,
+	public void actionNewData(byte[] data) {
+
+		Bitmap original = Converter.decodeCameraDataToBitmap(data);
+		Bitmap small = Converter.decodeCameraDataToSmallBitmap(data);
+
+		RecognitionResult result = detector.newData(original);
+		sessionsDB.insertPictureOfTheIntruder(currentIntrusion.getID(), small,
 				result);
 	}
 }

@@ -1,27 +1,28 @@
 package hcim.auric.record.screencast;
 
-import hcim.auric.record.AbstractRecorder;
+import hcim.auric.record.IRecorder;
 import hcim.auric.record.RecorderManager;
 import hcim.auric.utils.FileManager;
 import android.content.Context;
 
-public class ScreencastRecorder extends AbstractRecorder {
+public class ScreencastRecorder implements IRecorder {
 
-	private RecordScreencast recorder;
+	private RecordScreen recorder;
+	private Context context;
 
 	public ScreencastRecorder(Context c) {
-		super(c);
+		this.context = c;
 	}
 
 	@Override
-	public void start(String intrusionID) {
-		recorder = new RecordScreencast(new FileManager(context), intrusionID);
+	public void start(String sessionID) {
+		recorder = new RecordScreen(new FileManager(context), sessionID);
 		recorder.start();
 	}
 
 	@Override
 	public void stop() {
-		if (recorder != null){
+		if (recorder != null) {
 			recorder.stopThread();
 			recorder = null;
 		}

@@ -1,9 +1,10 @@
 package hcim.auric.record.screencast;
 
-import hcim.auric.activities.images.SlideShowIntrusionPictures;
-import hcim.auric.database.intrusions.IntrusionsDatabase;
+import hcim.auric.database.intrusions.SessionDatabase;
+import hcim.auric.general_activities.images.SlideShowIntrusionPictures;
+import hcim.auric.intrusion.Intrusion;
+import hcim.auric.intrusion.Session;
 import hcim.auric.recognition.Picture;
-import hcim.auric.record.RunInteraction;
 import hcim.auric.utils.FileManager;
 import hcim.auric.utils.OnSwipeTouchListener;
 
@@ -12,6 +13,9 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,11 +32,12 @@ import android.widget.TextView;
 import com.hcim.intrusiondetection.R;
 
 @SuppressLint("InflateParams")
-public class RunScreencast extends RunInteraction {
-	protected static final String TAG = "AURIC";
+public class RunScreencast extends Activity {
 	public static final String EXTRA_ID = "extra";
 
 	private static final int INTERVAL = 1000;
+
+	private SessionDatabase sessionDB;
 
 	private ImageView logView;
 	private ImageView background;
@@ -47,6 +52,8 @@ public class RunScreencast extends RunInteraction {
 
 	private int idxPhotos;
 	private int idxLog;
+
+	private String sessionID, intrusionID;
 
 	private boolean play;
 
@@ -95,11 +102,12 @@ public class RunScreencast extends RunInteraction {
 		fullscreen();
 		setContentView(R.layout.run_screencast);
 
-		intDB = IntrusionsDatabase.getInstance(this);
+		sessionDB = SessionDatabase.getInstance(this);
 
-		String intrusionID = getIntent().getStringExtra(EXTRA_ID);
-		intrusion = IntrusionsDatabase.getInstance(this).getIntrusion(
-				intrusionID);
+		sessionID = getIntent().getStringExtra(EXTRA_ID);
+		Session s = sessionDB.getSession(sessionID);
+		intrusionID = s.getIntrusionIDs().get(0);
+		Intrusion intrusion = sessionDB.getIntrusion(intrusionID);
 
 		intruderList = Picture.getBitmapList(intrusion.getImages());
 		fileManager = new FileManager(this);
@@ -131,14 +139,14 @@ public class RunScreencast extends RunInteraction {
 	}
 
 	private void computeTotalTime() {
-		File dir = new File(
-				fileManager.getIntrusionDirectory(intrusion.getID()));
-		totalScreenshots = dir.list().length;
-		totalPhotos = intruderList.size();
-		totalTime = totalScreenshots * INTERVAL;
-		logPeriod = totalTime / totalScreenshots;
-		photosPeriod = totalTime / totalPhotos;
-
+		File dir = new File(fileManager.getSessionDirectory(sessionID));
+		if (dir.exists()) {
+			totalScreenshots = dir.list().length;
+			totalPhotos = intruderList.size();
+			totalTime = totalScreenshots * INTERVAL;
+			logPeriod = totalTime / totalScreenshots;
+			photosPeriod = totalTime / totalPhotos;
+		}
 	}
 
 	private void initLog() {
@@ -154,8 +162,7 @@ public class RunScreencast extends RunInteraction {
 	}
 
 	private Bitmap getScreenshot(int number) {
-		String screenshot = fileManager
-				.getScreenshot(intrusion.getID(), number);
+		String screenshot = fileManager.getScreenshotPath(sessionID, number);
 		return BitmapFactory.decodeFile(screenshot);
 	}
 
@@ -174,11 +181,8 @@ public class RunScreencast extends RunInteraction {
 
 	private void fullscreen() {
 		View decorView = getWindow().getDecorView();
-		// Hide the status bar.
 		int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
 		decorView.setSystemUiVisibility(uiOptions);
-		// Remember that you should never show the action bar if the
-		// status bar is hidden, so hide that too if necessary.
 		ActionBar actionBar = getActionBar();
 		actionBar.hide();
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -224,8 +228,7 @@ public class RunScreencast extends RunInteraction {
 				if (playImg.getVisibility() == View.VISIBLE) {
 					Intent i = new Intent(RunScreencast.this,
 							SlideShowIntrusionPictures.class);
-					i.putExtra(SlideShowIntrusionPictures.EXTRA_ID,
-							intrusion.getID());
+					i.putExtra(SlideShowIntrusionPictures.EXTRA_ID, sessionID);
 					startActivity(i);
 				}
 			}
@@ -246,48 +249,32 @@ public class RunScreencast extends RunInteraction {
 		timerTextView.setVisibility(View.INVISIBLE);
 	}
 
-	// private View spinnerView() {
-	// LayoutInflater inflater = (LayoutInflater)
-	// getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	// LinearLayout view = new LinearLayout(this);
-	// view = (LinearLayout) inflater.inflate(R.layout.severity, null);
-	//
-	// spinnerSeverity = (Spinner) view.findViewById(R.id.severity_spinner);
-	// spinnerSeverity.setAdapter(new SeverityAdapter(this));
-	//
-	// return view;
-	// }
-	//
-	// private void markIntrusionAlertDialog() {
-	// AlertDialog.Builder alertDialog;
-	// alertDialog = new AlertDialog.Builder(this);
-	// alertDialog.setTitle("Severity of the intrusion");
-	// alertDialog.setView(spinnerView());
-	// alertDialog.setPositiveButton("OK",
-	// new DialogInterface.OnClickListener() {
-	// public void onClick(DialogInterface dialog, int which) {
-	// intrusion.setTag((int) spinnerSeverity
-	// .getSelectedItemPosition());
-	// intDB.updateIntrusion(intrusion);
-	//
-	// RunScreencast.super.finish();
-	// }
-	// });
-	// alertDialog.show();
-	// }
+	protected void trashButtonAlertDialog() {
+		AlertDialog.Builder alertDialog;
+		alertDialog = new AlertDialog.Builder(RunScreencast.this);
+		alertDialog.setTitle("Delete Intrusion Log");
+		alertDialog
+				.setMessage("Are you sure that you want to delete this intrusion log?");
+		alertDialog.setPositiveButton("YES",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						delete();
+						RunScreencast.super.finish();
+					}
 
-	@Override
+				});
+		alertDialog.setNegativeButton("NO", null);
+		alertDialog.show();
+	}
+
 	protected void delete() {
-		intDB.deleteIntrusion(intrusion.getID(), false);
+		sessionDB.deleteIntrusion(intrusionID);
 
-		File dir = new File(
-				fileManager.getIntrusionDirectory(intrusion.getID()));
+		File dir = new File(fileManager.getSessionDirectory(sessionID));
 		for (File f : dir.listFiles()) {
 			f.delete();
 		}
 		dir.delete();
-
-//		super.finish();
 	}
 
 	// @Override

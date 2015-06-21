@@ -2,8 +2,13 @@ package hcim.auric.audit;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * 
+ * @author Joana Velho
+ * 
+ */
 public class AuditQueue {
-	
+
 	private LinkedBlockingQueue<TaskMessage> queue;
 
 	public AuditQueue() {
@@ -11,16 +16,15 @@ public class AuditQueue {
 	}
 
 	public void addTaskMessage(TaskMessage t) {
-		if (ignoreTaskMessage(t)) {
-			return;
-		}
+		// if (ignoreTaskMessage(t)) {
+		// return;
+		// }
 		queue.add(t);
 	}
 
-	private boolean ignoreTaskMessage(TaskMessage t) {
-		return AuditTask.isScreenOff()
-				&& (t.getID() == IAuditTask.ACTION_NEW_PICTURE || t.getID() == IAuditTask.ACTION_RESULT);
-	}
+	// private boolean ignoreTaskMessage(TaskMessage t) {
+	// return AuditTask.isScreenOff() && t.getID() != AuditTask.ACTION_ON;
+	// }
 
 	public TaskMessage getNext() {
 		try {
@@ -32,5 +36,9 @@ public class AuditQueue {
 
 	public boolean isEmpty() {
 		return queue.isEmpty();
+	}
+
+	public void clear() {
+		queue.clear();
 	}
 }

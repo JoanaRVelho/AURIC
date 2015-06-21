@@ -18,7 +18,7 @@ public class AccessibilityNotification {
 		serviceDisabled = new Notification.Builder(context)
 				.setContentTitle("AURIC Service")
 				.setContentText("Accessibility Service Disabled")
-				.setSmallIcon(R.drawable.official_icon).build();
+				.setSmallIcon(R.drawable.auric_icon).build();
 	}
 
 	public void notifyUser() {

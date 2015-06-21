@@ -1,6 +1,6 @@
 package hcim.auric.service;
 
-import hcim.auric.database.configs.ConfigurationDatabase;
+import hcim.auric.database.SettingsPreferences;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -20,8 +20,8 @@ public class IntrusionNotifier {
 		intrusionDetected = new Notification.Builder(context)
 				.setContentTitle("AURIC - Intrusion Detected")
 				.setContentText("Background recording")
-				.setSmallIcon(R.drawable.official_icon).build();
-		hide = ConfigurationDatabase.getInstance(context).hideNotification();
+				.setSmallIcon(R.drawable.auric_icon).build();
+		hide = new SettingsPreferences(context).hideNotification();
 	}
 
 	public void notifyUser() {

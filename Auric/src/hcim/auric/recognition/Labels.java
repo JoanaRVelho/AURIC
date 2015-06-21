@@ -1,5 +1,7 @@
 package hcim.auric.recognition;
 
+import hcim.auric.utils.LogUtils;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,18 +13,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import android.util.Log;
-
 /**
  * 
  * @author Joana Velho
  * 
  *         An adaptation of {@link https
- *         ://github.com/ayuso2013/face-recognition}
- *
+ *         ://github.com/ayuso2013/face-recognition/
+ *         blob/master/src/org/opencv/javacv/facerecognition/labels.java}
+ * 
  */
 public class Labels {
-	private static final String TAG = "AURIC";
 	private static final String FILENAME = "faces.txt";
 
 	private ArrayList<Label> list;
@@ -93,7 +93,7 @@ public class Labels {
 			bw.close();
 
 		} catch (IOException e) {
-			Log.e(TAG, "Labels - " + e.getMessage() + " " + e.getCause());
+			LogUtils.exception(e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class Labels {
 				br.close();
 				fstream.close();
 			} catch (IOException e) {
-				Log.e(TAG, "Labels - " + e.getMessage() + " " + e.getCause());
+				LogUtils.exception(e);
 			}
 		}
 	}

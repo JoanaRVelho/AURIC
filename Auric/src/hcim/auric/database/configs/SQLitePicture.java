@@ -31,8 +31,9 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String CREATE_PICTURES_TABLE = "CREATE TABLE "+ TABLE_PICTURES +" ( " + KEY_ID
-				+ " TEXT, " + KEY_TYPE + " TEXT, " + KEY_PICTURE + " BLOB )";
+		String CREATE_PICTURES_TABLE = "CREATE TABLE " + TABLE_PICTURES + " ( "
+				+ KEY_ID + " TEXT, " + KEY_TYPE + " TEXT, " + KEY_PICTURE
+				+ " BLOB )";
 
 		db.execSQL(CREATE_PICTURES_TABLE);
 	}
@@ -76,7 +77,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		Picture picture = new Picture(id, type,
 				(Bitmap) Converter.byteArrayToBitmap(blob));
 
-		db.close();
+		//db.close();
 		return picture;
 	}
 
@@ -90,11 +91,12 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		if (cursor != null)
 			cursor.moveToFirst();
 
-		if (cursor.getCount() <= 0)
+		if (cursor.getCount() <= 0) {
+			//db.close();
 			return null;
-
+		}
 		String result = cursor.getString(1);
-		db.close();
+		//db.close();
 
 		return result;
 	}
@@ -109,7 +111,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 		db.insert(TABLE_PICTURES, null, values);
 
-		db.close();
+	//	db.close();
 	}
 
 	public int updatePicture(Picture pic) {
@@ -122,7 +124,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		int i = db.update(TABLE_PICTURES, values, KEY_ID + " = '" + pic.getID()
 				+ "'", null);
 
-		db.close();
+//		db.close();
 
 		return i;
 	}
@@ -132,7 +134,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 		db.delete(TABLE_PICTURES, KEY_ID + "= '" + pic.getID() + "'", null);
 
-		db.close();
+//		db.close();
 	}
 
 	/**
@@ -151,34 +153,8 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		Picture pic = null;
 
 		if (cursor.moveToFirst()) {
-			if (cursor.getCount() <= 0)
-				return null;
-			do {
-				pic = new Picture(cursor.getString(0), cursor.getString(1),
-						(Bitmap) Converter.byteArrayToBitmap(cursor.getBlob(2)));
-				result.add(pic);
-
-			} while (cursor.moveToNext());
-		}
-		db.close();
-
-		return result;
-	}
-
-	public List<Picture> getMyPictures() {
-		List<Picture> result = new ArrayList<Picture>();
-
-		String query = "SELECT  * FROM " + TABLE_PICTURES + " WHERE "
-				+ KEY_TYPE + " ='" + FaceRecognition.MY_PICTURE_TYPE + "'";
-
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(query, null);
-
-		Picture pic = null;
-
-		if (cursor.moveToFirst()) {
 			if (cursor.getCount() <= 0) {
-				db.close();
+				//db.close();
 				return null;
 			}
 			do {
@@ -188,7 +164,35 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 			} while (cursor.moveToNext());
 		}
-		db.close();
+		//db.close();
+
+		return result;
+	}
+
+	public List<Picture> getMyPictures() {
+		List<Picture> result = new ArrayList<Picture>();
+
+		String query = "SELECT  * FROM " + TABLE_PICTURES + " WHERE "
+				+ KEY_TYPE + " ='" + FaceRecognition.getMyPictureType() + "'";
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(query, null);
+
+		Picture pic = null;
+
+		if (cursor.moveToFirst()) {
+			if (cursor.getCount() <= 0) {
+			//	db.close();
+				return null;
+			}
+			do {
+				pic = new Picture(cursor.getString(0), cursor.getString(1),
+						(Bitmap) Converter.byteArrayToBitmap(cursor.getBlob(2)));
+				result.add(pic);
+
+			} while (cursor.moveToNext());
+		}
+	//	db.close();
 
 		return result;
 	}
@@ -197,7 +201,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		List<Picture> result = new ArrayList<Picture>();
 
 		String query = "SELECT  * FROM " + TABLE_PICTURES + " WHERE "
-				+ KEY_TYPE + " ='" + FaceRecognition.INTRUDER_PICTURE_TYPE
+				+ KEY_TYPE + " ='" + FaceRecognition.getIntruderPictureType()
 				+ "'";
 
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -215,7 +219,7 @@ public class SQLitePicture extends SQLiteOpenHelper {
 
 			} while (cursor.moveToNext());
 		}
-		db.close();
+	//	db.close();
 		return result;
 	}
 
@@ -226,6 +230,6 @@ public class SQLitePicture extends SQLiteOpenHelper {
 		values.put(KEY_TYPE, p.getType());
 		db.update(TABLE_PICTURES, values, KEY_ID + "='" + p.getID() + "'", null);
 
-		db.close();
+//		db.close();
 	}
 }

@@ -26,8 +26,7 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 	private static final String KEY_DESCRIPTION = "description";
 	private static final String[] COLUMNS = { KEY_ID, KEY_INT, KEY_PICTURE,
 			KEY_TYPE, KEY_DESCRIPTION };
-	
-	
+
 	private static final String DUMMY = "DUMMY";
 
 	public SQLiteIntruderPictures(Context context) {
@@ -38,7 +37,8 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_INTRUSION_TABLE = "CREATE TABLE " + TABLE_INTRUSIONS
 				+ " ( " + KEY_ID + " TEXT PRIMARY KEY, " + KEY_INT + " TEXT, "
-				+ KEY_PICTURE + " BLOB, " + KEY_TYPE + " TEXT, " + KEY_DESCRIPTION + " TEXT )";
+				+ KEY_PICTURE + " BLOB, " + KEY_TYPE + " TEXT, "
+				+ KEY_DESCRIPTION + " TEXT )";
 
 		db.execSQL(CREATE_INTRUSION_TABLE);
 	}
@@ -62,41 +62,42 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 
 		db.insert(TABLE_INTRUSIONS, null, values);
 
-		db.close();
+	//	db.close();
 	}
 
 	public void updatePictureType(Picture p) {
 		SQLiteDatabase db = this.getWritableDatabase();
-	
+
 		ContentValues values = new ContentValues();
 		values.put(KEY_TYPE, p.getType());
 		db.update(TABLE_INTRUSIONS, values, KEY_ID + "='" + p.getID() + "'",
 				null);
-	
-		db.close();
+
+		//db.close();
 	}
 
 	public Picture getPicture(String pictureID) {
 		SQLiteDatabase db = this.getReadableDatabase();
-	
+
 		Cursor cursor = db.query(TABLE_INTRUSIONS, COLUMNS, KEY_ID + "='"
 				+ pictureID + "'", null, null, null, null, null);
-	
+
 		if (cursor != null)
 			cursor.moveToFirst();
-	
-		if (cursor.getCount() <= 0)
+
+		if (cursor.getCount() <= 0) {
+			//db.close();
 			return null;
-	
+		}
 		byte[] blob = cursor.getBlob(2);
 		String type = cursor.getString(3);
 		String desc = cursor.getString(4);
-	
+
 		Picture picture = new Picture(pictureID, type,
 				(Bitmap) Converter.byteArrayToBitmap(blob));
 		picture.setDescription(desc);
-	
-		db.close();
+
+		//db.close();
 		return picture;
 	}
 
@@ -136,7 +137,7 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 			} while (cursor.moveToNext());
 		}
 
-		db.close();
+	//	db.close();
 
 		return result;
 	}
@@ -146,11 +147,11 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 
 		db.delete(TABLE_INTRUSIONS, KEY_INT + "= '" + intrusionID + "'", null);
 
-		db.close();
+		//db.close();
 	}
 
 	public void insertPictureUnknownIntrusion(Picture p) {
-		insertPicture(DUMMY, p);		
+		insertPicture(DUMMY, p);
 	}
 
 	public void updatePicturesUnknownIntrusion(String intrusionID) {
@@ -158,14 +159,13 @@ public class SQLiteIntruderPictures extends SQLiteOpenHelper {
 
 		ContentValues values = new ContentValues();
 		values.put(KEY_INT, intrusionID);
-		db.update(TABLE_INTRUSIONS, values, KEY_INT + "='" + DUMMY + "'",
-				null);
+		db.update(TABLE_INTRUSIONS, values, KEY_INT + "='" + DUMMY + "'", null);
 
-		db.close();
+	//	db.close();
 	}
 
 	public void deletePicturesUnknownIntrusion() {
 		deleteAllPictures(DUMMY);
-		
+
 	}
 }
