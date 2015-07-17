@@ -26,30 +26,6 @@ public class FileManager {
 	/**
 	 * @return field study folder path
 	 */
-	public String getFieldStudyFolder() {
-		String result = getPrivateExternal() + File.separator + "field_study";
-		
-		File dir = new File(result);
-		if(!dir.exists())
-			dir.mkdir();
-		return result;
-	}
-	
-	public String getOpenAppFile(){
-		return getFieldStudyFolder() + File.separator + "openFile.txt";
-	}
-
-	public boolean isFieldStudyDataStored(String sessionID) {
-		File f = new File(getFieldStudyFile(sessionID));
-		return f.exists();
-	}
-
-	/**
-	 * @return field study folder path
-	 */
-	public String getFieldStudyFile(String sessionID) {
-		return getFieldStudyFolder() + File.separator + sessionID;
-	}
 
 	/**
 	 * @return opencv's directory path
@@ -66,24 +42,41 @@ public class FileManager {
 		return getPrivateExternal() + File.separator + "sessions";
 	}
 
-	/**
-	 * 
-	 * @param sessionID
-	 * @return session directory path
-	 */
-	public String getSessionDirectory(String sessionID) {
-		return getSessionsRootDirectory() + File.separator + sessionID;
+	public void deleteSessions() {
+		File root = new File(getSessionsRootDirectory());
+		File[] intrusionDirs = root.listFiles();
+		if (intrusionDirs != null) {
+			File[] screenshots;
+			for (File dir : intrusionDirs) {
+				screenshots = dir.listFiles();
+				if (screenshots != null) {
+					for (File png : screenshots) {
+						png.delete();
+					}
+				}
+			}
+		}
 	}
 
 	/**
 	 * 
-	 * @param sessionID
+	 * @param intrusionID
+	 * @return intrusion directory path
+	 */
+	public String getIntrusionDirectory(String intrusionID) {
+		return getSessionsRootDirectory() + File.separator + intrusionID;
+	}
+
+	/**
+	 * 
+	 * @param intrusionID
 	 * @param number
 	 *            : screenshot number
 	 * @return screenshot path
 	 */
-	public String getScreenshotPath(String sessionID, int number) {
-		return getSessionDirectory(sessionID) + File.separator + number + PNG;
+	public String getScreenshotPath(String intrusionID, int number) {
+		return getIntrusionDirectory(intrusionID) + File.separator + number
+				+ PNG;
 	}
 
 	public boolean hasSpaceAvailableInOpenCVDirectory(int sizeInBytes) {

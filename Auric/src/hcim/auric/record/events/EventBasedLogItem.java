@@ -1,7 +1,7 @@
 package hcim.auric.record.events;
 
+import hcim.auric.Picture;
 import hcim.auric.accessibility.EventManager;
-import hcim.auric.recognition.Picture;
 import hcim.auric.utils.Converter;
 import hcim.auric.utils.TimeManager;
 
@@ -21,8 +21,6 @@ import android.view.accessibility.AccessibilityEvent;
  * 
  */
 public class EventBasedLogItem {
-	static final String TAG = "AURIC";
-
 	private static final String PHONE = "com.android.phone";
 
 	private int id;
@@ -64,7 +62,7 @@ public class EventBasedLogItem {
 		CharSequence seq = event.getContentDescription();
 		String contentDescription = seq == null ? "" : seq.toString();
 
-		String prefix = EventManager.getPrefix(event.getEventType());
+		String prefix = EventManager.getEventPrefix(event.getEventType());
 
 		if (contentDescription.equals("")) {
 			String aux = Converter.listCharSequenceToString(event.getText());
@@ -108,10 +106,6 @@ public class EventBasedLogItem {
 		return id;
 	}
 
-	public int getEventType() {
-		return eventType;
-	}
-
 	public boolean nothingToShow() {
 		return packageName == null;
 	}
@@ -120,32 +114,16 @@ public class EventBasedLogItem {
 		return packageName;
 	}
 
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
-
 	public String getAppName() {
 		return appName;
-	}
-
-	public void setAppName(String text) {
-		this.appName = text;
 	}
 
 	public String getTime() {
 		return time;
 	}
 
-	public void setTime(String time) {
-		this.time = time;
-	}
-
 	public ArrayList<String> getDetails() {
 		return details;
-	}
-
-	public void setDetails(ArrayList<String> details) {
-		this.details = details;
 	}
 
 	public String detailsToString() {
@@ -180,15 +158,6 @@ public class EventBasedLogItem {
 
 	public Drawable getIcon() {
 		return icon;
-	}
-
-	public void setIcon(Drawable icon) {
-		this.icon = icon;
-	}
-
-	public void addDetails(String d) {
-		details.add(d);
-
 	}
 
 	public List<Picture> getPictures() {

@@ -1,6 +1,6 @@
 package hcim.auric.record;
 
-import hcim.auric.database.SettingsPreferences;
+import hcim.auric.data.SettingsPreferences;
 import hcim.auric.record.events.EventRecorder;
 import hcim.auric.record.screencast.ScreencastRecorder;
 import hcim.auric.utils.HeterogeneityManager;

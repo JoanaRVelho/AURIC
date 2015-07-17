@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence-diagram version="1.1.8" icons="true" automaticImage="PDF">  
+  <object id="1" language="java" name="hcim.auric.detector.IntrusionDetector" project="Auric" 
+    file="/Auric/src/hcim/auric/detector/IntrusionDetector.java" binary="false" label="faceRecognitionDetector" 
+    type="class" autoSize="true">    
+    <position height="-1" width="-1" x="159" y="0"/>    
+    <execution id="2">      
+      <position height="63" width="0" x="0" y="78"/>    
+    </execution>  
+  </object>  
+  <object id="5" language="java" name="hcim.auric.detector.IntruderCapture" project="Auric" 
+    file="/Auric/src/hcim/auric/detector/IntruderCapture.java" binary="false" label="intruderCapture" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="4">      
+      <position height="21" width="0" x="0" y="99"/>    
+    </execution>    
+    <execution id="6">      
+      <position height="63" width="0" x="0" y="129"/>    
+    </execution>  
+  </object>  
+  <object id="9" language="java" name="hcim.auric.camera.CameraManager" project="Auric" 
+    file="/Auric/src/hcim/auric/camera/CameraManager.java" binary="false" label="cameraManager" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="8">      
+      <position height="21" width="0" x="0" y="150"/>    
+    </execution>    
+    <execution id="10">      
+      <position height="63" width="118" x="262" y="177"/>    
+    </execution>    
+    <execution id="13">      
+      <position height="63" width="118" x="262" y="253"/>    
+    </execution>  
+  </object>  
+  <object id="16" language="java" name="android.hardware.Camera" project="Auric" 
+    file="C:/Android/sdk/platforms/android-19/android.jar" binary="true" label="camera" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="669" y="0"/>    
+    <execution id="12">      
+      <position height="21" width="77" x="384" y="198"/>    
+    </execution>    
+    <execution id="15">      
+      <position height="21" width="77" x="384" y="274"/>    
+    </execution>  
+  </object>  
+  <message id="3" operation="start(boolean):void">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </message>  
+  <message id="7" operation="takePicture():void">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="8"/>  
+  </message>  
+  <message id="11" operation="open(int):android.hardware.Camera">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="12"/>  
+  </message>  
+  <message id="14" 
+    operation="takePicture(android.hardware.Camera.ShutterCallback,android.hardware.Camera.PictureCallback,android.hardware.Camera.PictureCallback):void">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="15"/>  
+  </message>
+</sequence-diagram>

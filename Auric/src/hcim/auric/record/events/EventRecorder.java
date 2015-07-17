@@ -1,6 +1,6 @@
 package hcim.auric.record.events;
 
-import hcim.auric.database.intrusions.EventBasedLogDatabase;
+import hcim.auric.data.EventLogDatabase;
 import hcim.auric.record.IRecorder;
 import hcim.auric.record.RecorderManager;
 import android.content.Context;
@@ -11,7 +11,7 @@ public class EventRecorder implements IRecorder {
 			"com.android.systemui", "com.sec.android.app.popupuireceiver" };
 
 	private EventBasedLog log;
-	private EventBasedLogDatabase db;
+	private EventLogDatabase db;
 	private Context context;
 	private volatile static boolean stop;
 
@@ -23,11 +23,11 @@ public class EventRecorder implements IRecorder {
 
 	public EventRecorder(Context c) {
 		context = c;
-		db = EventBasedLogDatabase.getInstance(c);
+		db = EventLogDatabase.getInstance(c);
 		instance = this;
 	}
 
-	public void onAccessibilityEvent(AccessibilityEvent event) {
+	public void newEvent(AccessibilityEvent event) {
 		if (stop)
 			return;
 
@@ -58,6 +58,7 @@ public class EventRecorder implements IRecorder {
 
 	@Override
 	public void start(String intrusionID) {
+	//	AuricEvents.start();
 		if (log == null) {
 			log = new EventBasedLog(intrusionID);
 			stop = false;
@@ -66,6 +67,8 @@ public class EventRecorder implements IRecorder {
 
 	@Override
 	public void stop() {
+	//	AuricEvents.stop();
+		
 		stop = true;
 		store(log);
 		log = null;
@@ -80,5 +83,9 @@ public class EventRecorder implements IRecorder {
 	public void destroy() {
 		stop();
 		instance = null;
+	}
+
+	public boolean running() {
+		return !stop;
 	}
 }

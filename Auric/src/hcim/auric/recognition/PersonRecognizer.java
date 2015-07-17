@@ -4,6 +4,8 @@ import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
 import static com.googlecode.javacv.cpp.opencv_highgui.cvLoadImage;
 import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 import hcim.auric.utils.LogUtils;
+import hcim.auric.utils.OpenCVUtils;
+import hcim.auric.utils.StringGenerator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,22 +34,22 @@ import com.googlecode.javacv.cpp.opencv_imgproc;
  */
 public class PersonRecognizer {
 
-	public final static int MAXIMG = 100;
 	private static final int WIDTH = 128;
 	private static final int HEIGHT = 128;
 
 	private FaceRecognizer faceRecognizer;
 	private String path;
-//	private int count = 0;
-	private Labels labelsFile;
-
-	private int prob = 999;
+	private LabelRepository labelsFile;
 
 	public PersonRecognizer(String path) {
 		faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
 				.createLBPHFaceRecognizer(2, 8, 8, 8, 200);
+		// faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
+		// .createFisherFaceRecognizer(0,200);
+		// faceRecognizer = com.googlecode.javacv.cpp.opencv_contrib
+		// .createEigenFaceRecognizer(80, 200);
 		this.path = path;
-		labelsFile = new Labels(path);
+		labelsFile = new LabelRepository(path);
 	}
 
 	/**
@@ -58,7 +60,7 @@ public class PersonRecognizer {
 	 * @param description
 	 *            : face's description
 	 */
-	public void addPerson(Mat m, String description) {
+	public String addPerson(Mat m, String description) {
 		Bitmap bmp = OpenCVUtils.matToBitmap(m);
 		bmp = Bitmap.createScaledBitmap(bmp, WIDTH, HEIGHT, false);
 		int count = numberOfPictures();
@@ -73,6 +75,7 @@ public class PersonRecognizer {
 		} catch (Exception e) {
 			LogUtils.exception(e);
 		}
+		return description + "-" + count;
 	}
 
 	public int numberOfPictures() {
@@ -89,14 +92,14 @@ public class PersonRecognizer {
 	public boolean train() {
 		File root = new File(path);
 
-		FilenameFilter pngFilter = new FilenameFilter() {
+		FilenameFilter jpgFilter = new FilenameFilter() {
 			@SuppressLint("DefaultLocale")
 			public boolean accept(File dir, String name) {
 				return name.toLowerCase().endsWith(".jpg");
 			};
 		};
 
-		File[] imageFiles = root.listFiles(pngFilter);
+		File[] imageFiles = root.listFiles(jpgFilter);
 
 		MatVector images = new MatVector(imageFiles.length);
 
@@ -116,17 +119,18 @@ public class PersonRecognizer {
 			img = cvLoadImage(p, Highgui.CV_LOAD_IMAGE_GRAYSCALE);
 
 			int i2 = p.lastIndexOf("-"); // <name>-<number>
-		//	int i3 = p.lastIndexOf("."); // .jpg
-		//	int icount = Integer.parseInt(p.substring(i2 + 1, i3));
-		//	if (count < icount)
-		//		count++;
+			// int i3 = p.lastIndexOf("."); // .jpg
+			// int icount = Integer.parseInt(p.substring(i2 + 1, i3));
+			// if (count < icount)
+			// count++;
 
 			String description = p.substring(i1 + 1, i2);
 
-			if (labelsFile.get(description) < 0)
-				labelsFile.add(description, labelsFile.max() + 1);
+			if (labelsFile.getLabelNumber(description) < 0)
+				labelsFile.addLabel(description,
+						labelsFile.numberOfSubjects() + 1);
 
-			label = labelsFile.get(description);
+			label = labelsFile.getLabelNumber(description);
 
 			// grayImg = IplImage.create(img.width(), img.height(),
 			// IPL_DEPTH_8U,
@@ -140,38 +144,41 @@ public class PersonRecognizer {
 			counter++;
 		}
 		if (counter > 0)
-			if (labelsFile.max() > 1)
+			if (labelsFile.numberOfSubjects() > 1)
 				faceRecognizer.train(images, labels);
-		labelsFile.save();
+		labelsFile.store();
 		return true;
 	}
 
-	public String predict(Mat m) {
-		if (!canPredict())
-			return "";
-		int n[] = new int[1];
-		double p[] = new double[1];
+	public RecognitionResult predict(Mat m, int min, int max) {
+		int subjectNumber[] = new int[1];
+		double confidence[] = new double[1];
 		IplImage ipl = matToIplImage(m, WIDTH, HEIGHT);
 
-		faceRecognizer.predict(ipl, n, p);
+		faceRecognizer.predict(ipl, subjectNumber, confidence);
+		
+		int difference;
+		String match;
 
-		if (n[0] != -1)
-			prob = (int) p[0];
-		else
-			prob = -1;
+		if (subjectNumber[0] != -1) {
+			difference = (int) confidence[0];
+			match = labelsFile.getLabelName(subjectNumber[0]);
+		} else {
+			difference = -1;
+			match = "Unkown";
+		}
+		// recognizing face
+		boolean matchOwner = match.startsWith(StringGenerator.getOwnerPrefix());
+		boolean targetDifference = min <= difference && difference <= max;
+		boolean recognized = matchOwner && targetDifference;
 
-		if (n[0] != -1)
-			return labelsFile.get(n[0]);
-		else
-			return "Unkown";
+		RecognitionResult result = new RecognitionResult(true, recognized,
+				match, difference);
+		return result;
 	}
 
-	private boolean canPredict() {
-		if (labelsFile.max() > 1)
-			return true;
-		else
-			return false;
-
+	public void untrain(String picID) {
+		labelsFile.removeLabel(picID);
 	}
 
 	private IplImage matToIplImage(Mat m, int width, int heigth) {
@@ -198,13 +205,5 @@ public class PersonRecognizer {
 		cvCvtColor(image, grayImg, opencv_imgproc.CV_BGR2GRAY);
 
 		return grayImg;
-	}
-
-	public int getProb() {
-		return prob;
-	}
-
-	public void untrain(String picID) {
-		labelsFile.remove(picID);
 	}
 }

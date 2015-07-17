@@ -30,9 +30,9 @@
         android:icon="@drawable/auric_icon"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppBaseTheme" >
+        android:theme="@style/DarkActionBar" >
         <activity
-            android:name="hcim.auric.general_activities.CalendarActivity"
+            android:name="hcim.auric.activities.CalendarActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -42,81 +42,81 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.settings.SettingsActivity"
+            android:name="hcim.auric.activities.settings.SettingsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.QuestionActivity"
+            android:name="hcim.auric.activities.QuestionActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.passcode.InsertPasscode"
+            android:name="hcim.auric.activities.passcode.InsertPasscode"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.passcode.ConfirmAndTurnOffPasscode"
+            android:name="hcim.auric.activities.passcode.ConfirmAndTurnOffPasscode"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.passcode.Unlock"
+            android:name="hcim.auric.activities.passcode.Unlock"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.passcode.ConfirmAndChangePasscode"
+            android:name="hcim.auric.activities.passcode.ConfirmAndChangePasscode"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.images.GridOfRecognizedPictures"
+            android:name="hcim.auric.activities.images.GridOfRecognizedPictures"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.images.FullPicture"
+            android:name="hcim.auric.activities.images.FullPicture"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.record.screencast.RunScreencast"
+            android:name="hcim.auric.activities.replay.Screencast"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.record.events.RunTimelineActivity"
+            android:name="hcim.auric.activities.replay.TimelineActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.record.events.Details"
+            android:name="hcim.auric.activities.replay.AppDetails"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.camera.RecognitionActivity"
+            android:name="hcim.auric.activities.face.RecognitionActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="hcim.auric.camera.DetectionActivity"
+            android:name="hcim.auric.activities.face.DetectionActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.SessionsListActivity"
+            android:name="hcim.auric.activities.SessionsList"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.images.SlideShowIntrusionPictures"
+            android:name="hcim.auric.activities.images.SlideShowIntrusionPictures"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.images.SlideShowRecognizedPictures"
+            android:name="hcim.auric.activities.images.SlideShowRecognizedPictures"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.images.SlideShowSetOfPictures"
+            android:name="hcim.auric.activities.images.SlideShowSetOfPictures"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.Welcome"
+            android:name="hcim.auric.activities.Welcome"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="hcim.auric.general_activities.settings.TestPhoto"
+            android:name="hcim.auric.activities.settings.TestPhoto"
             android:screenOrientation="portrait" >
         </activity>
 
@@ -125,7 +125,7 @@
             android:enabled="true" >
         </service>
         <service
-            android:name="hcim.auric.accessibility.AuricEvents"
+            android:name="hcim.auric.accessibility.AuricAccessibilityService"
             android:enabled="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
             <intent-filter>

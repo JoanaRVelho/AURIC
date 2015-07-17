@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">PIDe</string>
+    <string name="app_name">Auric</string>
     <string name="delete_all">Delete All Sessions</string>
     <string name="calendar">Intrusion Calendar</string>
-    <string name="list_apps">Applications</string>
     <string name="welcome">Welcome to Auric</string>
-    <string name="tap_to_start">Tap to Start</string>
     <string name="startconfig">Let\'s start</string>
     <string name="intrusion_detection">Intrusion Detection</string>
     <string name="description"></string>
-    <string name="brief">Auric is an intrusion detector for mobile devices. This app uses facial recognition to find out who is operating the device, while is recording the user\'s interactions.\n\nFirst step to configure Auric is to take 3 pictures of you.</string>
+    <string name="brief">Auric is an intrusion detector for mobile devices. This app uses facial recognition to find out who is operating the device, while is recording the user\'s interactions.\n\n First, Auric has to take a few pictures of you.</string>
     <string name="configurations">Settings</string>
     <string name="record_all">Record all interactions</string>
-    <string name="show_only_int">Show only intrusions sessions</string>
-    <string name="missingPictures">3 missing pictures</string>
+    <string name="show_only_int">Show only intrusions</string>
     <string name="intrusions">Intrusions</string>
     <string name="intrusion">Intrusion</string>
-    <string name="mypicture">My Picture</string>
     <string name="mypictures">Recognized Pictures</string>
     <string name="ok">OK</string>
     <string name="trash_description">Delete</string>
     <string name="edit">Edit Pictures</string>
-    <string name="test_photo">Test with Photo</string>
-    <string name="test_fr_photo">Test Face Recognition with Photo</string>
     <string name="test_camera">Test with Camera</string>
-    <string name="viewall">View All</string>
     <string name="face_params">Face Recognition Params</string>
-    <string name="faceparamsdesc">Max difference between two pictures. \nDefault value = 80</string>
-    <string name="ratedesc">Time between authentications measured in seconds. \nDefault value = 5 seconds</string>
+    <string name="faceparamsdesc">Max distance for a given input image.\nDefault value = 80</string>
+    <string name="ratedesc">Time between authentications measured in seconds. \nDefault value = 15 seconds</string>
     <string name="detection">Intrusion Detection Options</string>
-    <string name="strategy">Audit Strategy Options</string>
+    <string name="strategy">Strategy Options</string>
     <string name="device_sharing">Device Sharing</string>
     <string name="passcode_title">Passcode</string>
-    <string name="researcher_passcode">Please type Researcher\'s Passcode:</string>
     <string name="passcode">Passcode Lock</string>
     <string name="passcode_change">Change Passcode</string>
     <string name="record_type">Recording Options</string>
@@ -48,36 +40,5 @@
     <string name="hide_not">hide notification</string>
     <string name="number_pictures">Number of pictures</string>
     <string name="select_apps">Select applications</string>
-    <string name="is_intrusion">Quem foi o utilizador?</string>
-    <string name="me">eu</string>
-    <string name="yes">sim</string>
-    <string name="no">não</string>
-    <string name="mini_quest">Mini Questionário</string>
-    <string name="other_person">outra pessoa</string>
-    <string name="worried">Sente-se preocupado com isso?</string>
-    <string name="authorized">Estava autorizado a consultar o seu dispositivo para esse fim?</string>
     <string name="access_service">Auric\'s Accessibility Service\n\nThis accessibility service is essential for the application to find out what an opponent did on your device. Please enable it.</string>
-
-    <string-array name="mode_array">
-        <item>Original Mode</item>
-        <item>Original Verbose Mode</item>
-        <item>Laboratory Test Mode</item>
-    </string-array>
-    <string-array name="log_array">
-        <item>Event based Log</item>
-        <item>Screencast (requires root)</item>
-    </string-array>
-    <string-array name="severity_array">
-        <item>None</item>
-        <item>Low</item>
-        <item>Moderate</item>
-        <item>High</item>
-    </string-array>
-    <string-array name="severity_desc_array">
-        <item>I am not an intruder</item>
-        <item>The intruder had authorization to do that</item>
-        <item>The intruder did not have authorization to that but i am not concerned about it</item>
-        <item>The intruder did not have authorization to do that and i am concerned about it</item>
-    </string-array>
-
 </resources>

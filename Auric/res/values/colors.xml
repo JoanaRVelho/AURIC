@@ -6,9 +6,8 @@
     <color name="blue">#0000FF</color>
     <color name="navy">#6699FF</color>
     <color name="sky">#0099CC</color>
-    <color name="gray">#808080</color>
     <color name="lightgray">#e7e7e7</color>
-    <color name="lightgray02">#bfbfbf</color>
+    <color name="gray">#bfbfbf</color>
     <color name="dark">#000015</color>
     <color name="lightgreen">#CCFFD2</color>
     <color name="lightred">#FFD3CC</color>

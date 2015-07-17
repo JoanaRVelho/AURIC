@@ -5,10 +5,9 @@ import java.util.List;
 
 public class StrategyManager {
 
-	public static final String DEVICE_SHARING = "Device Sharing + records intruders";
-	public static final String DEVICE_SHARING_RECORD_ALL = "Device Sharing + records everything";
-	public static final String CHECK_ONCE = "Check Once";
-	private static final String DEFAULT = DEVICE_SHARING_RECORD_ALL;
+	public static final String DEVICE_SHARING = "Record only intruder's activities";
+	public static final String GREEDY_STRATEGY = "Records everything";
+	private static final String DEFAULT = GREEDY_STRATEGY;
 
 	private static List<String> strategies;
 
@@ -16,8 +15,7 @@ public class StrategyManager {
 		strategies = new ArrayList<String>();
 		
 		strategies.add(DEVICE_SHARING);
-		strategies.add(DEVICE_SHARING_RECORD_ALL);
-		strategies.add(CHECK_ONCE);
+		strategies.add(GREEDY_STRATEGY);
 	}
 
 	public static String getDefault() {

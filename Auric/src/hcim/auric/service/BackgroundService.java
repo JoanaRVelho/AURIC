@@ -1,13 +1,10 @@
 package hcim.auric.service;
 
-import hcim.auric.audit.AuditQueue;
-import hcim.auric.audit.AuditTask;
-import hcim.auric.database.SettingsPreferences;
+import hcim.auric.data.SettingsPreferences;
 import hcim.auric.strategy.DeviceSharingStrategy;
+import hcim.auric.strategy.GreedyStrategy;
 import hcim.auric.strategy.IStrategy;
-import hcim.auric.strategy.SimpleStrategy;
 import hcim.auric.strategy.StrategyManager;
-import hcim.auric.strategy.VerboseStrategy;
 import hcim.auric.utils.LogUtils;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -24,7 +21,7 @@ public class BackgroundService extends Service {
 	private Context context;
 	private NotificationManager notificationManager;
 	private SettingsPreferences settings;
-	private AuditTask task;
+	private ServiceThread task;
 	private OnOffReceiver receiver;
 
 	@Override
@@ -38,13 +35,13 @@ public class BackgroundService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		LogUtils.info("On start service");
 
-		AuditQueue queue = new AuditQueue();
+		TaskQueue queue = new TaskQueue();
 		IStrategy strategy = getSelectedStrategy(this, queue);
 
 		receiver = new OnOffReceiver(context, queue);
 		registerReceiver(receiver, receiver.getIntentFilter());
-		
-		task = new AuditTask(queue, strategy);
+
+		task = new ServiceThread(queue, strategy);
 		task.startTask();
 
 		startForeground(NOTIFICATION_STICKY, getNotification());
@@ -75,7 +72,7 @@ public class BackgroundService extends Service {
 			return fakeNotification();
 
 		CharSequence contentTitle = "AURIC Service";
-		CharSequence contentText = "Recording Intruder's Activities";
+		CharSequence contentText = "Taking pictures and recording interactions";
 
 		Notification note = new Notification.Builder(context)
 				.setContentTitle(contentTitle).setContentText(contentText)
@@ -101,17 +98,17 @@ public class BackgroundService extends Service {
 		return note;
 	}
 
-	public static IStrategy getSelectedStrategy(Context c, AuditQueue queue) {
+	public static IStrategy getSelectedStrategy(Context c, TaskQueue queue) {
 		SettingsPreferences s = new SettingsPreferences(c);
 		String strategy = s.getStrategyType();
-		int n = s.getNumberOfPicturesPerDetection();
 
-		if (strategy.equals(StrategyManager.DEVICE_SHARING)) {
-			return new DeviceSharingStrategy(c, queue, n);
-		}
-		if (strategy.equals(StrategyManager.CHECK_ONCE)) {
-			return new SimpleStrategy(c, queue, n);
-		}
-		return new VerboseStrategy(c, queue, n);
+		if (strategy.equals(StrategyManager.DEVICE_SHARING)) 
+			return new DeviceSharingStrategy(c, queue);
+		
+		if (strategy.equals(StrategyManager.GREEDY_STRATEGY))
+			return new GreedyStrategy(c, queue);
+		
+		else
+			return new GreedyStrategy(c, queue);
 	}
 }

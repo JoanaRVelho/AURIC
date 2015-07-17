@@ -1,9 +1,9 @@
 package hcim.auric.recognition;
 
-import hcim.auric.database.SettingsPreferences;
-import hcim.auric.database.configs.PicturesDatabase;
+import hcim.auric.data.SettingsPreferences;
 import hcim.auric.utils.FileManager;
 import hcim.auric.utils.LogUtils;
+import hcim.auric.utils.OpenCVUtils;
 import hcim.auric.utils.StringGenerator;
 
 import java.io.File;
@@ -35,26 +35,22 @@ import com.hcim.intrusiondetection.R;
  * 
  * @author Joana Velho
  * 
- *         An adaptation of {@link https
- *         ://github.com/ayuso2013/face-recognition/
- *         blob/master/src/org/opencv/javacv/facerecognition/FdActivity.java}
  * 
  */
 public class FaceRecognition {
 
 	private static FaceRecognition INSTANCE;
 
+	private static final int MIN = 0;
 	private static final String MY_PICTURE_TYPE = "myface";
 	private static final String INTRUDER_PICTURE_TYPE = "intruder";
 	private static final String UNKNOWN_PICTURE_TYPE = "unknown";
-
-	private static final int MIN = 0;
 
 	private File cascadeFile;
 	private CascadeClassifier faceDetector;
 	private int absoluteFaceSize = 0;
 
-	private BaseLoaderCallback loaderCallback;
+	private BaseLoaderCallback callback;
 	private String path;
 	private PersonRecognizer recognizer;
 
@@ -70,7 +66,7 @@ public class FaceRecognition {
 
 	/**
 	 * 
-	 * @return maximum difference between to faces
+	 * @return maximum difference between two faces
 	 */
 	public int getMax() {
 		return new SettingsPreferences(context).getFaceRecognitionMax();
@@ -96,7 +92,7 @@ public class FaceRecognition {
 	public static String getUnknownPictureType() {
 		return UNKNOWN_PICTURE_TYPE;
 	}
-	
+
 	/**
 	 * Add a Picture to the Database
 	 * 
@@ -104,30 +100,32 @@ public class FaceRecognition {
 	 * @param name
 	 * @return true if succeeded, false otherwise
 	 */
-	public boolean trainGrayPicture(Bitmap grayBitmap, String name) {
-		Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
+	public String trainGrayPicture(Bitmap grayBitmap, String name) {
+		// Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
+		// Mat equalizedMat = equalizeMat(grayMat);
+		//
+		Mat gray16uc4 = OpenCVUtils.bitmapToMat(grayBitmap);
+		Mat grayMat = new Mat(gray16uc4.height(), gray16uc4.width(),
+				CvType.CV_8UC1);
+
+		Imgproc.cvtColor(gray16uc4, grayMat, Imgproc.COLOR_BGRA2GRAY);
 		Mat equalizedMat = equalizeMat(grayMat);
 
 		MatOfRect faces = detect(equalizedMat);
 		Rect[] facesArray = faces.toArray();
+		String label = null;
 
-		boolean result;
-		if (facesArray == null || facesArray.length == 0) {
-			result = false;
-		} else {
+		if (facesArray != null && facesArray.length > 0) {
 			Mat cropped = equalizedMat.submat(facesArray[0]); // crop
-			recognizer.addPerson(cropped, name);
+			label = recognizer.addPerson(cropped, name);
 
 			cropped.release();
-			result = true;
 		}
 
 		faces.release();
-		equalizedMat.release();
-
 		grayMat.release();
 
-		return result;
+		return label;
 	}
 
 	/**
@@ -137,23 +135,28 @@ public class FaceRecognition {
 	 * @param name
 	 * @return true if succeeded, false otherwise
 	 */
-	public boolean trainPicture(Bitmap rgbBitmap, String name) {
+	public String trainPicture(Bitmap rgbBitmap, String name) {
+		// Bitmap grayBitmap = convertToGray(rgbBitmap);
+		// Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
+		// Mat equalizedMat = equalizeMat(grayMat);
+		//
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
-		Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
+		Mat gray16uc4 = OpenCVUtils.bitmapToMat(grayBitmap);
+		Mat grayMat = new Mat(gray16uc4.height(), gray16uc4.width(),
+				CvType.CV_8UC1);
+		Imgproc.cvtColor(gray16uc4, grayMat, Imgproc.COLOR_BGRA2GRAY);
 		Mat equalizedMat = equalizeMat(grayMat);
+		//
 
 		MatOfRect faces = detect(equalizedMat);
 		Rect[] facesArray = faces.toArray();
 
-		boolean result;
-		if (facesArray == null || facesArray.length == 0) {
-			result = false;
-		} else {
+		String label = null;
+		if (facesArray != null && facesArray.length > 0) {
 			Mat cropped = equalizedMat.submat(facesArray[0]); // crop
-			recognizer.addPerson(cropped, name);
+			label = recognizer.addPerson(cropped, name);
 
 			cropped.release();
-			result = true;
 		}
 
 		faces.release();
@@ -161,7 +164,7 @@ public class FaceRecognition {
 
 		grayMat.release();
 
-		return result;
+		return label;
 	}
 
 	/**
@@ -172,28 +175,28 @@ public class FaceRecognition {
 	 * @param name
 	 *            : face's name
 	 */
-	public void trainMat(Mat croppedGrayMat, String name) {
-		LogUtils.info("croppedGrayMat= channels:" + croppedGrayMat.channels()
-				+ ", type:" + croppedGrayMat.type() + ",depth:"
-				+ croppedGrayMat.depth());
+	public String trainMat(Mat croppedGrayMat, String name) {
 		Mat equalizedMat = equalizeMat(croppedGrayMat);
 
-		recognizer.addPerson(equalizedMat, name);
+		String label = recognizer.addPerson(equalizedMat, name);
 
 		equalizedMat.release();
+		return label;
 	}
 
 	public void untrainPicture(String picID) {
 		File root = new File(path);
 		String[] files = root.list();
+		String label = picID.split("-")[0];
+		String picsName = label + "-";
 
 		for (String filename : files) {
-			if (filename.startsWith(picID)) {
+			if (filename.startsWith(picsName)) {
 				File f = new File(path, filename);
 				f.delete();
 			}
 		}
-		recognizer.untrain(picID);
+		recognizer.untrain(label);
 	}
 
 	public void stopTrain() {
@@ -211,8 +214,9 @@ public class FaceRecognition {
 	public RecognitionResult recognizePicture(Bitmap rgbBitmap) {
 		Bitmap grayBitmap = convertToGray(rgbBitmap);
 		Mat gray16uc4 = OpenCVUtils.bitmapToMat(grayBitmap);
-		Mat grayMat = new Mat(gray16uc4.height(), gray16uc4.width(), CvType.CV_8UC1);
-		
+		Mat grayMat = new Mat(gray16uc4.height(), gray16uc4.width(),
+				CvType.CV_8UC1);
+
 		Imgproc.cvtColor(gray16uc4, grayMat, Imgproc.COLOR_BGRA2GRAY);
 		Mat equalizedMat = equalizeMat(grayMat);
 
@@ -234,19 +238,7 @@ public class FaceRecognition {
 	}
 
 	public RecognitionResult recognizeMat(Mat graySubMat) {
-		String match = recognizer.predict(graySubMat);
-		int difference = recognizer.getProb();
-
-		// recognizing face
-		PicturesDatabase db = PicturesDatabase.getInstance(context);
-		boolean matchOwner = db.isMyPicture(match);
-		boolean targetDifference = MIN <= difference && difference <= getMax();
-		boolean recognized = matchOwner && targetDifference;
-
-		RecognitionResult result = new RecognitionResult(true, recognized,
-				match, difference);
-
-		return result;
+		return recognizer.predict(graySubMat, MIN, getMax());
 	}
 
 	/**
@@ -263,38 +255,10 @@ public class FaceRecognition {
 	private RecognitionResult recognize(Rect[] facesArray, Mat grayMat) {
 		Mat m = new Mat();
 		m = grayMat.submat(facesArray[0]);
-		String match = recognizer.predict(m);
-		int difference = recognizer.getProb();
-
-		// recognizing face
-		PicturesDatabase db = PicturesDatabase.getInstance(context);
-		boolean matchOwner = db.isMyPicture(match);
-		boolean targetDifference = MIN <= difference && difference <= getMax();
-		boolean recognized = matchOwner && targetDifference;
-
-		RecognitionResult result = new RecognitionResult(true, recognized,
-				match, difference);
+		
+		RecognitionResult result = recognizer.predict(m, MIN, getMax());
 
 		m.release();
-
-		return result;
-	}
-
-	public boolean detectFace(Bitmap rgbBitmap) {
-		Bitmap grayBitmap = convertToGray(rgbBitmap);
-
-		Mat rgbaMat = OpenCVUtils.bitmapToMat(rgbBitmap);
-		Mat grayMat = OpenCVUtils.bitmapToMat(grayBitmap);
-
-		Rect[] facesArray = getDetectedFaces(grayMat);
-
-		boolean result = true;
-		if (facesArray == null) {
-			result = false;
-		}
-
-		rgbaMat.release();
-		grayMat.release();
 
 		return result;
 	}
@@ -353,12 +317,11 @@ public class FaceRecognition {
 	private Mat equalizeMat(Mat gray) {
 		Mat result = new Mat(gray.height(), gray.width(), CvType.CV_8UC1);
 		Imgproc.equalizeHist(gray, result);
-		LogUtils.info("equalized");
 		return result;
 	}
 
 	public BaseLoaderCallback getLoaderCallback() {
-		return loaderCallback;
+		return callback;
 	}
 
 	/**
@@ -369,10 +332,10 @@ public class FaceRecognition {
 	 */
 	private FaceRecognition(Context c) {
 		this.context = c;
-		loaderCallback = new Loader(c);
+		callback = new Loader(c);
 
 		if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_9, context,
-				loaderCallback)) {
+				callback)) {
 			// Log.e(TAG,
 			// "Face Recognition - Cannot connect to OpenCV Manager");
 		}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence-diagram version="1.1.8" icons="true">  
+  <object id="1" language="java" name="hcim.auric.camera.FrontPictureCallback" project="Auric" 
+    file="/Auric/src/hcim/auric/camera/FrontPictureCallback.java" binary="false" label="frontPictureCallback" 
+    type="class" autoSize="true">    
+    <position height="-1" width="-1" x="156" y="0"/>    
+    <execution id="2">      
+      <position height="84" width="142" x="5" y="78"/>    
+    </execution>    
+    <execution id="4">      
+      <position height="21" width="142" x="5" y="120"/>    
+    </execution>    
+    <execution id="5">      
+      <position height="63" width="142" x="5" y="165"/>    
+    </execution>  
+  </object>  
+  <object id="8" language="java" name="java.util.Observable" project="TestesJava" 
+    file="C:/Program Files/Java/jre1.8.0_25/lib/rt.jar" binary="true" label="observable" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="511" y="0"/>    
+    <execution id="7">      
+      <position height="21" width="88" x="151" y="186"/>    
+    </execution>  
+  </object>  
+  <object id="9" language="java" name="hcim.auric.detector.IntrusionDetector" project="Auric" 
+    file="/Auric/src/hcim/auric/detector/IntrusionDetector.java" binary="false" label="intrusionDetector" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="10">      
+      <position height="63" width="0" x="0" y="302"/>    
+    </execution>    
+    <execution id="13">      
+      <position height="63" width="122" x="232" y="471"/>    
+    </execution>    
+    <execution id="16">      
+      <position height="84" width="122" x="243" y="203"/>    
+    </execution>    
+    <execution id="18">      
+      <position height="21" width="122" x="243" y="245"/>    
+    </execution>    
+    <execution id="19">      
+      <position height="63" width="122" x="243" y="551"/>    
+    </execution>  
+  </object>  
+  <object id="22" language="java" name="hcim.auric.recognition.FaceRecognition" project="Auric" 
+    file="/Auric/src/hcim/auric/recognition/FaceRecognition.java" binary="false" label="faceRecognition" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="12">      
+      <position height="21" width="0" x="0" y="323"/>    
+    </execution>    
+    <execution id="23">      
+      <position height="63" width="117" x="358" y="352"/>    
+    </execution>  
+  </object>  
+  <object id="26" language="java" name="hcim.auric.recognition.PersonRecognizer" project="Auric" 
+    file="/Auric/src/hcim/auric/recognition/PersonRecognizer.java" binary="false" label="personRecognizer" type="class" 
+    autoSize="true">    
+    <position height="-1" width="-1" x="416" y="0"/>    
+    <execution id="25">      
+      <position height="21" width="128" x="479" y="373"/>    
+    </execution>    
+    <execution id="27">      
+      <position height="63" width="128" x="479" y="403"/>    
+    </execution>  
+  </object>  
+  <object id="30" language="java" name="com.googlecode.javacv.cpp.opencv_contrib.FaceRecognizer" project="Auric" 
+    file="C:/Users/Joana/workspace/Auric/libs/javacv.jar" binary="true" label="faceRecognizer" type="class" 
+    autoSize="true">    
+    <position height="-1" width="-1" x="570" y="0"/>    
+    <execution id="29">      
+      <position height="21" width="124" x="611" y="424"/>    
+    </execution>  
+  </object>  
+  <object id="31" language="java" name="hcim.auric.service.TaskQueue" project="Auric" 
+    file="/Auric/src/hcim/auric/service/TaskQueue.java" binary="false" label="auditQueue" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="708" y="0"/>    
+    <execution id="15">      
+      <position height="21" width="89" x="739" y="492"/>    
+    </execution>  
+  </object>  
+  <object id="32" language="java" name="hcim.auric.data.SessionDatabase" project="Auric" 
+    file="/Auric/src/hcim/auric/data/SessionDatabase.java" binary="false" label="sessionDatabase" type="class" 
+    autoSize="true">    
+    <position height="-1" width="-1" x="997" y="0"/>    
+    <execution id="21">      
+      <position height="21" width="123" x="841" y="572"/>    
+    </execution>  
+  </object>  
+  <message id="3" operation="onPictureTaken(byte[],android.hardware.Camera):void">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </message>  
+  <message id="6" operation="notifyObservers(java.lang.Object):void">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="7"/>  
+  </message>  
+  <message id="11" operation="recognizePicture(android.graphics.Bitmap):hcim.auric.recognition.RecognitionResult">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="12"/>  
+  </message>  
+  <message id="14" operation="addTaskMessage(hcim.auric.service.TaskMessage):void">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="15"/>  
+  </message>  
+  <message id="17" operation="update(java.util.Observable,Object):void">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="18"/>  
+  </message>  
+  <message id="20" 
+    operation="insertPictureOfIntruder(android.graphics.Bitmap,hcim.auric.recognition.RecognitionResult):void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="21"/>  
+  </message>  
+  <message id="24" operation="predict(org.opencv.core.Mat,int,int)">    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="25"/>  
+  </message>  
+  <message id="28" operation="predict(com.googlecode.javacv.cpp.opencv_core.CvArr,int[],double[]):void">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="29"/>  
+  </message>
+</sequence-diagram>

@@ -2,7 +2,6 @@ package hcim.auric.record.events;
 
 import hcim.auric.accessibility.EventManager;
 import hcim.auric.utils.Converter;
-import hcim.auric.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,23 +47,13 @@ public class EventBasedLog {
 		return intrusionID;
 	}
 
-	public void setIntrusionID(String intrusionID) {
-		this.intrusionID = intrusionID;
-	}
-
 	public void addItem(AccessibilityEvent event, Context c) {
 		if (EventManager.isEditText(event.getEventType())) {
 			managingEditText(event);
 		}
 
 		EventBasedLogItem item = new EventBasedLogItem(event, c);
-
 		list.add(item);
-		LogUtils.info("#####################################################");
-		for (EventBasedLogItem i : list) {
-			LogUtils.info(i.detailsToString());
-		}
-		LogUtils.info("#####################################################");
 	}
 
 	private void managingEditText(AccessibilityEvent event) {

@@ -1,11 +1,11 @@
 package hcim.auric.strategy;
 
-import hcim.auric.database.intrusions.SessionDatabase;
-import hcim.auric.intrusion.Intrusion;
-import hcim.auric.intrusion.Session;
+import hcim.auric.Intrusion;
+import hcim.auric.Session;
+import hcim.auric.data.SessionDatabase;
+import hcim.auric.detector.IDetector;
 import hcim.auric.record.IRecorder;
 import hcim.auric.record.RecorderManager;
-import hcim.auric.service.IntrusionNotifier;
 import android.content.Context;
 
 public abstract class AbstractStrategy implements IStrategy {
@@ -15,6 +15,7 @@ public abstract class AbstractStrategy implements IStrategy {
 
 	protected IntrusionNotifier notifier;
 	protected IRecorder recorder;
+	protected IDetector detector;
 
 	public AbstractStrategy(Context context) {
 		this.sessionsDB = SessionDatabase.getInstance(context);
@@ -28,5 +29,10 @@ public abstract class AbstractStrategy implements IStrategy {
 	@Override
 	public final IRecorder getRecorder() {
 		return recorder;
+	}
+
+	@Override
+	public IDetector getDetector() {
+		return detector;
 	}
 }

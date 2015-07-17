@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence-diagram version="1.1.8" icons="true">  
+  <object id="1" language="java" name="hcim.auric.accessibility.AuricAccessibilityService" project="Auric" 
+    file="/Auric/src/hcim/auric/accessibility/AuricAccessibilityService.java" binary="false" 
+    label="auricAccessibilityService" type="class" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="2">      
+      <position height="63" width="0" x="0" y="78"/>    
+    </execution>  
+  </object>  
+  <object id="5" language="java" name="hcim.auric.record.events.EventRecorder" project="Auric" 
+    file="/Auric/src/hcim/auric/record/events/EventRecorder.java" binary="false" label="eventRecorder" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="4">      
+      <position height="21" width="0" x="0" y="99"/>    
+    </execution>    
+    <execution id="6">      
+      <position height="63" width="111" x="177" y="147"/>    
+    </execution>    
+    <execution id="9">      
+      <position height="63" width="111" x="177" y="285"/>    
+    </execution>  
+  </object>  
+  <object id="12" language="java" name="hcim.auric.record.events.EventBasedLog" project="Auric" 
+    file="/Auric/src/hcim/auric/record/events/EventBasedLog.java" binary="false" label="eventBasedLog" type="class" 
+    autoSize="true">    
+    <position height="-1" width="-1" x="590" y="0"/>    
+    <execution id="8">      
+      <position height="21" width="111" x="292" y="168"/>    
+    </execution>    
+    <execution id="13">      
+      <position height="63" width="111" x="292" y="210"/>    
+    </execution>  
+  </object>  
+  <object id="16" language="java" name="hcim.auric.record.events.EventBasedLogItem" project="Auric" 
+    file="/Auric/src/hcim/auric/record/events/EventBasedLogItem.java" binary="false" label="eventBasedLogItem" 
+    type="class" autoSize="true">    
+    <position height="-1" width="-1" x="774" y="0"/>    
+    <execution id="15">      
+      <position height="21" width="136" x="407" y="231"/>    
+    </execution>  
+  </object>  
+  <object id="17" language="java" name="hcim.auric.data.EventLogDatabase" project="Auric" 
+    file="/Auric/src/hcim/auric/data/EventLogDatabase.java" binary="false" label="eventLogDatabase" type="class" 
+    autoSize="true">    
+    <position height="-1" width="-1" x="542" y="0"/>    
+    <execution id="11">      
+      <position height="21" width="129" x="547" y="306"/>    
+    </execution>  
+  </object>  
+  <message id="3" operation="newEvent(android.view.accessibility.AccessibilityEvent):void">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </message>  
+  <message id="7" operation="addItem(android.view.accessibility.AccessibilityEvent,android.content.Context):void">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="8"/>  
+  </message>  
+  <message id="10" operation="insert(hcim.auric.record.events.EventBasedLog):void">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="11"/>  
+  </message>  
+  <message id="14" operation="EventBasedLogItem(android.view.accessibility.AccessibilityEvent,android.content.Context)">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="15"/>  
+  </message>
+</sequence-diagram>

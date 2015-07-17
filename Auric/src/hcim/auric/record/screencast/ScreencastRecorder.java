@@ -15,8 +15,8 @@ public class ScreencastRecorder implements IRecorder {
 	}
 
 	@Override
-	public void start(String sessionID) {
-		recorder = new RecordScreen(new FileManager(context), sessionID);
+	public void start(String intrusionID) {
+		recorder = new RecordScreen(new FileManager(context), intrusionID);
 		recorder.start();
 	}
 

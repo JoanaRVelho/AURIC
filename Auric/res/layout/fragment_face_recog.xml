@@ -21,21 +21,10 @@
             android:text="@string/faceparamsdesc" />
 
         <Button
-            android:id="@+id/viewall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/TextView01"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/button_design"
-            android:text="@string/viewall"
-            android:textColor="@color/white" />
-
-        <Button
             android:id="@+id/edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/viewall"
+            android:layout_below="@+id/TextView01"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:background="@drawable/button_design"
@@ -53,17 +42,6 @@
             android:text="@string/test_camera"
             android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/testphoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/testfr"
-            android:layout_below="@+id/testfr"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/button_design"
-            android:text="@string/test_photo"
-            android:textColor="@color/white" />
-
         <NumberPicker
             android:id="@+id/numberPicker1"
             android:layout_width="50dp"
@@ -76,8 +54,8 @@
             android:id="@+id/TextView01"
             android:layout_width="fill_parent"
             android:layout_height="25sp"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:background="@color/sky"
             android:gravity="center"
@@ -89,8 +67,8 @@
             android:id="@+id/faceRecogTitle"
             android:layout_width="fill_parent"
             android:layout_height="25sp"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/testphoto"
+            android:layout_below="@+id/testfr"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
             android:background="@color/sky"
             android:gravity="center"

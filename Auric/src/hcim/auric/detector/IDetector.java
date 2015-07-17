@@ -1,14 +1,20 @@
 package hcim.auric.detector;
 
+/**
+ * Interface that represents an Intrusion Detector
+ * 
+ * @author Joana Velho
+ * 
+ */
 public interface IDetector {
 
 	/**
-	 * This method must be called to start the detection
+	 * This method must be called to start detection
 	 */
 	public void start();
 
 	/**
-	 * This method must be called to stop the detection
+	 * This method must be called to stop detection
 	 */
 	public void stop();
 

@@ -1,6 +1,6 @@
 package hcim.auric.service;
 
-import hcim.auric.database.SettingsPreferences;
+import hcim.auric.data.SettingsPreferences;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

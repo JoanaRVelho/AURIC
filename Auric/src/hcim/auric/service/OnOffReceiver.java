@@ -1,9 +1,6 @@
 package hcim.auric.service;
 
-import hcim.auric.audit.AuditQueue;
-import hcim.auric.audit.AuditTask;
-import hcim.auric.audit.TaskMessage;
-import hcim.auric.database.SettingsPreferences;
+import hcim.auric.data.SettingsPreferences;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +9,9 @@ import android.telephony.TelephonyManager;
 
 public class OnOffReceiver extends BroadcastReceiver {
 	private IntentFilter filter;
-	private AuditQueue queue;
+	private TaskQueue queue;
 
-	public OnOffReceiver(Context c, AuditQueue queue) {
+	public OnOffReceiver(Context c, TaskQueue queue) {
 		this.queue = queue;
 		filter = new IntentFilter();
 		filter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -36,12 +33,12 @@ public class OnOffReceiver extends BroadcastReceiver {
 		if (action.equals(Intent.ACTION_SCREEN_OFF)) {
 			// ignore screen turning off event due to a phone call
 			if (!phoneCallInProgress(context)) { // off hook
-				queue.addTaskMessage(new TaskMessage(AuditTask.ACTION_OFF));
+				queue.addTaskMessage(new TaskMessage(TaskMessage.ACTION_OFF));
 			}
 		}
 		if (action.equals(Intent.ACTION_SCREEN_ON)) {
 			if (!phoneCallInProgress(context)) {// off hook
-				queue.addTaskMessage(new TaskMessage(AuditTask.ACTION_ON));
+				queue.addTaskMessage(new TaskMessage(TaskMessage.ACTION_ON));
 			}
 		}
 	}
