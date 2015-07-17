@@ -94,11 +94,11 @@ public class FaceDatabase {
 
 		for (int i = 0; i < RESOURCES.length; i++) {
 			for (int j = 0; j < RESOURCES[i].length; j++) {
-				Bitmap gray = BitmapFactory.decodeResource(c.getResources(),
-						RESOURCES[i][j]);
-				faceRecognition.trainGrayPicture(gray, name + (i + 1));
+			//	Bitmap gray = BitmapFactory.decodeResource(c.getResources(),
+			//			RESOURCES[i][j]);
+			//	faceRecognition.trainGrayPicture(gray, name + (i + 1));
 
-				gray.recycle();
+			//	gray.recycle();
 			}
 		}
 	}
