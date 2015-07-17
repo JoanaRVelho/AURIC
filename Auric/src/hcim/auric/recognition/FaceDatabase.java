@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 
 import com.hcim.intrusiondetection.R;
 
-public class FaceDatabase {
+public class FaceDatabase {/*
 	private static int[][] RESOURCES = {
 			{ R.drawable.s6p1, R.drawable.s6p10, R.drawable.s6p2,
 					R.drawable.s6p3, R.drawable.s6p4, R.drawable.s6p5,
@@ -87,7 +87,7 @@ public class FaceDatabase {
 					R.drawable.s38p3, R.drawable.s38p4, R.drawable.s38p5,
 					R.drawable.s38p6, R.drawable.s38p7, R.drawable.s38p8,
 					R.drawable.s38p9 } };
-
+*/
 	public static void build(Context c) {
 		FaceRecognition faceRecognition = FaceRecognition.getInstance(c);
 		String name = "s";
